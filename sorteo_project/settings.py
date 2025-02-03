@@ -129,4 +129,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'sorteo_app/static')
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 CSRF_TRUSTED_ORIGINS = ["https://web-production-0252.up.railway.app"]
