@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-*!)y=(x-y1vj5s5i^y5a_zv(4z1&wvl%f00umni1x6cv@8hwd2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['web-production-0252.up.railway.app', 'localhost']
+ALLOWED_HOSTS = ['web-production-0252.up.railway.app', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "whitenoise.runserver_nostatic"
+    # "whitenoise.runserver_nostatic"
     "sorteo_app"
 ]
 
@@ -128,7 +128,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'sorteo_app/static')
 ]
-
-
 
 CSRF_TRUSTED_ORIGINS = ["https://web-production-0252.up.railway.app"]
