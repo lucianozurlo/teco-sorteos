@@ -138,4 +138,4 @@ STORAGES = {
     }
 }
 
-CSRF_TRUSTED_ORIGINS = ["https://web-production-0252.up.railway.app"]
+CSRF_TRUSTED_ORIGINS = ["http://*", "https://web-production-0252.up.railway.app"]
