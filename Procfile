@@ -1,1 +1,1 @@
-web: gunicorn sorteo_project.wsgi --log-file - 
+web: python manage.py collectstatic && gunicorn sorteo_project.wsgi --log-file - 
