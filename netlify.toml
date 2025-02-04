@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "build"
+
+[context.production.environment]
+  # Establece la URL base de la API para producción.
+  REACT_APP_API_BASE_URL = "https://web-production-0252.up.railway.app"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
