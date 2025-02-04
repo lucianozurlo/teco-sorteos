@@ -1,8 +1,6 @@
 /* src/index.css */
 
-/* ===========================================
-   Variables globales de colores y tipografía
-   =========================================== */
+/* Variables globales de colores, tipografía y espaciados */
 :root {
   --primary-color: #007BFF;
   --primary-hover: #0056b3;
@@ -13,11 +11,14 @@
   --neutral-border: #ddd;
   --text-color: #333;
   --font-family: 'Roboto', Arial, sans-serif;
+  --base-padding: 16px;
+  --base-margin: 16px;
 }
 
-/* ===========================================
-     Estilos Base
-     =========================================== */
+/* Importar fuente Roboto desde Google Fonts (opcional, incluir en index.html o aquí) */
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap'); */
+
+/* Reset y base */
 * {
   box-sizing: border-box;
 }
@@ -42,14 +43,28 @@ a:hover {
   color: var(--primary-hover);
 }
 
-/* ===========================================
-     Header y Navegación
-     =========================================== */
+/* Header Profesional */
 header {
   background-color: #fff;
+  padding: var(--base-padding) calc(var(--base-padding) * 2);
+  margin-bottom: var(--base-margin);
+  border-bottom: 2px solid var(--neutral-border);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 10px 20px;
-  margin-bottom: 20px;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.header-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
 }
 
 .nav-links {
@@ -57,8 +72,8 @@ header {
   flex-wrap: wrap;
   gap: 15px;
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 .nav-links li {
@@ -66,8 +81,9 @@ header {
 }
 
 .nav-links a {
-  padding: 8px 12px;
-  font-weight: bold;
+  display: block;
+  padding: 10px 15px;
+  font-weight: 500;
   color: var(--text-color);
   border-radius: 4px;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -78,21 +94,17 @@ header {
   color: #fff;
 }
 
-/* ===========================================
-     Contenedor Principal
-     =========================================== */
+/* Contenedor global para secciones */
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 var(--base-padding);
 }
 
-/* ===========================================
-     Botón Base
-     =========================================== */
+/* Estilos de Botón Base */
 .btn {
   display: inline-block;
-  padding: 8px 16px;
+  padding: 10px 20px;
   background-color: var(--primary-color);
   color: #fff;
   border: none;
@@ -106,63 +118,63 @@ header {
   background-color: var(--primary-hover);
 }
 
-/* ===========================================
-     Tablas
-     =========================================== */
+/* Estilos Profesionales para Tablas */
 .table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
-  font-size: 0.9rem;
+  margin-bottom: var(--base-margin);
+  background-color: #fff;
+  font-size: 0.95rem;
 }
 
 .table th,
 .table td {
   border: 1px solid var(--neutral-border);
-  padding: 10px;
+  padding: 12px 15px;
   text-align: left;
 }
 
 .table th {
   background-color: #f2f2f2;
+  font-weight: 600;
 }
 
-/* ===========================================
-     Estilos para Secciones Comunes (Tarjetas)
-     =========================================== */
-.card {
-  background-color: #fff;
-  padding: 20px;
-  margin: 20px auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* ===========================================
-     Responsividad General
-     =========================================== */
+/* Responsividad Global */
 @media (max-width: 768px) {
   .nav-links {
     flex-direction: column;
     align-items: flex-start;
   }
-
-  .container {
-    padding: 0 10px;
-  }
 }
 
 @media (max-width: 600px) {
 
-  /* Ajuste de paddings y márgenes para móviles */
-  .card {
-    padding: 15px;
-    margin: 10px;
+  /* Ajustar paddings y márgenes en contenedores */
+  .container,
+  header,
+  .add-to-blacklist-container,
+  .historico-container,
+  .listas-container,
+  .premio-manager-container,
+  .sorteo-container,
+  .upload-csv-container {
+    padding: 16px;
+    margin: 12px;
   }
 
-  /* Las tablas se vuelven scrollables horizontalmente */
+  /* Tablas: permitir scroll horizontal si es necesario */
   .table {
     display: block;
     overflow-x: auto;
+  }
+
+  /* Reducir tamaño de fuente en cabeceras si es necesario */
+  header .header-logo {
+    font-size: 1.3rem;
+  }
+
+  .nav-links a {
+    padding: 8px 10px;
+    font-size: 0.9rem;
   }
 }

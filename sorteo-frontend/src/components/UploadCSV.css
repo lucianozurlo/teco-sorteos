@@ -1,8 +1,8 @@
 /* sorteo-frontend/src/components/UploadCSV.css */
 .upload-csv-container {
     background-color: #fff;
-    padding: 20px;
-    margin: 20px auto;
+    padding: 24px;
+    margin: var(--base-margin) auto;
     max-width: 600px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -26,7 +26,7 @@
 }
 
 .upload-button {
-    padding: 10px 20px;
+    padding: 12px 20px;
     background-color: var(--success-color);
     color: #fff;
     border: none;
@@ -52,12 +52,12 @@
 }
 
 .descargar-plantillas {
-    margin-top: 1rem;
+    margin-top: 16px;
 }
 
 .descargar-plantillas .btn {
     display: inline-block;
-    padding: 0.5rem 1rem;
+    padding: 8px 16px;
     background-color: var(--primary-color);
     color: #fff;
     text-decoration: none;

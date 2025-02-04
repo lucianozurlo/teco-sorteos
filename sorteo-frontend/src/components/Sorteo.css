@@ -1,12 +1,11 @@
 /* sorteo-frontend/src/components/Sorteo.css */
 .sorteo-container {
     background-color: #fff;
-    padding: 20px;
-    margin: 20px auto;
+    padding: 24px;
+    margin: var(--base-margin) auto;
     max-width: 800px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    font-family: var(--font-family);
 }
 
 .sorteo-section {
@@ -15,15 +14,15 @@
 
 .sorteo-section label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 8px;
+    font-weight: 600;
     font-size: 1rem;
     color: var(--text-color);
 }
 
 .sorteo-section input,
 .sorteo-section select {
-    padding: 8px;
+    padding: 10px;
     width: 100%;
     max-width: 300px;
     border: 1px solid var(--neutral-border);
@@ -32,7 +31,7 @@
 }
 
 .sortear-btn {
-    padding: 10px 20px;
+    padding: 12px 24px;
     background-color: var(--success-color);
     color: #fff;
     border: none;
@@ -50,15 +49,15 @@
 .sorteo-list {
     list-style: none;
     padding: 0;
-    margin-top: 10px;
+    margin-top: 16px;
 }
 
 .sorteo-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    margin-bottom: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
     border: 1px solid var(--neutral-border);
     border-radius: 4px;
     background-color: #fff;
@@ -66,13 +65,14 @@
 }
 
 .eliminar-btn {
-    padding: 5px 10px;
+    padding: 6px 12px;
     background-color: var(--danger-color);
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 0.9rem;
 }
 
 .eliminar-btn:hover {
@@ -81,8 +81,8 @@
 
 .sorteo-result {
     margin-top: 20px;
-    padding: 15px;
-    border: 1px solid var(--success-color);
+    padding: 16px;
+    border: 2px solid var(--success-color);
     border-radius: 4px;
     background-color: #e9ffe9;
     font-size: 1rem;

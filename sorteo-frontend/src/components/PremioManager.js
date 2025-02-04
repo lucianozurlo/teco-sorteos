@@ -132,7 +132,7 @@ function PremioManager() {
 
   return (
     <div className="premio-manager-container">
-      <h2>Gestor de Premios</h2>
+      <h2>Premios</h2>
       <div className="premio-manager-section">
         <h3>Agregar Nuevo Premio</h3>
         <input

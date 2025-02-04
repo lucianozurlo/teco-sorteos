@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {BrowserRouter as Router, Routes, Route, Link} from 'react-router-dom';
+import Header from './Header';
 import Home from './components/Home';
 import Sorteo from './components/Sorteo';
 import PremioManager from './components/PremioManager';
@@ -23,9 +24,9 @@ function App () {
           <ul className="nav-links">
             <li><Link to="/">Home</Link></li>
             <li><Link to="/sorteo">Sorteo</Link></li>
-            <li><Link to="/premios">Gestor de Premios</Link></li>
-            <li><Link to="/upload-csv">Upload CSV</Link></li>
-            <li><Link to="/historico">Histórico</Link></li>
+            <li><Link to="/premios">Premios</Link></li>
+            <li><Link to="/upload-csv">Subir bases</Link></li>
+            <li><Link to="/historico">Registro</Link></li>
             <li><Link to="/listas">Listas Cargadas</Link></li>
             <li><Link to="/blacklist/add">Agregar a Lista Negra</Link></li>
             <li><Link to="/admin">Admin</Link></li>

@@ -1,56 +1,57 @@
 /* sorteo-frontend/src/components/Historico.css */
 .historico-container {
     background-color: #fff;
-    padding: 20px;
-    margin: 20px auto;
+    padding: 24px;
+    margin: var(--base-margin) auto;
     max-width: 1000px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .historico-section {
-    margin-bottom: 30px;
+    margin-bottom: 32px;
 }
 
 .historico-section h3 {
-    margin-bottom: 15px;
+    margin-bottom: 16px;
     font-size: 1.2rem;
 }
 
 .filtros-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
 .filtro label {
-    font-weight: bold;
-    margin-right: 5px;
+    font-weight: 600;
+    margin-right: 8px;
 }
 
 .filtro input,
 .filtro select {
-    padding: 6px;
+    padding: 8px;
     border: 1px solid var(--neutral-border);
     border-radius: 4px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
 }
 
-/* Ajustes para la tabla */
+/* Tablas para Registro */
 .historico-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .historico-table th,
 .historico-table td {
     border: 1px solid var(--neutral-border);
-    padding: 10px;
-    font-size: 0.9rem;
+    padding: 12px 15px;
+    font-size: 0.95rem;
 }
 
 .historico-table th {
     background-color: #f2f2f2;
+    font-weight: 600;
 }

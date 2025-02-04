@@ -1,0 +1,79 @@
+/* Header.css */
+
+/* Header principal */
+header {
+    background-color: #fff;
+    padding: 16px 32px;
+    /* Espaciado interno amplio */
+    margin-bottom: 16px;
+    border-bottom: 2px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Contenedor interno centrado y con layout flexible */
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+/* Logo del header */
+.header-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #007BFF;
+    /* Color primario */
+}
+
+/* Menú de navegación */
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Cada elemento de navegación */
+.nav-links li {
+    margin: 0;
+}
+
+/* Enlaces de navegación */
+.nav-links a {
+    display: block;
+    padding: 10px 15px;
+    font-weight: 500;
+    color: #333;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Efecto hover para los enlaces */
+.nav-links a:hover {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-links {
+        width: 100%;
+        flex-direction: column;
+        margin-top: 10px;
+    }
+
+    .nav-links a {
+        width: 100%;
+        text-align: center;
+    }
+}

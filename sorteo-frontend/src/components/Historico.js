@@ -295,7 +295,7 @@ function Historico() {
   // ================================
   return (
     <div className="historico-container">
-      <h2>Histórico de Sorteos y Actividades</h2>
+      <h2>Registro de Sorteos y Actividades</h2>
 
       {/* FILTROS Y ORDENAMIENTO PARA RESULTADOS */}
       <div className="filtros-container" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1rem' }}>
