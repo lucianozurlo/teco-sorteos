@@ -12,7 +12,7 @@ import AddToBlacklist from './components/AddToBlacklist';
 import AdminRedirect from './components/AdminRedirect';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {ADMIN_URL} from './config';
+import {ADMIN_URL} from '../config';
 import './App.css';
 
 function App () {
