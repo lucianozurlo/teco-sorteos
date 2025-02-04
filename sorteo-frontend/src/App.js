@@ -11,6 +11,7 @@ import AddToBlacklist from './components/AddToBlacklist';
 import AdminRedirect from './components/AdminRedirect';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {ADMIN_URL} from './config';
 import './App.css';
 
 function App () {
@@ -27,14 +28,7 @@ function App () {
             <li><Link to="/historico">Histórico</Link></li>
             <li><Link to="/listas">Listas Cargadas</Link></li>
             <li><Link to="/blacklist/add">Agregar a Lista Negra</Link></li>
-            <li>
-              <a
-                href="https://web-production-0252.up.railway.app/admin/"
-                target="_blank"
-              >
-                Admin
-              </a>
-            </li>
+            <li><Link to="/admin">Admin</Link></li>
           </ul>
         </nav>
         <hr />
@@ -47,7 +41,7 @@ function App () {
           <Route path="/historico" element={<Historico />} />
           <Route path="/listas" element={<ListasCargadas />} />
           <Route path="/blacklist/add" element={<AddToBlacklist />} />
-          {/* <Route path="/admin" element={<AdminRedirect />} /> */}
+          <Route path="/admin" element={<AdminRedirect />} />
         </Routes>
         <ToastContainer />
       </div>
