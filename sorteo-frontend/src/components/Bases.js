@@ -125,7 +125,7 @@ function Bases() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>Legajo</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Área</th>
@@ -187,7 +187,7 @@ function Bases() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th>Legajo</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Área</th>

@@ -17,10 +17,10 @@ function UploadCSV () {
     if (file && file.type === 'text/csv') {
       setFileUsuarios (file);
       toast.success (
-        `Archivo de usuarios "${file.name}" cargado correctamente.`
+        `Listado de participantes "${file.name}" cargado correctamente.`
       );
     } else {
-      toast.error ('Por favor, sube un archivo CSV válido para usuarios.');
+      toast.error ('Por favor, subí un archivo CSV válido para usuarios.');
     }
   }, []);
 
@@ -29,10 +29,12 @@ function UploadCSV () {
     if (file && file.type === 'text/csv') {
       setFileListaNegra (file);
       toast.success (
-        `Archivo de lista negra "${file.name}" cargado correctamente.`
+        `Listado de participantes excluidos "${file.name}" cargado correctamente.`
       );
     } else {
-      toast.error ('Por favor, sube un archivo CSV válido para lista negra.');
+      toast.error (
+        'Por favor, subí un archivo CSV válido a la lista de excluidos.'
+      );
     }
   }, []);
 
@@ -51,7 +53,7 @@ function UploadCSV () {
   const handleUpload = async () => {
     if (!fileUsuarios && !fileListaNegra) {
       toast.error (
-        'Por favor, arrastra al menos un archivo: usuarios o lista negra.'
+        'Por favor, arrastrá al menos un archivo: participantes o excluidos.'
       );
       return;
     }
@@ -95,7 +97,9 @@ function UploadCSV () {
           <input {...getInputPropsUsuarios ()} />
           {fileUsuarios
             ? <p>{fileUsuarios.name}</p>
-            : <p>Arrastra el CSV de usuarios o haz clic para seleccionarlo</p>}
+            : <p>
+                Arrastrá el archivo CSV de participantes o hacé clic para seleccionarlo
+              </p>}
         </div>
         <div
           {...getRootPropsListaNegra ()}
@@ -105,7 +109,7 @@ function UploadCSV () {
           {fileListaNegra
             ? <p>{fileListaNegra.name}</p>
             : <p>
-                Arrastra el CSV de lista negra o haz clic para seleccionarlo
+                Arrastrá el archivo CSV de usuarios que no participarán de los sorteos o hacé clic para seleccionarlo
               </p>}
         </div>
       </div>
@@ -123,7 +127,7 @@ function UploadCSV () {
           download="participantes_template.csv"
           className="btn"
         >
-          Descargar Plantilla de Participantes
+          Descargar Plantilla de ejemplo de Participantes
         </a>
         <a
           href={`${API_BASE_URL}/api/download_template/lista_negra/`}
@@ -131,7 +135,7 @@ function UploadCSV () {
           className="btn"
           style={{marginLeft: '1rem'}}
         >
-          Descargar Plantilla de Lista Negra
+          Descargar Plantilla de ejemplo para Participantes excluidos
         </a>
       </div>
     </div>

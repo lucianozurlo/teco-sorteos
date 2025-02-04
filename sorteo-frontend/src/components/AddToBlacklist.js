@@ -34,12 +34,12 @@ function AddToBlacklist () {
 
   return (
     <div className="add-to-blacklist-container">
-      <h3>Agregar a Lista Negra Individualmente</h3>
+      <h3>Agregar a la lista de participantes excluidos</h3>
       <input
         type="number"
         value={participantId}
         onChange={e => setParticipantId (e.target.value)}
-        placeholder="Ingrese ID del participante"
+        placeholder="Legajo del participante"
       />
       <button onClick={handleAdd}>Agregar</button>
     </div>
