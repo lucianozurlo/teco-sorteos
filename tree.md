@@ -41,7 +41,7 @@
         └── .DS_Store
         └── 📁build
             └── asset-manifest.json
-            └── favicon.ico
+            └── favicon.png
             └── index.html
             └── logo192.png
             └── logo512.png
@@ -58,7 +58,7 @@
         └── package-lock.json
         └── package.json
         └── 📁public
-            └── favicon.ico
+            └── favicon.png
             └── index.html
             └── logo192.png
             └── logo512.png
