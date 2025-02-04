@@ -2,7 +2,7 @@
 
 /* Header con fondo azul */
 header {
-    background-color: #007BFF;
+    background-color: #3c00a0;
     padding: 16px 32px;
     margin-bottom: 24px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -48,7 +48,7 @@ header {
 /* Enlace activo o al pasar el mouse: fondo blanco, texto azul */
 .nav-links a:hover,
 .nav-links a.active {
-    background-color: #007BFF;
+    background-color: #3c00a0;
     color: #fff;
 }
 
