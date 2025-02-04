@@ -1,12 +1,12 @@
-// sorteo-frontend/src/components/PremioManager.js
+// sorteo-frontend/src/components/Premios.js
 
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
-import './PremioManager.css';
+import './Premios.css';
 import { API_BASE_URL } from '../config';
 
-function PremioManager() {
+function Premios() {
   const [premios, setPremios] = useState([]);
   const [nuevoNombre, setNuevoNombre] = useState('');
   const [nuevoStock, setNuevoStock] = useState(1);
@@ -131,9 +131,9 @@ function PremioManager() {
   };
 
   return (
-    <div className="premio-manager-container">
+    <div className="premios-container">
       <h2>Premios</h2>
-      <div className="premio-manager-section">
+      <div className="premios-section">
         <h3>Agregar Nuevo Premio</h3>
         <input
           type="text"
@@ -151,7 +151,7 @@ function PremioManager() {
         <button onClick={agregarPremio}>Agregar Premio</button>
       </div>
       <hr />
-      <div className="premio-manager-section">
+      <div className="premios-section">
         <h3>Lista de Premios</h3>
         {cargando ? (
           <ClipLoader size={50} color="#123abc" />
@@ -213,4 +213,4 @@ function PremioManager() {
   );
 }
 
-export default PremioManager;
+export default Premios;

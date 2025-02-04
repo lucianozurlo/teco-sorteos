@@ -76,10 +76,10 @@
                 └── Registro.css
                 └── Registro.js
                 └── Home.js
-                └── ListasCargadas.css
-                └── ListasCargadas.js
-                └── PremioManager.css
-                └── PremioManager.js
+                └── Bases.css
+                └── Bases.js
+                └── Premios.css
+                └── Premios.js
                 └── Sorteo.css
                 └── Sorteo.js
                 └── UploadCSV.css
