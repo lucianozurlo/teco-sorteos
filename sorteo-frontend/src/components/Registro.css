@@ -37,22 +37,3 @@
     border-radius: 4px;
     font-size: 0.95rem;
 }
-
-/* Tablas para Registro */
-.registro-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 24px;
-}
-
-.registro-table th,
-.registro-table td {
-    border: 1px solid var(--neutral-border);
-    padding: 12px 15px;
-    font-size: 0.95rem;
-}
-
-.registro-table th {
-    background-color: #f2f2f2;
-    font-weight: 600;
-}

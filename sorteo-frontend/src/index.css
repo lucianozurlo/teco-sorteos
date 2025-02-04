@@ -166,7 +166,23 @@ header {
   .table {
     display: block;
     overflow-x: auto;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
   }
+
+  table th,
+  table td {
+    border: 1px solid var(--neutral-border);
+    padding: 12px 15px;
+    font-size: 0.95rem;
+  }
+
+  table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+  }
+
 
   /* Reducir tamaño de fuente en cabeceras si es necesario */
   header .header-logo {
