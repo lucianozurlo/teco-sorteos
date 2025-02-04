@@ -1,24 +1,25 @@
-// sorteo-frontend/src/Header.js
+// Header.js
 import React from 'react';
-import {Link} from 'react-router-dom';
-import './Header.css'; // Opcional, si deseas estilos específicos para el header
+import {NavLink} from 'react-router-dom';
+import './Header.css';
 
 function Header () {
   return (
     <header>
-      <div className="header-inner container">
+      <div className="header-inner">
         <div className="header-logo">
-          Sorteos CI
+          Mi App de Sorteos
         </div>
         <ul className="nav-links">
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/sorteo">Sorteo</Link></li>
-          <li><Link to="/premios">Premios</Link></li>
-          <li><Link to="/upload-csv">Subir bases</Link></li>
-          <li><Link to="/registro">Registro</Link></li>
-          <li><Link to="/listas">Listas Cargadas</Link></li>
-          <li><Link to="/blacklist/add">Agregar a Lista Negra</Link></li>
-          <li><Link to="/admin">Admin</Link></li>
+          {/* Usamos NavLink para que asigne automáticamente la clase "active" */}
+          <li><NavLink to="/" end>Home</NavLink></li>
+          <li><NavLink to="/sorteo">Sorteo</NavLink></li>
+          <li><NavLink to="/premios">Premios</NavLink></li>
+          <li><NavLink to="/upload-csv">Subir bases</NavLink></li>
+          <li><NavLink to="/registro">Registro</NavLink></li>
+          <li><NavLink to="/listas">Listas Cargadas</NavLink></li>
+          <li><NavLink to="/blacklist/add">Agregar a Lista Negra</NavLink></li>
+          <li><NavLink to="/admin">Admin</NavLink></li>
         </ul>
       </div>
     </header>

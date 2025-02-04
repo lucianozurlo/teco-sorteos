@@ -1,12 +1,10 @@
 /* Header.css */
 
-/* Header principal */
+/* Header con fondo azul */
 header {
-    background-color: #fff;
+    background-color: #007BFF;
     padding: 16px 32px;
-    /* Espaciado interno amplio */
-    margin-bottom: 16px;
-    border-bottom: 2px solid #ddd;
+    margin-bottom: 24px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -20,27 +18,20 @@ header {
     flex-wrap: wrap;
 }
 
-/* Logo del header */
+/* Logo: texto grande y en blanco */
 .header-logo {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: 700;
-    color: #007BFF;
-    /* Color primario */
+    color: #fff;
 }
 
 /* Menú de navegación */
 .nav-links {
     display: flex;
-    flex-wrap: wrap;
     gap: 15px;
     list-style: none;
     margin: 0;
     padding: 0;
-}
-
-/* Cada elemento de navegación */
-.nav-links li {
-    margin: 0;
 }
 
 /* Enlaces de navegación */
@@ -48,18 +39,20 @@ header {
     display: block;
     padding: 10px 15px;
     font-weight: 500;
-    color: #333;
+    color: #fff;
+    /* Texto blanco por defecto */
     border-radius: 4px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Efecto hover para los enlaces */
-.nav-links a:hover {
+/* Enlace activo o al pasar el mouse: fondo blanco, texto azul */
+.nav-links a:hover,
+.nav-links a.active {
     background-color: #007BFF;
     color: #fff;
 }
 
-/* Ajustes responsivos */
+/* Responsividad: en pantallas pequeñas, el menú se apila */
 @media (max-width: 768px) {
     .header-inner {
         flex-direction: column;
