@@ -32,21 +32,31 @@ header {
     list-style: none;
     margin: 0;
     padding: 0;
+    font-family: var(--font-family);
+}
+
+.nav-links li {
+    display: inline;
 }
 
 /* Enlaces de navegación */
 .nav-links a {
     display: block;
-    padding: 10px 15px;
     font-weight: 500;
     color: #fff;
-    /* Texto blanco por defecto */
     border-radius: 4px;
-    transition: background-color 0.3s, color 0.3s;
+    text-decoration: none;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
 }
 
 .nav-links a:hover {
     color: #3c00a0;
+    background-color: #fff;
 }
 
 .nav-links a.active:hover {
