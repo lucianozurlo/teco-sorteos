@@ -2,7 +2,7 @@
 
 /* Header con fondo azul */
 header {
-    background-color: #3c00a0;
+    background-color: #fff;
     padding: 16px 32px;
     margin-bottom: 24px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -22,7 +22,7 @@ header {
 .header-logo {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #fff;
+    color: #3c00a0;
 }
 
 /* Menú de navegación */
@@ -45,9 +45,11 @@ header {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* Enlace activo o al pasar el mouse: fondo blanco, texto azul */
-.nav-links a:hover,
-.nav-links a.active {
+.nav-links a:hover {
+    color: #3c00a0;
+}
+
+.nav-links a.active:hover {
     background-color: #3c00a0;
     color: #fff;
 }

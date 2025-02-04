@@ -8,7 +8,7 @@ function Header () {
     <header>
       <div className="header-inner">
         <div className="header-logo">
-          Mi App de Sorteos
+          Teco Sorteos
         </div>
         <ul className="nav-links">
           {/* Usamos NavLink para que asigne automáticamente la clase "active" */}
