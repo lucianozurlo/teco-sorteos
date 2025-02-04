@@ -1,5 +1,6 @@
-from django.shortcuts import render
+# sorteo_app/views.py
 
-# Create your views here.
-def render_articles(request):
-    return render(request, 'articles.html')
+"""
+Este archivo puede contener vistas sencillas o legacy.
+Si no lo usás, podés dejarlo vacío o borrarlo.
+"""
