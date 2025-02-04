@@ -1,45 +1,56 @@
 /* sorteo-frontend/src/components/Historico.css */
-
 .historico-container {
-    padding: 20px;
-    max-width: 1000px;
-    margin: auto;
-    font-family: var(--font-family);
     background-color: #fff;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 1000px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .historico-section {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .historico-section h3 {
-    margin-bottom: 10px;
-    color: var(--text-color);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
 }
 
+.filtros-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.filtro label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.filtro input,
+.filtro select {
+    padding: 6px;
+    border: 1px solid var(--neutral-border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* Ajustes para la tabla */
 .historico-table {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
 .historico-table th,
 .historico-table td {
     border: 1px solid var(--neutral-border);
-    padding: 8px;
-    text-align: left;
+    padding: 10px;
     font-size: 0.9rem;
 }
 
 .historico-table th {
     background-color: #f2f2f2;
-}
-
-.actividad-list {
-    list-style: none;
-    padding: 0;
-}
-
-.actividad-list li {
-    padding: 5px 0;
-    border-bottom: 1px solid var(--neutral-border);
 }

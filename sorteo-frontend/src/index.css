@@ -1,3 +1,8 @@
+/* src/index.css */
+
+/* ===========================================
+   Variables globales de colores y tipografía
+   =========================================== */
 :root {
   --primary-color: #007BFF;
   --primary-hover: #0056b3;
@@ -5,39 +10,159 @@
   --danger-color: #dc3545;
   --danger-hover: #c82333;
   --neutral-bg: #f8f9fa;
-  --neutral-border: #ccc;
+  --neutral-border: #ddd;
   --text-color: #333;
-  --font-family: 'Arial', sans-serif;
+  --font-family: 'Roboto', Arial, sans-serif;
+}
+
+/* ===========================================
+     Estilos Base
+     =========================================== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: #eef1f5;
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Enlaces */
+a {
+  text-decoration: none;
+  color: var(--primary-color);
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* ===========================================
+     Header y Navegación
+     =========================================== */
+header {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px 20px;
+  margin-bottom: 20px;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-links li {
+  margin: 0;
+}
+
+.nav-links a {
+  padding: 8px 12px;
+  font-weight: bold;
+  color: var(--text-color);
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-links a:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* ===========================================
+     Contenedor Principal
+     =========================================== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* ===========================================
+     Botón Base
+     =========================================== */
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+.btn:hover {
+  background-color: var(--primary-hover);
+}
+
+/* ===========================================
+     Tablas
+     =========================================== */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+  border: 1px solid var(--neutral-border);
+  padding: 10px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+/* ===========================================
+     Estilos para Secciones Comunes (Tarjetas)
+     =========================================== */
+.card {
+  background-color: #fff;
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ===========================================
+     Responsividad General
+     =========================================== */
+@media (max-width: 768px) {
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .container {
+    padding: 0 10px;
+  }
 }
 
 @media (max-width: 600px) {
 
-  .sorteo-container,
-  .premio-manager-container,
-  .historico-container,
-  .upload-csv-container,
-  .listas-container {
-    padding: 10px;
-    margin: 0 5px;
+  /* Ajuste de paddings y márgenes para móviles */
+  .card {
+    padding: 15px;
+    margin: 10px;
   }
 
-  .nav-links {
-    flex-direction: column;
-    gap: 10px;
+  /* Las tablas se vuelven scrollables horizontalmente */
+  .table {
+    display: block;
+    overflow-x: auto;
   }
-}
-
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
 }

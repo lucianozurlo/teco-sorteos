@@ -1,20 +1,21 @@
 /* sorteo-frontend/src/components/PremioManager.css */
-
 .premio-manager-container {
-    padding: 20px;
-    max-width: 800px;
-    margin: auto;
     background-color: #fff;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     font-family: var(--font-family);
 }
 
 .premio-manager-section {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .premio-manager-section h3 {
-    margin-bottom: 10px;
-    color: var(--text-color);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
 }
 
 .premio-manager-section input {
@@ -24,6 +25,7 @@
     width: 200px;
     border: 1px solid var(--neutral-border);
     border-radius: 4px;
+    font-size: 1rem;
 }
 
 .premio-manager-section button {
@@ -33,19 +35,20 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 1rem;
 }
 
 .premio-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9rem;
+    margin-bottom: 20px;
 }
 
 .premio-table th,
 .premio-table td {
     border: 1px solid var(--neutral-border);
-    padding: 8px;
-    text-align: left;
+    padding: 10px;
+    font-size: 0.9rem;
 }
 
 .premio-table th {
