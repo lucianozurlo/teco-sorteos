@@ -4,28 +4,30 @@
     padding: 20px;
     max-width: 600px;
     margin: auto;
+    background-color: #fff;
+    font-family: var(--font-family);
 }
 
 .dropzone {
-    border: 2px dashed #cccccc;
+    border: 2px dashed var(--neutral-border);
     border-radius: 5px;
     padding: 20px;
     text-align: center;
-    color: #cccccc;
-    transition: border-color 0.3s, background-color 0.3s;
+    color: var(--neutral-border);
+    transition: border-color 0.3s ease, background-color 0.3s ease;
     margin-bottom: 20px;
 }
 
 .dropzone.active {
-    border-color: #007bff;
+    border-color: var(--primary-color);
     background-color: #f0f8ff;
-    color: #333333;
+    color: var(--text-color);
 }
 
 .upload-button {
     padding: 10px 20px;
-    background-color: #28a745;
-    color: white;
+    background-color: var(--success-color);
+    color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -34,6 +36,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.3s ease;
 }
 
 .upload-button:disabled {
@@ -54,13 +57,13 @@
 .descargar-plantillas .btn {
     display: inline-block;
     padding: 0.5rem 1rem;
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: #fff;
     text-decoration: none;
     border-radius: 4px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease;
 }
 
 .descargar-plantillas .btn:hover {
-    background-color: #0056b3;
+    background-color: var(--primary-hover);
 }

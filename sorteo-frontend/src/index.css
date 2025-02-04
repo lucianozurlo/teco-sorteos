@@ -1,3 +1,33 @@
+:root {
+  --primary-color: #007BFF;
+  --primary-hover: #0056b3;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --danger-hover: #c82333;
+  --neutral-bg: #f8f9fa;
+  --neutral-border: #ccc;
+  --text-color: #333;
+  --font-family: 'Arial', sans-serif;
+}
+
+@media (max-width: 600px) {
+
+  .sorteo-container,
+  .premio-manager-container,
+  .historico-container,
+  .upload-csv-container,
+  .listas-container {
+    padding: 10px;
+    margin: 0 5px;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

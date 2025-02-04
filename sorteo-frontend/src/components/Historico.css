@@ -4,6 +4,8 @@
     padding: 20px;
     max-width: 1000px;
     margin: auto;
+    font-family: var(--font-family);
+    background-color: #fff;
 }
 
 .historico-section {
@@ -12,6 +14,7 @@
 
 .historico-section h3 {
     margin-bottom: 10px;
+    color: var(--text-color);
 }
 
 .historico-table {
@@ -21,9 +24,10 @@
 
 .historico-table th,
 .historico-table td {
-    border: 1px solid #ccc;
+    border: 1px solid var(--neutral-border);
     padding: 8px;
     text-align: left;
+    font-size: 0.9rem;
 }
 
 .historico-table th {
@@ -37,5 +41,5 @@
 
 .actividad-list li {
     padding: 5px 0;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--neutral-border);
 }

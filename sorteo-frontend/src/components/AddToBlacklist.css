@@ -2,33 +2,38 @@
 
 .add-to-blacklist-container {
   padding: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--neutral-border);
   border-radius: 4px;
   max-width: 400px;
   margin: 1rem auto;
+  background-color: var(--neutral-bg);
+  font-family: var(--font-family);
 }
 
 .add-to-blacklist-container h3 {
   margin-bottom: 1rem;
+  color: var(--text-color);
 }
 
 .add-to-blacklist-container input {
-  width: calc(100% - 120px);
+  width: calc(100% - 130px);
   padding: 0.5rem;
-  margin-right: 1rem;
-  border: 1px solid #ccc;
+  margin-right: 0.5rem;
+  border: 1px solid var(--neutral-border);
   border-radius: 4px;
+  font-size: 1rem;
 }
 
 .add-to-blacklist-container button {
   padding: 0.5rem 1rem;
-  background-color: #007bff;
+  background-color: var(--primary-color);
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .add-to-blacklist-container button:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-hover);
 }
