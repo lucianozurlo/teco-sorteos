@@ -11,9 +11,7 @@ function Header () {
           Teco Sorteos
         </div>
         <ul className="nav-links">
-          {/* Usamos NavLink para que asigne automáticamente la clase "active" */}
-          <li><NavLink to="/" end>Home</NavLink></li>
-          <li><NavLink to="/sorteo">Sorteo</NavLink></li>
+          <li><NavLink to="/">Sorteo</NavLink></li>
           <li><NavLink to="/premios">Premios</NavLink></li>
           <li><NavLink to="/upload-csv">Subir bases</NavLink></li>
           <li><NavLink to="/registro">Registro</NavLink></li>

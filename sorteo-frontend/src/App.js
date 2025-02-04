@@ -21,8 +21,7 @@ function App () {
       <Header />
       <div className="container">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/sorteo" element={<Sorteo />} />
+          <Route path="/" element={<Sorteo />} />
           <Route path="/premios" element={<PremioManager />} />
           <Route path="/upload-csv" element={<UploadCSV />} />
           <Route path="/registro" element={<Registro />} />
