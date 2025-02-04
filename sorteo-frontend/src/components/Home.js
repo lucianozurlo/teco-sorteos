@@ -2,7 +2,6 @@
 
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {ADMIN_URL} from '../config';
 
 function Home () {
   return (
