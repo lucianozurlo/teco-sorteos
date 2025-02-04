@@ -140,6 +140,27 @@ header {
 }
 
 
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  background-color: var(--neutral-bg);
+  font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+  border: 1px solid var(--neutral-border);
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f2f2f2;
+  font-weight: 600;
+}
+
+
 /* Responsividad Global */
 @media (max-width: 768px) {
   .nav-links {
