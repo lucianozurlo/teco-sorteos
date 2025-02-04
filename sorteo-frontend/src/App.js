@@ -7,7 +7,7 @@ import Home from './components/Home';
 import Sorteo from './components/Sorteo';
 import PremioManager from './components/PremioManager';
 import UploadCSV from './components/UploadCSV';
-import Historico from './components/Historico';
+import Registro from './components/Registro';
 import ListasCargadas from './components/ListasCargadas';
 import AddToBlacklist from './components/AddToBlacklist';
 import AdminRedirect from './components/AdminRedirect';

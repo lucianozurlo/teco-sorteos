@@ -73,8 +73,8 @@
                 └── AddToBlacklist.css
                 └── AddToBlacklist.js
                 └── AdminRedirect.js
-                └── Historico.css
-                └── Historico.js
+                └── Registro.css
+                └── Registro.js
                 └── Home.js
                 └── ListasCargadas.css
                 └── ListasCargadas.js
