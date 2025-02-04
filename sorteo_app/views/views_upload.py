@@ -47,7 +47,7 @@ class UploadCSVView(APIView):
                         count_ln += 1
                     except ValueError:
                         errores_ln.append(f"ID inválido en lista_negra: {row.get('ID')}")
-                mensaje['lista_negra'] = f"Se procesaron {count_ln} registros en la lista negra."
+                mensaje['lista_negra'] = f"Se procesaron {count_ln} registros en la lista."
                 if errores_ln:
                     mensaje['errores_lista_negra'] = errores_ln
             except Exception as e:
@@ -90,9 +90,9 @@ class UploadCSVView(APIView):
                         except Exception as e:
                             errores.append({'row': row, 'error': str(e)})
                 RegistroActividad.objects.create(
-                    evento=f"Carga de participantes desde CSV; se cargaron/actualizaron {contador} participantes. Excluidos {total_excluidos} por estar en la lista negra."
+                    evento=f"Carga de participantes desde archivo CSV; se cargaron/actualizaron {contador} participantes. No incluidos {total_excluidos}."
                 )
-                mensaje['usuarios'] = f"Se cargaron {contador} participantes. Excluidos {total_excluidos} registros (por estar en la lista negra)."
+                mensaje['usuarios'] = f"Se cargaron {contador} participantes. No incluidos {total_excluidos} registros."
                 if errores:
                     mensaje['errores_usuarios'] = errores
             except Exception as e:
@@ -100,7 +100,7 @@ class UploadCSVView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
         if not file_usuarios and not file_lista_negra:
-            return Response({'error': 'Debe enviar al menos uno de los archivos: usuarios o lista_negra.'},
+            return Response({'error': 'Debe enviar al menos uno de los archivos.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         return Response(mensaje, status=status.HTTP_200_OK)

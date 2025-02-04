@@ -5,7 +5,7 @@ import csv
 from sorteo_app.models import Participante, RegistroActividad
 
 class Command(BaseCommand):
-    help = 'Carga datos de participantes desde CSV y excluye IDs en la lista negra.'
+    help = 'Carga datos de participantes desde CSV y excluye legajoss en la lista.'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -16,12 +16,12 @@ class Command(BaseCommand):
         parser.add_argument(
             '--lista_negra',
             type=str,
-            help='Ruta al archivo CSV de lista negra'
+            help='Ruta al archivo CSV de lista'
         )
 
     def handle(self, *args, **options):
-        ruta_usuarios = options['usuarios'] or 'usuarios.csv'
-        ruta_lista_negra = options['lista_negra'] or 'lista_negra.csv'
+        ruta_usuarios = options['usuarios'] or 'participantes.csv'
+        ruta_lista_negra = options['lista_negra'] or 'no_incluidos.csv'
 
         # Leer IDs de la lista negra
         blacklist_ids = set()
@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 for row in reader:
                     blacklist_ids.add(int(row['ID']))
         except FileNotFoundError:
-            raise CommandError(f"No se encontró el archivo de lista negra: {ruta_lista_negra}")
+            raise CommandError(f"No se encontró el archivo: {ruta_lista_negra}")
 
         # Leer y crear/actualizar participantes (excluyendo los que estén en la lista negra)
         try:
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 ))
 
                 RegistroActividad.objects.create(
-                    evento=f"Carga de participantes desde {ruta_usuarios}; excluidos {len(blacklist_ids)} IDs de lista negra."
+                    evento=f"Carga de participantes desde {ruta_usuarios}; no incluidos {len(blacklist_ids)} legajos."
                 )
         except FileNotFoundError:
-            raise CommandError(f"No se encontró el archivo de usuarios: {ruta_usuarios}")
+            raise CommandError(f"No se encontró el archivo de participantes: {ruta_usuarios}")

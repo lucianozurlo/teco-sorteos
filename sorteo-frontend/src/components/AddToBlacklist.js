@@ -10,7 +10,7 @@ function AddToBlacklist () {
 
   const handleAdd = async () => {
     if (!participantId) {
-      toast.error ('Por favor, ingresa un ID.');
+      toast.error ('Por favor, ingresa un legajo.');
       return;
     }
     try {
@@ -24,11 +24,11 @@ function AddToBlacklist () {
         toast.success (data.message);
         setParticipantId ('');
       } else {
-        toast.error (data.error || 'Error al agregar a la lista negra.');
+        toast.error (data.error || 'Error al agregar a la lista.');
       }
     } catch (err) {
       console.error (err);
-      toast.error ('Error al agregar a la lista negra.');
+      toast.error ('Error al agregar a la lista.');
     }
   };
 

@@ -20,7 +20,7 @@ function UploadCSV () {
         `Listado de participantes "${file.name}" cargado correctamente.`
       );
     } else {
-      toast.error ('Por favor, subí un archivo CSV válido para usuarios.');
+      toast.error ('Por favor, subí un archivo CSV válido para participantes.');
     }
   }, []);
 
@@ -32,9 +32,7 @@ function UploadCSV () {
         `Listado de participantes no incluidos "${file.name}" cargado correctamente.`
       );
     } else {
-      toast.error (
-        'Por favor, subí un archivo CSV válido a la lista de no incluidos.'
-      );
+      toast.error ('Por favor, subí un archivo CSV válido.');
     }
   }, []);
 
@@ -52,9 +50,7 @@ function UploadCSV () {
 
   const handleUpload = async () => {
     if (!fileUsuarios && !fileListaNegra) {
-      toast.error (
-        'Por favor, arrastrá al menos un archivo: participantes o no incluidos.'
-      );
+      toast.error ('Por favor, arrastrá al menos un archivo.');
       return;
     }
     setCargando (true);

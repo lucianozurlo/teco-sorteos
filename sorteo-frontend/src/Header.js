@@ -15,7 +15,6 @@ function Header () {
           <li><NavLink to="/premios">Premios</NavLink></li>
           <li><NavLink to="/registro">Registro</NavLink></li>
           <li><NavLink to="/bases">Bases</NavLink></li>
-          <li><NavLink to="/blacklist/add">Agregar a Lista Negra</NavLink></li>
           <li>
             <a href="/admin" target="_blank" rel="noopener noreferrer">
               Admin

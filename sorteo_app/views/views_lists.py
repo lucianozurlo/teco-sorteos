@@ -37,6 +37,6 @@ class ClearListaNegra(APIView):
     def delete(self, request):
         deleted, _ = ListaNegra.objects.all().delete()
         return Response({
-            'message': 'Lista negra eliminada',
+            'message': 'Lista eliminada',
             'deleted': deleted
         }, status=status.HTTP_200_OK)

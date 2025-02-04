@@ -14,7 +14,7 @@ class AddToBlacklist(APIView):
     def post(self, request, format=None):
         participant_id = request.data.get('id')
         if not participant_id:
-            return Response({"error": "Falta el id del participante."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Falta el legajo del participante."}, status=status.HTTP_400_BAD_REQUEST)
         try:
             participant_id = int(participant_id)
         except ValueError:
@@ -33,6 +33,6 @@ class AddToBlacklist(APIView):
             }
         )
         if created:
-            return Response({"message": "Participante agregado a la lista negra."}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Participante agregado a la lista."}, status=status.HTTP_201_CREATED)
         else:
-            return Response({"message": "Participante ya se encontraba en la lista negra."}, status=status.HTTP_200_OK)
+            return Response({"message": "El participante ya se encontraba en la lista."}, status=status.HTTP_200_OK)
