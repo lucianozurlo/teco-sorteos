@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
+import {API_BASE_URL} from '../config';
 import './Historico.css';
 
 function Historico() {
@@ -49,7 +50,7 @@ function Historico() {
   const fetchSorteos = async () => {
     setCargandoSorteos(true);
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/sorteos/');
+      const response = await fetch(`${API_BASE_URL}/api/sorteos/`);
       const data = await response.json();
       // Ordenamos de más nuevo a más viejo según fecha_hora
       const sorteosOrdenados = data.sort((a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
@@ -65,7 +66,7 @@ function Historico() {
   const fetchResultados = async () => {
     setCargandoResultados(true);
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/resultados_sorteo/');
+      const response = await fetch(`${API_BASE_URL}/api/resultados_sorteo/`);
       const data = await response.json();
       // Ordenamos de más nuevo a más viejo según fecha
       const resultadosOrdenados = data.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
@@ -81,7 +82,7 @@ function Historico() {
   const fetchActividad = async () => {
     setCargandoActividad(true);
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/registro_actividad/');
+      const response = await fetch(`${API_BASE_URL}/api/registro_actividad/`);
       const data = await response.json();
       setActividad(data);
     } catch (error) {
