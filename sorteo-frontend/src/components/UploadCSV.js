@@ -88,7 +88,7 @@ function UploadCSV () {
 
   return (
     <div className="upload-csv-container">
-      <h2>Subir Archivos CSV</h2>
+      <h3>Cargar archivos CSV</h3>
       <div className="dropzone-container">
         <div
           {...getRootPropsUsuarios ()}
