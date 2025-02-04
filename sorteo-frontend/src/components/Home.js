@@ -11,7 +11,7 @@ function Home () {
         <li><Link to="/sorteo">Realizar Sorteo</Link></li>
         <li><Link to="/premios">Premios</Link></li>
         <li><Link to="/upload-csv">Subir bases</Link></li>
-        <li><Link to="/historico">Registro</Link></li>
+        <li><Link to="/registro">Registro</Link></li>
         <li><Link to="/admin">Admin</Link></li>
       </ul>
     </div>

@@ -1,12 +1,12 @@
-// sorteo-frontend/src/components/Historico.js
+// sorteo-frontend/src/components/Registro.js
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
 import {API_BASE_URL} from '../config';
-import './Historico.css';
+import './Registro.css';
 
-function Historico() {
+function Registro() {
   // Datos generales
   const [sorteos, setSorteos] = useState([]);
   const [resultados, setResultados] = useState([]);
@@ -294,7 +294,7 @@ function Historico() {
   // RENDERIZACIÓN
   // ================================
   return (
-    <div className="historico-container">
+    <div className="registro-container">
       <h2>Registro de Sorteos y Actividades</h2>
 
       {/* FILTROS Y ORDENAMIENTO PARA RESULTADOS */}
@@ -340,12 +340,12 @@ function Historico() {
         </div>
       </div>
 
-      <div className="historico-section">
+      <div className="registro-section">
         <h3>Resultados de Sorteos</h3>
         {cargandoResultados ? (
           <ClipLoader size={50} color="#123abc" />
         ) : (
-          <table className="historico-table">
+          <table className="registro-table">
             <thead>
               <tr>
                 <th onClick={() => requestSort('id')} style={{ cursor: 'pointer' }}>
@@ -419,12 +419,12 @@ function Historico() {
         </div>
       </div>
 
-      <div className="historico-section">
+      <div className="registro-section">
         <h3>Lista de Sorteos</h3>
         {cargandoSorteos ? (
           <ClipLoader size={50} color="#123abc" />
         ) : (
-          <table className="historico-table">
+          <table className="registro-table">
             <thead>
               <tr>
                 <th onClick={() => requestSortSorteo('id')} style={{ cursor: 'pointer' }}>
@@ -458,7 +458,7 @@ function Historico() {
       <hr />
 
       {/* REGISTRO DE ACTIVIDADES */}
-      <div className="historico-section">
+      <div className="registro-section">
         <h3>Registro de Actividades</h3>
         {cargandoActividad ? (
           <ClipLoader size={50} color="#123abc" />
@@ -476,4 +476,4 @@ function Historico() {
   );
 }
 
-export default Historico;
+export default Registro;

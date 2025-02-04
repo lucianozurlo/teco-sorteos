@@ -15,7 +15,7 @@ function Header () {
           <li><Link to="/sorteo">Sorteo</Link></li>
           <li><Link to="/premios">Premios</Link></li>
           <li><Link to="/upload-csv">Subir bases</Link></li>
-          <li><Link to="/historico">Registro</Link></li>
+          <li><Link to="/registro">Registro</Link></li>
           <li><Link to="/listas">Listas Cargadas</Link></li>
           <li><Link to="/blacklist/add">Agregar a Lista Negra</Link></li>
           <li><Link to="/admin">Admin</Link></li>

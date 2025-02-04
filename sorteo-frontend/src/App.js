@@ -7,7 +7,7 @@ import Home from './components/Home';
 import Sorteo from './components/Sorteo';
 import PremioManager from './components/PremioManager';
 import UploadCSV from './components/UploadCSV';
-import Historico from './components/Historico';
+import Registro from './components/Registro';
 import ListasCargadas from './components/ListasCargadas';
 import AddToBlacklist from './components/AddToBlacklist';
 import AdminRedirect from './components/AdminRedirect';
@@ -18,6 +18,7 @@ import './App.css';
 function App () {
   return (
     <Router>
+      <Header />
       <div>
         {/* Navegación Principal */}
         <nav>
@@ -26,7 +27,7 @@ function App () {
             <li><Link to="/sorteo">Sorteo</Link></li>
             <li><Link to="/premios">Premios</Link></li>
             <li><Link to="/upload-csv">Subir bases</Link></li>
-            <li><Link to="/historico">Registro</Link></li>
+            <li><Link to="/registro">Registro</Link></li>
             <li><Link to="/listas">Listas Cargadas</Link></li>
             <li><Link to="/blacklist/add">Agregar a Lista Negra</Link></li>
             <li><Link to="/admin">Admin</Link></li>
@@ -39,7 +40,7 @@ function App () {
           <Route path="/sorteo" element={<Sorteo />} />
           <Route path="/premios" element={<PremioManager />} />
           <Route path="/upload-csv" element={<UploadCSV />} />
-          <Route path="/historico" element={<Historico />} />
+          <Route path="/registro" element={<Registro />} />
           <Route path="/listas" element={<ListasCargadas />} />
           <Route path="/blacklist/add" element={<AddToBlacklist />} />
           <Route path="/admin" element={<AdminRedirect />} />
