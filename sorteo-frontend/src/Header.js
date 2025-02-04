@@ -8,7 +8,7 @@ function Header () {
     <header>
       <div className="header-inner">
         <div className="header-logo">
-          Mi App de Sorteos
+          Sorteos CI
         </div>
         <ul className="nav-links">
           <li><NavLink to="/sorteo">Sorteo</NavLink></li>
