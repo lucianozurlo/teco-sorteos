@@ -185,7 +185,7 @@ table th {
   }
 
   /* Tablas: permitir scroll horizontal si es necesario */
-  .table {
+  table {
     display: block;
     overflow-x: auto;
     width: 100%;

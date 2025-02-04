@@ -103,7 +103,7 @@
     margin: 16px;
   }
 
-  .table {
+  table {
     display: block;
     overflow-x: auto;
   }
