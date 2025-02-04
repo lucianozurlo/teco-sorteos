@@ -1,15 +1,11 @@
-// sorteo-frontend/src/App.js
-
+// App.js
 import React from 'react';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import Header from './Header';
-import Home from './components/Home';
 import Sorteo from './components/Sorteo';
-import PremioManager from './components/PremioManager';
-import UploadCSV from './components/UploadCSV';
+import Premios from './components/Premios';
 import Registro from './components/Registro';
-import ListasCargadas from './components/ListasCargadas';
-import AddToBlacklist from './components/AddToBlacklist';
+import Bases from './components/Bases';
 import AdminRedirect from './components/AdminRedirect';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -22,11 +18,10 @@ function App () {
       <div className="container">
         <Routes>
           <Route path="/" element={<Sorteo />} />
-          <Route path="/premios" element={<PremioManager />} />
-          <Route path="/upload-csv" element={<UploadCSV />} />
+          <Route path="/sorteo" element={<Sorteo />} />
+          <Route path="/premios" element={<Premios />} />
           <Route path="/registro" element={<Registro />} />
-          <Route path="/listas" element={<ListasCargadas />} />
-          <Route path="/blacklist/add" element={<AddToBlacklist />} />
+          <Route path="/bases" element={<Bases />} />
           <Route path="/admin" element={<AdminRedirect />} />
         </Routes>
       </div>
