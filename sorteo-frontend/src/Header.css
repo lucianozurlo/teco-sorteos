@@ -52,8 +52,8 @@ header {
 }
 
 .nav-links a:hover {
-    background-color: var(--primary-light);
-    color: #fff;
+    color: var(--primary-light);
+    background-color: transparent;
 }
 
 .nav-links a.active {

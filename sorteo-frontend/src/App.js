@@ -18,7 +18,6 @@ function App () {
       <div className="container">
         <Routes>
           <Route path="/" element={<Sorteo />} />
-          <Route path="/sorteo" element={<Sorteo />} />
           <Route path="/premios" element={<Premios />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/bases" element={<Bases />} />
