@@ -53,5 +53,5 @@ urlpatterns = [
     path('api/provincias/', listar_provincias, name='listar_provincias'),
     path('api/localidades/', listar_localidades, name='listar_localidades'),
     path('api/', include(router.urls)),
-    path("", include("sorteo_app.urls")),  # Include the URL patterns from the sorteo_app app
+    # path("", include("sorteo_app.urls")),  # Include the URL patterns from the sorteo_app app
 ]

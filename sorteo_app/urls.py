@@ -1,6 +1,6 @@
 from django.urls import path
-from sorteo_app import views
+from sorteo_app.views import render_articles
 
 urlpatterns = [
-    path('', views.render_articles, name='articles')
+    path('', render_articles, name='articles')
 ]
