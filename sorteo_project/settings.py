@@ -58,15 +58,15 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # 'corsheaders.middleware.CorsMiddleware'
+    'corsheaders.middleware.CorsMiddleware'
 ]
 
 # Configurar CORS
-# CORS_ALLOWED_ORIGINS = [
-#   "http://localhost:3000",
-#   "https://sorteos-ci.netlify.app",
-# ]
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+  "http://localhost:3000",
+  "https://sorteos-ci.netlify.app",
+]
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "sorteo_project.urls"
 
