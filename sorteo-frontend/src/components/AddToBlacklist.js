@@ -34,7 +34,7 @@ function AddToBlacklist () {
 
   return (
     <div className="add-to-blacklist-container">
-      <h3>Agregar a la lista de participantes excluidos</h3>
+      <h3>Agregar a la lista de participantes no incluidos</h3>
       <input
         type="number"
         value={participantId}

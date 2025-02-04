@@ -21,7 +21,7 @@ h3 {
     border-radius: 5px;
     padding: 20px;
     text-align: center;
-    color: var(--neutral-border);
+    color: var(--neutral-disabled);
     transition: border-color 0.3s ease, background-color 0.3s ease;
     margin-bottom: 20px;
 }

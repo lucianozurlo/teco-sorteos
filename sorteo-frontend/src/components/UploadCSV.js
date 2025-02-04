@@ -29,11 +29,11 @@ function UploadCSV () {
     if (file && file.type === 'text/csv') {
       setFileListaNegra (file);
       toast.success (
-        `Listado de participantes excluidos "${file.name}" cargado correctamente.`
+        `Listado de participantes no incluidos "${file.name}" cargado correctamente.`
       );
     } else {
       toast.error (
-        'Por favor, subí un archivo CSV válido a la lista de excluidos.'
+        'Por favor, subí un archivo CSV válido a la lista de no incluidos.'
       );
     }
   }, []);
@@ -53,7 +53,7 @@ function UploadCSV () {
   const handleUpload = async () => {
     if (!fileUsuarios && !fileListaNegra) {
       toast.error (
-        'Por favor, arrastrá al menos un archivo: participantes o excluidos.'
+        'Por favor, arrastrá al menos un archivo: participantes o no incluidos.'
       );
       return;
     }
@@ -121,13 +121,13 @@ function UploadCSV () {
         {cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Subir CSV'}
       </button>
       <div className="descargar-plantillas" style={{marginTop: '1rem'}}>
-        <h3>Descargar Plantillas CSV</h3>
+        <h3>Descargar Plantillas de ejemplo</h3>
         <a
           href={`${API_BASE_URL}/api/download_template/participantes/`}
           download="participantes_template.csv"
           className="btn"
         >
-          Descargar Plantilla de ejemplo de Participantes
+          Participantes
         </a>
         <a
           href={`${API_BASE_URL}/api/download_template/lista_negra/`}
@@ -135,7 +135,7 @@ function UploadCSV () {
           className="btn"
           style={{marginLeft: '1rem'}}
         >
-          Descargar Plantilla de ejemplo para Participantes excluidos
+          Participantes no incluidos
         </a>
       </div>
     </div>
