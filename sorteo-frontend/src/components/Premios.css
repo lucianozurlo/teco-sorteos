@@ -1,8 +1,8 @@
-/* sorteo-frontend/src/components/Premios.css */
+/* Premios.css */
 .premios-container {
-    background-color: #fff;
+    background-color: var(--neutral-bg);
     padding: 24px;
-    margin: var(--base-margin) auto;
+    margin: 24px auto;
     max-width: 800px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -15,6 +15,7 @@
 .premios-section h3 {
     margin-bottom: 16px;
     font-size: 1.2rem;
+    color: var(--primary-dark);
 }
 
 .premios-section input {
@@ -35,22 +36,29 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-size: 1rem;
+    background-color: var(--primary-color);
+    color: #fff;
 }
 
-.premio-table {
+.premios-section button:hover {
+    background-color: var(--primary-light);
+}
+
+.premios-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 24px;
 }
 
-.premio-table th,
-.premio-table td {
+.premios-table th,
+.premios-table td {
     border: 1px solid var(--neutral-border);
     padding: 12px 15px;
     font-size: 0.95rem;
+    text-align: left;
 }
 
-.premio-table th {
+.premios-table th {
     background-color: #f2f2f2;
     font-weight: 600;
 }
@@ -59,6 +67,11 @@
     background-color: var(--danger-color);
     color: #fff;
     transition: background-color 0.3s ease;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 6px 12px;
+    font-size: 0.9rem;
 }
 
 .eliminar-btn:hover {
@@ -70,6 +83,11 @@
     color: #fff;
     margin-left: 8px;
     transition: background-color 0.3s ease;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 6px 12px;
+    font-size: 0.9rem;
 }
 
 .cancelar-btn:hover {

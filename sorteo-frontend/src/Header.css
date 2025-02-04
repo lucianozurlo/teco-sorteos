@@ -1,8 +1,8 @@
 /* Header.css */
 
-/* Header con fondo azul */
+/* Header con fondo blanco */
 header {
-    background-color: #fff;
+    background-color: var(--neutral-bg);
     padding: 16px 32px;
     margin-bottom: 24px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -18,11 +18,11 @@ header {
     flex-wrap: wrap;
 }
 
-/* Logo: texto grande y en blanco */
+/* Logo: texto grande con color principal */
 .header-logo {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #3c00a0;
+    color: var(--primary-color);
 }
 
 /* Menú de navegación */
@@ -42,25 +42,22 @@ header {
 /* Enlaces de navegación */
 .nav-links a {
     display: block;
+    padding: 8px 12px;
     font-weight: 500;
     color: #fff;
+    background-color: var(--primary-color);
     border-radius: 4px;
     text-decoration: none;
-    padding: 8px 12px;
     transition: all 0.3s ease;
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -ms-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
 }
 
 .nav-links a:hover {
-    color: #3c00a0;
-    background-color: #fff;
+    background-color: var(--primary-light);
+    color: #fff;
 }
 
-.nav-links a.active:hover {
-    background-color: #3c00a0;
+.nav-links a.active {
+    background-color: var(--primary-dark);
     color: #fff;
 }
 

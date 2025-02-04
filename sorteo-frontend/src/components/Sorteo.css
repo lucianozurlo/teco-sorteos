@@ -1,8 +1,8 @@
-/* sorteo-frontend/src/components/Sorteo.css */
+/* Sorteo.css */
 .sorteo-container {
-    background-color: #fff;
+    background-color: var(--neutral-bg);
     padding: 24px;
-    margin: var(--base-margin) auto;
+    margin: 24px auto;
     max-width: 800px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -17,7 +17,7 @@
     margin-bottom: 8px;
     font-weight: 600;
     font-size: 1rem;
-    color: var(--text-color);
+    color: var(--primary-color);
 }
 
 .sorteo-section input,
@@ -60,7 +60,7 @@
     margin-bottom: 10px;
     border: 1px solid var(--neutral-border);
     border-radius: 4px;
-    background-color: #fff;
+    background-color: var(--neutral-bg);
     font-size: 0.95rem;
 }
 

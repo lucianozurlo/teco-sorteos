@@ -1,9 +1,8 @@
-/* sorteo-frontend/src/components/Registro.css */
-
+/* Registro.css */
 .registro-container {
-    background-color: #fff;
+    background-color: var(--neutral-bg);
     padding: 24px;
-    margin: var(--base-margin) auto;
+    margin: 24px auto;
     max-width: 1000px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -16,6 +15,7 @@
 .registro-section h3 {
     margin-bottom: 16px;
     font-size: 1.2rem;
+    color: var(--primary-dark);
 }
 
 .filtros-container {
@@ -28,6 +28,7 @@
 .filtro label {
     font-weight: 600;
     margin-right: 8px;
+    color: var(--primary-color);
 }
 
 .filtro input,
@@ -36,4 +37,24 @@
     border: 1px solid var(--neutral-border);
     border-radius: 4px;
     font-size: 0.95rem;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+    background-color: var(--neutral-bg);
+    font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+    border: 1px solid var(--neutral-border);
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
 }
