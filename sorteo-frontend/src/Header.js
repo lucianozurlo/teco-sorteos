@@ -11,7 +11,7 @@ function Header () {
           Sorteos CI
         </div>
         <ul className="nav-links">
-          <li><NavLink to="/sorteo">Sorteo</NavLink></li>
+          <li><NavLink to="/">Sorteo</NavLink></li>
           <li><NavLink to="/premios">Premios</NavLink></li>
           <li><NavLink to="/registro">Registro</NavLink></li>
           <li><NavLink to="/bases">Bases</NavLink></li>
