@@ -118,7 +118,7 @@ header {
 }
 
 /* Estilos Profesionales para Tablas */
-.table {
+table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: var(--base-margin);
@@ -127,20 +127,20 @@ header {
   font-size: 0.95rem;
 }
 
-.table th,
-.table td {
+table th,
+table td {
   border: 1px solid var(--neutral-border);
   padding: 12px 15px;
   text-align: left;
 }
 
-.table th {
+table th {
   background-color: #f2f2f2;
   font-weight: 600;
 }
 
 
-.table {
+table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 24px;
@@ -148,14 +148,14 @@ header {
   font-size: 0.95rem;
 }
 
-.table th,
-.table td {
+table th,
+table td {
   border: 1px solid var(--neutral-border);
   padding: 12px 15px;
   text-align: left;
 }
 
-.table th {
+table th {
   background-color: #f2f2f2;
   font-weight: 600;
 }
