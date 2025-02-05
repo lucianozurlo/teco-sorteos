@@ -2,7 +2,7 @@
 .upload-csv-container {
     background-color: var(--neutral-bg);
     padding: 24px;
-    max-width: 600px;
+    width: 100%;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     font-family: var(--font-family);
