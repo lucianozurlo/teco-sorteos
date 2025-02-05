@@ -1,4 +1,5 @@
-// Bases.js
+// sorteo-frontend/src/components/Bases.js
+
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';

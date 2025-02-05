@@ -1,6 +1,5 @@
-/* Header.css */
+/* sorteo-frontend/src/Header.css */
 
-/* Header con fondo blanco */
 header {
     background-color: var(--neutral-bg);
     padding: 16px 32px;
@@ -8,7 +7,6 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Contenedor interno centrado y con layout flexible */
 .header-inner {
     max-width: 1200px;
     margin: 0 auto;
@@ -18,14 +16,12 @@ header {
     flex-wrap: wrap;
 }
 
-/* Logo: texto grande con color principal */
 .header-logo {
     font-size: 1.8rem;
     font-weight: 700;
     color: var(--primary-color);
 }
 
-/* Menú de navegación */
 .nav-links {
     display: flex;
     gap: 15px;
@@ -39,7 +35,6 @@ header {
     display: inline;
 }
 
-/* Enlaces de navegación */
 .nav-links a {
     display: block;
     padding: 8px 12px;
@@ -66,7 +61,6 @@ header {
     color: #fff;
 }
 
-/* Responsividad: en pantallas pequeñas, el menú se apila */
 @media (max-width: 768px) {
     .header-inner {
         flex-direction: column;

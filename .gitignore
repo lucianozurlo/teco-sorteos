@@ -3,4 +3,8 @@ venv
 __pycache__
 db.sqlite3
 .env
+.env.development
+.env.production
 staticfiles
+_base
+data

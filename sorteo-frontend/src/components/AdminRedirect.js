@@ -1,4 +1,5 @@
-// AdminRedirect.js
+// sorteo-frontend/src/components/AdminRedirect.js
+
 import React, {useEffect} from 'react';
 import {ADMIN_URL} from '../config';
 
