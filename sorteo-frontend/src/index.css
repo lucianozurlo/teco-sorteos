@@ -106,7 +106,7 @@ header {
 }
 
 /* Estilos de Botón Base */
-.btn {
+/* .btn {
   display: inline-block;
   padding: 10px 20px;
   background-color: var(--primary-color);
@@ -120,11 +120,9 @@ header {
 
 .btn:hover {
   background-color: var(--primary-hover);
-}
+} */
 
 button {
-  align-items: center;
-  appearance: button;
   background-color: var(--primary-color);
   border-radius: 8px;
   border-style: none;
@@ -132,10 +130,6 @@ button {
   box-sizing: border-box;
   color: #fff;
   cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  flex-shrink: 0;
-  font-family: "RM Neue", sans-serif;
   font-size: 100%;
   line-height: 1.15;
   margin: 0;
@@ -145,7 +139,6 @@ button {
   transition: color .13s ease-in-out, background .13s ease-in-out, opacity .13s ease-in-out, box-shadow .13s ease-in-out;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: manipulation;
 }
 
 button:active {

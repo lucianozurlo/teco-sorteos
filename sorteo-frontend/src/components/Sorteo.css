@@ -28,7 +28,7 @@
     max-width: 300px;
     border: 1px solid var(--neutral-border);
     border-radius: 4px;
-    font-size: 1rem;
+    font-size: .9rem;
 }
 
 .sorteo-section label input {
