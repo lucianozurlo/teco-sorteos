@@ -179,7 +179,7 @@ select {
   border-radius: 4px;
   font-size: .9rem;
   max-width: 300px;
-  padding: 10px;
+  padding: 10px !important;
   width: 100%;
 }
 
