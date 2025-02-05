@@ -89,8 +89,12 @@ header {
   padding: 10px 15px;
   font-weight: 500;
   color: var(--text-color);
-  border-radius: 4px;
+  border-radius: 6px;
   transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
 }
 
 .nav-links a:hover {
