@@ -63,15 +63,18 @@
     font-weight: 600;
 }
 
-.premios-table th:nth-child(1) {
+.premios-table th:nth-child(1),
+.premios-table td:nth-child(1) {
     width: 55%;
 }
 
-.premios-table th:nth-child(2) {
+.premios-table th:nth-child(2),
+.premios-table td:nth-child(2) {
     width: 10%;
 }
 
-.premios-table th:nth-child(3) {
+.premios-table th:nth-child(3),
+.premios-table td:nth-child(3) {
     width: 35%;
 }
 
