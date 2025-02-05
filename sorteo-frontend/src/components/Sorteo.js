@@ -363,7 +363,7 @@ return (
 	)}
 	<hr />
 	{/* Botón para realizar sorteo */}
-	<div>
+	<div className="sortear">
 	<button onClick={handleSortear} className="ejecutar" disabled={cargando}>
 		{cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Sortear'}
 	</button>

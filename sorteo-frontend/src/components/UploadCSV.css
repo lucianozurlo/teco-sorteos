@@ -8,12 +8,6 @@
     font-family: var(--font-family);
 }
 
-h3 {
-    margin-bottom: 8px;
-    font-size: 1.2rem;
-    color: var(--primary-dark);
-}
-
 .dropzone {
     border: 2px dashed var(--neutral-disabled);
     border-radius: 5px;
@@ -62,7 +56,7 @@ h3 {
 
 .descargar-plantillas .btn {
     display: inline-block;
-    margin-top: 30px;
+    margin-top: 0;
     padding: 8px 16px;
     background-color: var(--primary-color);
     color: #fff;

@@ -158,10 +158,12 @@ button:hover {
 }
 
 button.ejecutar {
-  margin-top: 1rem;
   background-color: var(--primary-light);
   padding: 15px 25px;
   font-size: 1.2rem;
+  margin-top: 0;
+  margin-bottom: 25px;
+  width: 100%;
 }
 
 button.eliminar {
@@ -190,18 +192,19 @@ h1 {
 h2,
 h3 {
   color: var(--primary-dark);
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-weight: 600;
   margin: 10px auto 35px;
 }
 
 h3 {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 400;
 }
 
 h4 {
   margin-top: 0;
+  margin-bottom: 15px;
   font-size: 1.1rem;
 }
 
