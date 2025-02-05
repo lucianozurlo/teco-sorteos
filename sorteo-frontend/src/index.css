@@ -150,7 +150,7 @@ button:active {
 }
 
 button:hover {
-  background-color: var(--primary-dark);
+  background-color: var(--primary-dark) !important;
 }
 
 button.ejecutar {

@@ -32,10 +32,6 @@
     margin-right: 8px;
 }
 
-.premios-section button:hover {
-    background-color: var(--primary-light);
-}
-
 .premios-table {
     width: 100%;
     border-collapse: collapse;
