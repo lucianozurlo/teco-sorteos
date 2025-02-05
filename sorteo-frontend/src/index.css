@@ -22,6 +22,10 @@
   box-sizing: border-box;
 }
 
+#root {
+  margin-bottom: 100px;
+}
+
 body {
   margin: 0;
   padding: 0;

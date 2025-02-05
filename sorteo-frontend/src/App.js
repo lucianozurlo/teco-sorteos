@@ -9,7 +9,7 @@ import Bases from './components/Bases';
 import AdminRedirect from './components/AdminRedirect';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './App.css';
+// import './App.css';
 
 function App () {
   return (
