@@ -181,6 +181,15 @@ h1 {
   margin-top: 0;
 }
 
+h3 {
+  color: var(--primary-dark);
+  font-size: 1.1rem;
+  margin-top: 0;
+  font-weight: 400;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
 /* Estilos Profesionales para Tablas */
 table {
   width: 100%;
