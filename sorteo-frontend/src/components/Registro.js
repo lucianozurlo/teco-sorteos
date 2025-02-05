@@ -297,6 +297,8 @@ function Registro() {
     <div className="registro-container">
       <h2>Registro de Sorteos y Actividades</h2>
 
+      <h3>Resultados de Sorteos</h3>
+
       {/* FILTROS Y ORDENAMIENTO PARA RESULTADOS */}
       <div className="filtros-container" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1rem' }}>
         <div className="filtro">
@@ -341,7 +343,6 @@ function Registro() {
       </div>
 
       <div className="registro-section">
-        <h3>Resultados de Sorteos</h3>
         {cargandoResultados ? (
           <ClipLoader size={50} color="#123abc" />
         ) : (
@@ -385,6 +386,8 @@ function Registro() {
 
       <hr />
 
+      <h3>Lista de Sorteos</h3>
+
       {/* FILTROS Y ORDENAMIENTO PARA LISTA DE SORTEOS */}
       <div className="filtros-container" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1rem' }}>
         <div className="filtro">
@@ -420,7 +423,6 @@ function Registro() {
       </div>
 
       <div className="registro-section">
-        <h3>Lista de Sorteos</h3>
         {cargandoSorteos ? (
           <ClipLoader size={50} color="#123abc" />
         ) : (
