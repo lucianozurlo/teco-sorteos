@@ -29,7 +29,8 @@
 }
 
 .premios-section button {
-    margin-right: 8px;
+    margin: 5px 0;
+    width: 100%;
 }
 
 .premios-table {
