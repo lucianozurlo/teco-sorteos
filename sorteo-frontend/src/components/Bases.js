@@ -248,7 +248,7 @@ function Bases() {
             <UploadCSV />
           </div>
           <div className="cargar-item">
-            <h3>Excluir Individualmente</h3>
+            <h3>Agregar individualmente</h3>
             {/* Se recomienda actualizar el título interno del componente AddToBlacklist */}
             <AddToBlacklist />
           </div>

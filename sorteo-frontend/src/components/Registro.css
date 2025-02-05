@@ -25,7 +25,7 @@
 .filtros-container {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: flex-end !important;
     gap: 16px;
     margin: 20px 0;
 }
