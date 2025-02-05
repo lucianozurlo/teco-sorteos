@@ -200,6 +200,11 @@ h3 {
   font-weight: 400;
 }
 
+h4 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

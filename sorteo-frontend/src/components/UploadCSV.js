@@ -117,7 +117,7 @@ function UploadCSV () {
         {cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Subir CSV'}
       </button>
       <div className="descargar-plantillas" style={{marginTop: '1rem'}}>
-        <h3>Descargar Plantillas de ejemplo</h3>
+        <h4>Descargar Plantillas de ejemplo</h4>
         <a
           href={`${API_BASE_URL}/api/download_template/participantes/`}
           download="participantes_template.csv"
