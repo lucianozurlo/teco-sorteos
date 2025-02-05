@@ -59,6 +59,7 @@
 .premios-table th:nth-child(2),
 .premios-table td:nth-child(2) {
     width: 10%;
+    text-align: center;
 }
 
 .premios-table th:nth-child(3),
