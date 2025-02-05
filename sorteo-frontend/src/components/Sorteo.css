@@ -15,6 +15,7 @@
 .sorteo-section label {
     display: block;
     margin-bottom: 8px;
+    margin-top: 20px;
     font-weight: 600;
     font-size: 1rem;
     color: var(--primary-color);
