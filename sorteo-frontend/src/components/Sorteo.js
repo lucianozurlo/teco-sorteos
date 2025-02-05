@@ -276,7 +276,7 @@ return (
 	</div>
 	{usarFiltros && (
 	<>
-		<div className="sorteo-section">
+		<div className="sorteo-section col1">
 		<label>Provincia:</label>
 		<select
 			value={provinciaSeleccionada}
@@ -288,7 +288,7 @@ return (
 			))}
 		</select>
 		</div>
-		<div className="sorteo-section">
+		<div className="sorteo-section col2">
 		<label>Localidad:</label>
 		<select
 			value={localidadSeleccionada}
