@@ -36,6 +36,10 @@
     width: unset;
 }
 
+.sorteo-section .half {
+    width: 50%;
+}
+
 .sortear-btn {
     padding: 12px 24px;
     background-color: var(--success-color);
