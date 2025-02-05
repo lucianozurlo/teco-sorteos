@@ -351,7 +351,7 @@ return (
 		{items.map(item => (
 			<li key={item.id} className="sorteo-item">
 			{item.nombre_item} - Cantidad: {item.cantidad}
-			<button onClick={() => eliminarPremioDelSorteo(item.id)} className="eliminar-btn">
+			<button onClick={() => eliminarPremioDelSorteo(item.id)} className="eliminar">
 				Eliminar
 			</button>
 			</li>
@@ -361,7 +361,7 @@ return (
 	)}
 	<hr />
 	{/* Botón para realizar sorteo */}
-	<div className="sorteo-section">
+	<div>
 	<button onClick={handleSortear} className="ejecutar" disabled={cargando}>
 		{cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Sortear'}
 	</button>
