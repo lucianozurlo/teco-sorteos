@@ -29,7 +29,7 @@
     max-width: 300px;
     border: 1px solid var(--neutral-border);
     border-radius: 4px;
-    font-size: 0.9rem;
+    font-size: .9rem;
 }
 
 .sorteo-section label input {
@@ -50,8 +50,7 @@
     margin-bottom: 0;
 }
 
-.sorteo-container h4,
-.sorteo-section h3 {
+.sorteo-section h4 {
     margin-top: 30px;
 }
 
