@@ -167,6 +167,15 @@ select {
   width: 100%;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 135%;
+}
+
 h1 {
   margin-top: 0;
 }
@@ -174,15 +183,19 @@ h1 {
 h2,
 h3 {
   color: var(--primary-dark);
+}
+
+h2 {
   font-size: 1.7rem;
   font-weight: 600;
   margin: 10px auto 35px;
 }
 
 h3 {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 400;
   margin-bottom: 20px;
+  margin-top: 0;
 }
 
 h4 {

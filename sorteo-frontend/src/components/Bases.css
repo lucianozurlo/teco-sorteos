@@ -1,5 +1,9 @@
 /* sorteo-frontend/src/components/Bases.css */
 
+.container {
+  max-width: unset !important;
+}
+
 .bases-container {
   background-color: var(--neutral-bg);
   padding: 24px;
@@ -12,6 +16,8 @@
 
 .bases-container table {
   min-width: 100%;
+  font-size: 0.9rem;
+  line-height: 130%;
 }
 
 .bases-container table th:first-child {
@@ -22,11 +28,28 @@
   padding: 6px 10px;
 }
 
+.bases-container table td:first-child {
+  text-align: right;
+}
+
+.bases-container table th:last-child,
+.bases-container table td:last-child {
+  text-align: center;
+}
+
+.bases-container table td:last-child {
+  width: 160px;
+}
+
+.bases-container table td:last-child button {
+  padding: 10px 16px;
+}
+
 /* Pestañas */
 .tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 35px;
   justify-content: flex-start;
 }
 
@@ -96,11 +119,15 @@
 }
 
 .cargar-section .cargar-item:first-child {
-  width: 60%;
+  width: 40%;
 }
 
 .cargar-section .cargar-item:last-child {
-  width: 40%;
+  width: 60%;
+}
+
+.cargar-section .cargar-item h3 {
+  margin-left: 12px;
 }
 
 /* Responsividad */

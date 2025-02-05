@@ -5,28 +5,25 @@ import { toast } from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { API_BASE_URL } from '../config';
 import UploadCSV from './UploadCSV';
-import AddToBlacklist from './AddToBlacklist'; // Se usará para exclusión individual (se recomienda actualizar su título interno)
+import AddToBlacklist from './AddToBlacklist';
+import AddToParticipants from './AddToParticipants';
 import './Bases.css';
 
 function Bases() {
   // Estado para controlar la pestaña activa:
-  // 'participantes' → Listado participantes  
-  // 'no_incluidos' → Listado No incluidos  
-  // 'cargar' → Cargar bases
+  // 'participantes' → Listado de participantes  
+  // 'no_incluidos' → Listado de no incluidos  
+  // 'cargar' → Sección para cargar archivos CSV y agregar manualmente a ambas listas
   const [activeTab, setActiveTab] = useState('participantes');
-
-  // Estado para los datos obtenidos del endpoint de listas  
-  // Se asume que el endpoint devuelve un objeto con dos arrays:
-  // data.participantes y data.blacklist (ahora serán "No incluidos")
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Estados para paginación (para ambas listas)
+  // Estados para paginación
   const itemsPerPage = 100;
   const [currentPageParticipantes, setCurrentPageParticipantes] = useState(1);
   const [currentPageNoIncluidos, setCurrentPageNoIncluidos] = useState(1);
 
-  // Función para obtener los datos desde la API
+  // Función para obtener las listas de participantes y no incluidos
   const fetchLists = async () => {
     setLoading(true);
     try {
@@ -45,19 +42,54 @@ function Bases() {
     fetchLists();
   }, []);
 
-  // Paginación para Participantes
-  const totalRecordsParticipantes =
-    data && data.participantes ? data.participantes.length : 0;
-  const totalPagesParticipantes = Math.ceil(
-    totalRecordsParticipantes / itemsPerPage
-  );
-  const paginatedParticipantes =
-    data && data.participantes
-      ? data.participantes.slice(
-          (currentPageParticipantes - 1) * itemsPerPage,
-          currentPageParticipantes * itemsPerPage
-        )
-      : [];
+  // Función para borrar todos los participantes
+  const handleClearParticipants = async () => {
+    if (!window.confirm("¿Estás seguro de borrar todos los participantes?")) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/lists/clear/participantes/`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success(data.message);
+        fetchLists();
+      } else {
+        toast.error(data.error || 'Error al borrar participantes.');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Error de conexión.');
+    }
+  };
+
+  // Función para borrar la lista de no incluidos
+  const handleClearBlacklist = async () => {
+    if (!window.confirm("¿Estás seguro de borrar la lista de no incluidos?")) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/lists/clear/blacklist/`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success(data.message);
+        fetchLists();
+      } else {
+        toast.error(data.error || 'Error al borrar la lista de no incluidos.');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Error de conexión.');
+    }
+  };
+
+
+  // Paginación para la lista de participantes
+  const totalRecordsParticipantes = data && data.participantes ? data.participantes.length : 0;
+  const totalPagesParticipantes = Math.ceil(totalRecordsParticipantes / itemsPerPage);
+  const paginatedParticipantes = data && data.participantes ? data.participantes.slice(
+    (currentPageParticipantes - 1) * itemsPerPage,
+    currentPageParticipantes * itemsPerPage
+  ) : [];
 
   const handleNextParticipantes = () => {
     if (currentPageParticipantes < totalPagesParticipantes)
@@ -69,19 +101,13 @@ function Bases() {
       setCurrentPageParticipantes((prev) => prev - 1);
   };
 
-  // Paginación para "No incluidos" (excluir)
-  const totalRecordsNoIncluidos =
-    data && data.blacklist ? data.blacklist.length : 0;
-  const totalPagesNoIncluidos = Math.ceil(
-    totalRecordsNoIncluidos / itemsPerPage
-  );
-  const paginatedNoIncluidos =
-    data && data.blacklist
-      ? data.blacklist.slice(
-          (currentPageNoIncluidos - 1) * itemsPerPage,
-          currentPageNoIncluidos * itemsPerPage
-        )
-      : [];
+  // Paginación para la lista de no incluidos
+  const totalRecordsNoIncluidos = data && data.blacklist ? data.blacklist.length : 0;
+  const totalPagesNoIncluidos = Math.ceil(totalRecordsNoIncluidos / itemsPerPage);
+  const paginatedNoIncluidos = data && data.blacklist ? data.blacklist.slice(
+    (currentPageNoIncluidos - 1) * itemsPerPage,
+    currentPageNoIncluidos * itemsPerPage
+  ) : [];
 
   const handleNextNoIncluidos = () => {
     if (currentPageNoIncluidos < totalPagesNoIncluidos)
@@ -91,6 +117,48 @@ function Bases() {
   const handlePrevNoIncluidos = () => {
     if (currentPageNoIncluidos > 1)
       setCurrentPageNoIncluidos((prev) => prev - 1);
+  };
+
+  // Handler para mover un registro de participantes a la lista de no incluidos
+  const handleNoIncluir = async (participante) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/blacklist/add/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(participante),
+      });
+      const respData = await response.json();
+      if (response.ok) {
+        toast.success(respData.message);
+        fetchLists(); // Actualiza ambas listas
+      } else {
+        toast.error(respData.error || 'Error al agregar a no incluidos.');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Error de conexión.');
+    }
+  };
+
+  // Handler para quitar un registro de la lista de no incluidos (remover de blacklist)
+  const handleQuitar = async (legajo) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/blacklist/remove/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: legajo }),
+      });
+      const respData = await response.json();
+      if (response.ok) {
+        toast.success(respData.message);
+        fetchLists(); // Actualiza ambas listas
+      } else {
+        toast.error(respData.error || 'Error al quitar de la lista de no incluidos.');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Error de conexión.');
+    }
   };
 
   return (
@@ -117,8 +185,13 @@ function Bases() {
         </button>
       </div>
 
+      {/* Pestaña de participantes */}
       {activeTab === 'participantes' && (
         <div className="list-section">
+          {/* Botón para borrar todos los participantes */}
+          <div style={{ marginBottom: '10px' }}>
+            <button onClick={handleClearParticipants}>Borrar todos los participantes</button>
+          </div>
           {loading ? (
             <ClipLoader size={50} color="#123abc" />
           ) : data && data.participantes && data.participantes.length > 0 ? (
@@ -135,6 +208,7 @@ function Bases() {
                     <th>Email</th>
                     <th>Localidad</th>
                     <th>Provincia</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -149,16 +223,16 @@ function Bases() {
                       <td>{item.email}</td>
                       <td>{item.localidad}</td>
                       <td>{item.provincia}</td>
+                      <td>
+                        <button onClick={() => handleNoIncluir(item)}>No Incluir</button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {totalPagesParticipantes > 1 && (
                 <div className="pagination">
-                  <button
-                    onClick={handlePrevParticipantes}
-                    disabled={currentPageParticipantes === 1}
-                  >
+                  <button onClick={handlePrevParticipantes} disabled={currentPageParticipantes === 1}>
                     Anterior
                   </button>
                   <span>
@@ -179,8 +253,13 @@ function Bases() {
         </div>
       )}
 
+      {/* Pestaña de no incluidos */}
       {activeTab === 'no_incluidos' && (
         <div className="list-section">
+          {/* Botón para borrar la lista de no incluidos */}
+          <div style={{ marginBottom: '10px' }}>
+            <button onClick={handleClearBlacklist}>Borrar lista de No incluidos</button>
+          </div>
           {loading ? (
             <ClipLoader size={50} color="#123abc" />
           ) : data && data.blacklist && data.blacklist.length > 0 ? (
@@ -197,6 +276,7 @@ function Bases() {
                     <th>Email</th>
                     <th>Localidad</th>
                     <th>Provincia</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -211,16 +291,16 @@ function Bases() {
                       <td>{item.email}</td>
                       <td>{item.localidad}</td>
                       <td>{item.provincia}</td>
+                      <td>
+                        <button onClick={() => handleQuitar(item.id)}>Quitar</button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {totalPagesNoIncluidos > 1 && (
                 <div className="pagination">
-                  <button
-                    onClick={handlePrevNoIncluidos}
-                    disabled={currentPageNoIncluidos === 1}
-                  >
+                  <button onClick={handlePrevNoIncluidos} disabled={currentPageNoIncluidos === 1}>
                     Anterior
                   </button>
                   <span>
@@ -241,16 +321,16 @@ function Bases() {
         </div>
       )}
 
+      {/* Pestaña de cargar bases */}
       {activeTab === 'cargar' && (
         <div className="cargar-section">
-          {/* Aquí se agrupan las funcionalidades para cargar bases */}
           <div className="cargar-item">
-            <h3>Cargar CSV</h3>
+            <h3>Cargar base de participantes</h3>
             <UploadCSV />
           </div>
           <div className="cargar-item">
             <h3>Agregar individualmente</h3>
-            {/* Se recomienda actualizar el título interno del componente AddToBlacklist */}
+            <AddToParticipants />
             <AddToBlacklist />
           </div>
         </div>

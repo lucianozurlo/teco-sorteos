@@ -9,6 +9,10 @@
     font-family: var(--font-family);
 }
 
+.upload-csv-container h4 {
+    margin-top: -5px;
+}
+
 .dropzone {
     border: 2px dashed var(--neutral-disabled);
     border-radius: 5px;
