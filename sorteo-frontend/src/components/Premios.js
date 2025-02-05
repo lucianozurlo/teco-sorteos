@@ -38,11 +38,11 @@ function Premios() {
 
   const agregarPremio = async () => {
     if (!nuevoNombre.trim()) {
-      toast.error('Por favor, ingresa un nombre para el premio.');
+      toast.error('Por favor, ingresá un nombre para el premio.');
       return;
     }
     if (nuevoStock < 1) {
-      toast.error('El stock debe ser al menos 1.');
+      toast.error('Debe haber por lo menos 1 elemento en stock.');
       return;
     }
     try {
@@ -81,7 +81,7 @@ function Premios() {
 
   const guardarEdicion = async () => {
     if (!editNombre.trim()) {
-      toast.error('Por favor, ingresa un nombre para el premio.');
+      toast.error('Por favor, ingresá un nombre para el premio.');
       return;
     }
     if (editStock < 0) {

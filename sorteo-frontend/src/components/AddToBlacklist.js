@@ -10,7 +10,7 @@ function AddToBlacklist () {
 
   const handleAdd = async () => {
     if (!participantId) {
-      toast.error ('Por favor, ingresa un legajo.');
+      toast.error ('Por favor, ingresá un legajo.');
       return;
     }
     try {

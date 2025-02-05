@@ -191,7 +191,7 @@ if (active.id !== over.id) {
 // Enviar la solicitud del sorteo (sin window.confirm)
 const handleSortear = async () => {
 if (items.length === 0) {
-	toast.error('Por favor, agrega al menos un premio para sortear.');
+	toast.error('Por favor, agregá al menos un premio para sortear.');
 	return;
 }
 // Se suma la cantidad de cada premio (ya viene en cada objeto)

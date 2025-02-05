@@ -72,11 +72,11 @@ function UploadCSV () {
         setFileUsuarios (null);
         setFileListaNegra (null);
       } else {
-        toast.error (data.error || 'Error al subir CSV');
+        toast.error (data.error || 'Error al subir archivo CSV');
       }
     } catch (err) {
       console.error (err);
-      toast.error ('Error al subir CSV.');
+      toast.error ('Error al subir archivo CSV.');
     } finally {
       setCargando (false);
     }
