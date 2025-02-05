@@ -38,6 +38,12 @@
 
 .sorteo-section .half {
     width: 50%;
+    margin-right: 8px;
+}
+
+.sorteo-section .half:last-child {
+    width: 50%;
+    margin-right: 0;
 }
 
 .sortear-btn {
