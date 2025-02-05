@@ -8,6 +8,10 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.registro-container hr {
+    margin-bottom: 20px;
+}
+
 .registro-section {
     margin-bottom: 32px;
 }
@@ -21,12 +25,13 @@
 .filtros-container {
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-end;
     gap: 16px;
     margin: 20px 0;
 }
 
 .filtro {
-    width: 11%;
+    width: 18%;
 }
 
 .filtro label {
