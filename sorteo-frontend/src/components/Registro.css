@@ -22,7 +22,11 @@
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    margin-bottom: 20px;
+    margin: 20px 0;
+}
+
+.filtro {
+    width: 11%;
 }
 
 .filtro label {
