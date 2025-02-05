@@ -9,13 +9,6 @@
   font-family: var(--font-family);
 }
 
-.bases-container h2 {
-  margin-bottom: 16px;
-  font-size: 1.8rem;
-  text-align: center;
-  color: var(--primary-dark);
-}
-
 /* Pestañas */
 .tabs {
   display: flex;
@@ -87,13 +80,6 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-}
-
-.cargar-item h3 {
-  margin-bottom: 8px;
-  font-size: 1.2rem;
-  color: var(--primary-dark);
-  text-align: center;
 }
 
 /* Responsividad */
