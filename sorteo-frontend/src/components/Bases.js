@@ -190,7 +190,7 @@ function Bases() {
         <div className="list-section">
           {/* Botón para borrar todos los participantes */}
           <div style={{ marginBottom: '10px' }}>
-            <button onClick={handleClearParticipants}>Borrar todos los participantes</button>
+            <button onClick={handleClearParticipants}>Borrar lista</button>
           </div>
           {loading ? (
             <ClipLoader size={50} color="#123abc" />
@@ -258,7 +258,7 @@ function Bases() {
         <div className="list-section">
           {/* Botón para borrar la lista de no incluidos */}
           <div style={{ marginBottom: '10px' }}>
-            <button onClick={handleClearBlacklist}>Borrar lista de No incluidos</button>
+            <button onClick={handleClearBlacklist}>Borrar lista</button>
           </div>
           {loading ? (
             <ClipLoader size={50} color="#123abc" />
