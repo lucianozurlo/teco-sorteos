@@ -276,30 +276,32 @@ return (
 	</div>
 	{usarFiltros && (
 	<>
-		<div className="sorteo-section col1">
-		<label>Provincia:</label>
-		<select
-			value={provinciaSeleccionada}
-			onChange={(e) => setProvinciaSeleccionada(e.target.value)}
-		>
-			<option value="">-- Seleccionar provincia --</option>
-			{provincias.map((prov, idx) => (
-			<option key={idx} value={prov}>{prov}</option>
-			))}
-		</select>
-		</div>
-		<div className="sorteo-section col2">
-		<label>Localidad:</label>
-		<select
-			value={localidadSeleccionada}
-			onChange={(e) => setLocalidadSeleccionada(e.target.value)}
-			disabled={!provinciaSeleccionada}
-		>
-			<option value="">-- Seleccionar localidad --</option>
-			{localidades.map((loc, idx) => (
-			<option key={idx} value={loc}>{loc}</option>
-			))}
-		</select>
+	    <div className="sorteo-section">
+			<div className="col1">
+			<label>Provincia:</label>
+			<select
+				value={provinciaSeleccionada}
+				onChange={(e) => setProvinciaSeleccionada(e.target.value)}
+			>
+				<option value="">-- Seleccionar provincia --</option>
+				{provincias.map((prov, idx) => (
+				<option key={idx} value={prov}>{prov}</option>
+				))}
+			</select>
+			</div>
+			<div className="sorteo-section col2">
+			<label>Localidad:</label>
+			<select
+				value={localidadSeleccionada}
+				onChange={(e) => setLocalidadSeleccionada(e.target.value)}
+				disabled={!provinciaSeleccionada}
+			>
+				<option value="">-- Seleccionar localidad --</option>
+				{localidades.map((loc, idx) => (
+				<option key={idx} value={loc}>{loc}</option>
+				))}
+			</select>
+			</div>
 		</div>
 	</>
 	)}
