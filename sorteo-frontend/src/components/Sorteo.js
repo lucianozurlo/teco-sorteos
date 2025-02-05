@@ -135,7 +135,7 @@ try {
 // Agregar un premio seleccionado al sorteo
 const agregarPremioAlSorteo = () => {
 if (!selectedPremioId) {
-	toast.error('Por favor, selecciona un premio.');
+	toast.error('Por favor, seleccioná un premio.');
 	return;
 }
 const premio = availablePremios.find(p => p.id === parseInt(selectedPremioId));
@@ -307,7 +307,7 @@ return (
 	{/* Agregar Premios */}
 	<h3>Agregar Premios al Sorteo</h3>
 	<div className="sorteo-section">
-	<label>Selecciona un premio:</label>
+	<label>Seleccioná un premio:</label>
 	<select
 		value={selectedPremioId}
 		onChange={(e) => setSelectedPremioId(e.target.value)}
