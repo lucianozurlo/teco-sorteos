@@ -9,6 +9,13 @@
   font-family: var(--font-family);
 }
 
+.bases-container h2 {
+  margin-bottom: 16px;
+  font-size: 1.8rem;
+  text-align: center;
+  color: var(--primary-dark);
+}
+
 /* Pestañas */
 .tabs {
   display: flex;
