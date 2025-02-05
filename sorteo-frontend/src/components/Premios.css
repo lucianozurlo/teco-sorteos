@@ -67,7 +67,7 @@
     width: 35%;
 }
 
-.premios-table td:nth-child(3) .premios-section button {
+.premios-table td:nth-child(3) button {
     margin: 5px;
     width: 45%;
 }
