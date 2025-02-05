@@ -82,11 +82,11 @@
   gap: 32px;
 }
 
-.cargar-section div:first-child {
+.cargar-section .cargar-item:first-child {
   width: 60%;
 }
 
-.cargar-section div:last-child {
+.cargar-section .cargar-item:last-child {
   width: 40%;
 }
 
