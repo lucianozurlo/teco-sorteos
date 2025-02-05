@@ -63,6 +63,7 @@ h3 {
 
 .descargar-plantillas .btn {
     display: inline-block;
+    margin-top: 30px;
     padding: 8px 16px;
     background-color: var(--primary-color);
     color: #fff;

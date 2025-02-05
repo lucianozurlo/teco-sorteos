@@ -109,11 +109,7 @@ function UploadCSV () {
               </p>}
         </div>
       </div>
-      <button
-        onClick={handleUpload}
-        className="upload-button"
-        disabled={cargando}
-      >
+      <button onClick={handleUpload} className="ejecutar" disabled={cargando}>
         {cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Subir CSV'}
       </button>
       <div className="descargar-plantillas" style={{marginTop: '1rem'}}>

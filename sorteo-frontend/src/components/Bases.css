@@ -78,8 +78,16 @@
 /* Sección de cargar bases */
 .cargar-section {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 32px;
+}
+
+.cargar-section div:first-child {
+  width: 60%;
+}
+
+.cargar-section div:last-child {
+  width: 40%;
 }
 
 /* Responsividad */
