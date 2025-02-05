@@ -62,11 +62,12 @@
     text-align: center;
 }
 
-.premios-table td:nth-child(2) .premios-section button {
-    margin: 5px;
-}
-
 .premios-table th:nth-child(3),
 .premios-table td:nth-child(3) {
     width: 35%;
+}
+
+.premios-table td:nth-child(3) .premios-section button {
+    margin: 5px;
+    width: 45%;
 }
