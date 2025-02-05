@@ -64,7 +64,7 @@
 }
 
 .premios-table th:nth-child(1) {
-    width: 65%;
+    width: 55%;
 }
 
 .premios-table th:nth-child(2) {
@@ -72,7 +72,7 @@
 }
 
 .premios-table th:nth-child(3) {
-    width: 25%;
+    width: 35%;
 }
 
 .cancelar-btn {
