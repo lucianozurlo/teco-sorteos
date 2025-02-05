@@ -63,20 +63,19 @@
     font-weight: 600;
 }
 
-.eliminar-btn {
-    background-color: var(--danger-color);
-    color: #fff;
-    transition: background-color 0.3s ease;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    padding: 6px 12px;
-    font-size: 0.9rem;
+.premios-table th:nth-child(1) {
+    width: 65%;
 }
 
-.eliminar-btn:hover {
-    background-color: var(--danger-hover);
+.premios-table th:nth-child(2) {
+    width: 10%;
 }
+
+.premios-table th:nth-child(3) {
+    width: 25%;
+}
+
+
 
 .cancelar-btn {
     background-color: #6c757d;
