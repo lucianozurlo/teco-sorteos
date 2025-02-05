@@ -199,7 +199,7 @@ function Premios() {
                     ) : (
                       <>
                         <button onClick={() => iniciarEdicion(premio)}>Editar</button>
-                        <button onClick={() => eliminarPremio(premio.id)} className="eliminar-btn">Eliminar</button>
+                        <button onClick={() => eliminarPremio(premio.id)} className="eliminar">Eliminar</button>
                       </>
                     )}
                   </td>
