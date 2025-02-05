@@ -65,19 +65,3 @@
 .premios-table td:nth-child(3) {
     width: 35%;
 }
-
-.cancelar-btn {
-    background-color: #6c757d;
-    color: #fff;
-    margin-left: 8px;
-    transition: background-color 0.3s ease;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    padding: 6px 12px;
-    font-size: 0.9rem;
-}
-
-.cancelar-btn:hover {
-    background-color: #5a6268;
-}

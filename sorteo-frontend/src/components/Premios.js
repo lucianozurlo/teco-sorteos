@@ -194,7 +194,7 @@ function Premios() {
                     {editPremioId === premio.id ? (
                       <>
                         <button onClick={guardarEdicion}>Guardar</button>
-                        <button onClick={cancelarEdicion} className="cancelar-btn">Cancelar</button>
+                        <button onClick={cancelarEdicion} className="eliminar">Cancelar</button>
                       </>
                     ) : (
                       <>

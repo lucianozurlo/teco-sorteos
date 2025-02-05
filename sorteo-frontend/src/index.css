@@ -140,9 +140,13 @@ button {
   padding: 10px 21px;
   text-align: center;
   text-transform: none;
-  transition: color .13s ease-in-out, background .13s ease-in-out, opacity .13s ease-in-out, box-shadow .13s ease-in-out;
+  transition: all .25s ease-in-out;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-transition: all .25s ease-in-out;
+  -moz-transition: all .25s ease-in-out;
+  -ms-transition: all .25s ease-in-out;
+  -o-transition: all .25s ease-in-out;
 }
 
 button:active {
@@ -161,11 +165,11 @@ button.ejecutar {
 }
 
 button.eliminar {
-  background-color: red;
+  background-color: red !important;
 }
 
 button:hover.eliminar {
-  background-color: darkred;
+  background-color: darkred !important;
 }
 
 input,
