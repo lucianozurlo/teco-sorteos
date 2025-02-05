@@ -10,7 +10,7 @@ const AdminRedirect = () => {
 
   return (
     <div>
-      Redirigiendo a la administración...
+      Redirigiendo...
     </div>
   );
 };
