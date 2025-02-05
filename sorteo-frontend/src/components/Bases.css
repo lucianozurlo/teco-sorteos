@@ -9,6 +9,18 @@
   font-family: var(--font-family);
 }
 
+.bases-container table {
+  min-width: 100%;
+}
+
+.bases-container table th:first-child {
+  text-align: right;
+}
+
+.bases-container table td {
+  padding: 6px 10px;
+}
+
 /* Pestañas */
 .tabs {
   display: flex;
