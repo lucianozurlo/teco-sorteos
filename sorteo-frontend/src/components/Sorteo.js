@@ -348,7 +348,7 @@ return (
 	{/* Lista de premios con opción de eliminar */}
 	{items.length > 0 && (
 	<div className="sorteo-section">
-		<h3>Lista de Premios en el Sorteo</h3>
+		<h4>Lista de Premios para sortear</h4>
 		<ul className="sorteo-list">
 		{items.map(item => (
 			<li key={item.id} className="sorteo-item">
