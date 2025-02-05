@@ -37,12 +37,11 @@
 }
 
 .sorteo-section .half {
-    width: 50%;
+    width: 41%;
     margin-right: 8px;
 }
 
 .sorteo-section .half:last-child {
-    width: 50%;
     margin-right: 0;
 }
 
