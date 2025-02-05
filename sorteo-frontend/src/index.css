@@ -220,6 +220,9 @@ table th {
   font-weight: 600;
 }
 
+.d-flex {
+  display: flex !important;
+}
 
 /* Responsividad Global */
 @media (max-width: 768px) {

@@ -23,7 +23,7 @@
 
 .sorteo-section input,
 .sorteo-section select {
-    padding: 10px;
+    padding: 0 10px;
     width: 100%;
     max-width: 300px;
     border: 1px solid var(--neutral-border);
@@ -44,6 +44,10 @@
 .sorteo-section .half:last-child {
     width: 50%;
     margin-right: 0;
+}
+
+.sorteo-section .half label {
+    margin-bottom: 0;
 }
 
 .sortear-btn {
