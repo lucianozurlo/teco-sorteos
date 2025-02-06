@@ -74,6 +74,7 @@
 .bases-container table th:last-child,
 .bases-container table td:last-child {
   text-align: center;
+  margin: 0;
 }
 
 .bases-container table td {
@@ -82,6 +83,7 @@
 
 .bases-container table td:last-child button {
   padding: 10px 16px;
+  margin: 0;
 }
 
 /* Botones para vaciar listas */

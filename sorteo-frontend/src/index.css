@@ -147,6 +147,18 @@ button.ejecutar {
   width: 100%;
 }
 
+.acciones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.acciones.edit {
+  gap: 5px;
+  flex-direction: column;
+  margin: 5px 0;
+}
+
 button.rojo {
   background-color: red !important;
 }
@@ -161,6 +173,14 @@ button.verde {
 
 button:hover.verde {
   background-color: darkgreen !important;
+}
+
+button.azul {
+  background-color: blue !important;
+}
+
+button:hover.azul {
+  background-color: darkblue !important;
 }
 
 input,
