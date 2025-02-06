@@ -9,6 +9,10 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.premios-container .acciones {
+    gap: 0;
+}
+
 .premios-container hr {
     margin: 18px 0 22px;
 }
@@ -25,7 +29,8 @@
 }
 
 .premios-section button {
-    margin-right: 8px;
+    padding: 8px 12px !important;
+
 }
 
 .premios-table {
@@ -49,7 +54,7 @@
 
 .premios-table th:nth-child(1),
 .premios-table td:nth-child(1) {
-    width: 55%;
+    width: 60%;
 }
 
 .premios-table th:nth-child(2),
@@ -60,7 +65,8 @@
 
 .premios-table th:nth-child(3),
 .premios-table td:nth-child(3) {
-    width: 35%;
+    width: 30%;
+    text-align: center;
 }
 
 .premios-table td:nth-child(3) button {
