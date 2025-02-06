@@ -20,7 +20,7 @@
   line-height: 130%;
 }
 
-/* Definir anchos para cada columna */
+/* Anchos de columnas en porcentaje */
 .bases-container table th:nth-child(1),
 .bases-container table td:nth-child(1) {
   width: 6.5%;
@@ -84,6 +84,26 @@
   padding: 10px 16px;
 }
 
+/* Botones para vaciar listas */
+.clear-button-container {
+  text-align: right;
+  margin-bottom: 8px;
+}
+
+.clear-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.clear-button:hover {
+  background-color: var(--primary-dark);
+}
+
 /* Pestañas */
 .tabs {
   display: flex;
@@ -114,7 +134,7 @@
 
 /* Sección de listados */
 .list-section {
-  margin-top: 16px;
+  margin-top: -50px;
 }
 
 /* Paginación */

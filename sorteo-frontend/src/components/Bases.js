@@ -32,6 +32,58 @@ function Bases () {
     fetchLists ();
   }, []);
 
+  // Función para vaciar la lista de participantes
+  const clearParticipants = async () => {
+    if (!window.confirm ('¿Estás seguro de vaciar la lista de participantes?'))
+      return;
+    try {
+      const response = await fetch (
+        `${API_BASE_URL}/api/lists/clear/participantes/`,
+        {
+          method: 'DELETE',
+        }
+      );
+      const dataResp = await response.json ();
+      if (response.ok) {
+        toast.info (dataResp.message || 'Lista de participantes vaciada.');
+        fetchLists ();
+      } else {
+        toast.error (
+          dataResp.error || 'Error al vaciar la lista de participantes.'
+        );
+      }
+    } catch (err) {
+      console.error (err);
+      toast.error ('Error de conexión.');
+    }
+  };
+
+  // Función para vaciar la lista de no incluidos
+  const clearBlacklist = async () => {
+    if (!window.confirm ('¿Estás seguro de vaciar la lista de no incluidos?'))
+      return;
+    try {
+      const response = await fetch (
+        `${API_BASE_URL}/api/lists/clear/blacklist/`,
+        {
+          method: 'DELETE',
+        }
+      );
+      const dataResp = await response.json ();
+      if (response.ok) {
+        toast.info (dataResp.message || 'Lista de no incluidos vaciada.');
+        fetchLists ();
+      } else {
+        toast.error (
+          dataResp.error || 'Error al vaciar la lista de no incluidos.'
+        );
+      }
+    } catch (err) {
+      console.error (err);
+      toast.error ('Error de conexión.');
+    }
+  };
+
   return (
     <div className="bases-container">
       <h2>Bases</h2>
@@ -58,6 +110,11 @@ function Bases () {
 
       {activeTab === 'participantes' &&
         <div className="list-section">
+          <div className="clear-button-container">
+            <button className="clear-button" onClick={clearParticipants}>
+              Vaciar lista
+            </button>
+          </div>
           {loading
             ? <ClipLoader size={50} color="#123abc" />
             : data.participantes && data.participantes.length > 0
@@ -124,7 +181,7 @@ function Bases () {
                               }}
                               title="Mover a No incluidos"
                             >
-                              {/* SVG para mover de participantes a no incluidos (segundo SVG) */}
+                              {/* SVG para mover de participantes a no incluidos */}
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 384 512"
@@ -147,6 +204,11 @@ function Bases () {
 
       {activeTab === 'no_incluidos' &&
         <div className="list-section">
+          <div className="clear-button-container">
+            <button className="clear-button" onClick={clearBlacklist}>
+              Vaciar lista
+            </button>
+          </div>
           {loading
             ? <ClipLoader size={50} color="#123abc" />
             : data.blacklist && data.blacklist.length > 0
@@ -224,7 +286,7 @@ function Bases () {
                               }}
                               title="Mover a Participantes"
                             >
-                              {/* SVG para mover de no incluidos a participantes (primer SVG) */}
+                              {/* SVG para mover de no incluidos a participantes */}
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 448 512"
