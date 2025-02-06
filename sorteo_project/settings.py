@@ -11,26 +11,22 @@ from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
 import os
+import logging.config
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-*!)y=(x-y1vj5s5i^y5a_zv(4z1&wvl%f00umni1x6cv@8hwd2"
+SECRET_KEY = os.getenv('SECRET_KEY', "django-insecure-*!)y=(x-y1vj5s5i^y5a_zv(4z1&wvl%f00umni1x6cv@8hwd2")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('ENV', 'development') == 'development'
 
 ALLOWED_HOSTS = ['web-production-0252.up.railway.app', 'localhost', '127.0.0.1']
 
 # DATABASE
-ENV = os.getenv('ENV', 'development')  # Por defecto development
-
-if ENV == 'development':
-    DEBUG = True
-    # Para desarrollo usaremos SQLite
+if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -38,8 +34,6 @@ if ENV == 'development':
         }
     }
 else:
-    DEBUG = False
-    # En producción usaremos Railway (ya tienes configurado dj_database_url)
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'),
@@ -47,7 +41,6 @@ else:
             ssl_require=True
         )
     }
-
 
 # Application definition
 
@@ -59,13 +52,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "whitenoise.runserver_nostatic",
-
     # Apps de terceros
     'rest_framework',
     'corsheaders',
-
     # Tu app
-    'sorteo_app'
+    'sorteo_app',
 ]
 
 MIDDLEWARE = [
@@ -77,7 +68,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'corsheaders.middleware.CorsMiddleware'
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # Configurar CORS
@@ -107,51 +98,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "sorteo_project.wsgi.application"
 
+# DRF configuration: se incluye autenticación y permisos básicos (se puede ampliar)
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # Cambiar a IsAuthenticated en producción
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',  # habilitar si usas tokens
+    ],
+}
+
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
-# TIME_ZONE = 'America/Argentina/Buenos_Aires'
 USE_I18N = True
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = "static/"
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,'sorteo_app/static')
-]
-
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'sorteo_app/static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
@@ -159,3 +132,33 @@ STORAGES = {
 }
 
 CSRF_TRUSTED_ORIGINS = ["http://*", "https://web-production-0252.up.railway.app"]
+
+# Configuración de Logging
+LOGGING_CONFIG = None
+LOGLEVEL = os.getenv('LOGLEVEL', 'INFO').upper()
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': LOGLEVEL,
+    },
+})
+
+# Posibles mejoras: agregar configuración de email, roles, etc.

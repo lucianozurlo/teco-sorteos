@@ -13,7 +13,6 @@ function Bases () {
   const [activeTab, setActiveTab] = useState ('participantes');
   const [data, setData] = useState ({participantes: [], blacklist: []});
   const [loading, setLoading] = useState (false);
-  // Para manejar la edición inline: editRow contiene el id de la fila en edición y editValues sus datos
   const [editRow, setEditRow] = useState (null);
   const [editValues, setEditValues] = useState ({});
 
@@ -35,16 +34,13 @@ function Bases () {
     fetchLists ();
   }, []);
 
-  // Funciones para vaciar listas
   const clearParticipants = async () => {
     if (!window.confirm ('¿Estás seguro de vaciar la lista de participantes?'))
       return;
     try {
       const response = await fetch (
         `${API_BASE_URL}/api/lists/clear/participantes/`,
-        {
-          method: 'DELETE',
-        }
+        {method: 'DELETE'}
       );
       const dataResp = await response.json ();
       if (response.ok) {
@@ -67,9 +63,7 @@ function Bases () {
     try {
       const response = await fetch (
         `${API_BASE_URL}/api/lists/clear/blacklist/`,
-        {
-          method: 'DELETE',
-        }
+        {method: 'DELETE'}
       );
       const dataResp = await response.json ();
       if (response.ok) {
@@ -86,10 +80,9 @@ function Bases () {
     }
   };
 
-  // Manejo del modo edición
+  // Manejo de edición inline
   const startEditing = item => {
     setEditRow (item.id);
-    // Inicializamos editValues con los valores actuales del item
     setEditValues ({...item});
   };
 
@@ -98,17 +91,12 @@ function Bases () {
     setEditValues ({});
   };
 
-  // Función para guardar la edición: se usa el endpoint según la pestaña activa
   const saveEditing = async id => {
-    // No permitimos editar el legajo
     const payload = {...editValues, id};
     try {
-      let url = '';
-      if (activeTab === 'participantes') {
-        url = `${API_BASE_URL}/api/participants/add/`;
-      } else if (activeTab === 'no_incluidos') {
-        url = `${API_BASE_URL}/api/blacklist/add/`;
-      }
+      let url = activeTab === 'participantes'
+        ? `${API_BASE_URL}/api/participants/add/`
+        : `${API_BASE_URL}/api/blacklist/add/`;
       const response = await fetch (url, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -128,8 +116,7 @@ function Bases () {
     }
   };
 
-  // Renderizado de cada fila: si es la fila en edición, mostramos inputs
-  const renderRow = (item, isBlacklist = false) => {
+  const renderRow = item => {
     if (editRow === item.id) {
       return (
         <tr key={item.id}>
@@ -201,7 +188,7 @@ function Bases () {
           <td>
             <div className="acciones edit">
               <button onClick={() => saveEditing (item.id)} title="Guardar">
-                Guardar{' '}
+                Guardar
               </button>
               <button onClick={cancelEditing} className="rojo" title="Cancelar">
                 Cancelar
@@ -277,13 +264,61 @@ function Bases () {
                 <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
               </svg>
             </button>
+            <button
+              className="verde"
+              onClick={async () => {
+                try {
+                  const payload = {
+                    id: item.id,
+                    nombre: item.nombre,
+                    apellido: item.apellido,
+                    email: item.email,
+                    area: item.area,
+                    dominio: item.dominio,
+                    cargo: item.cargo,
+                    localidad: item.localidad,
+                    provincia: item.provincia,
+                  };
+                  const response = await fetch (
+                    `${API_BASE_URL}/api/participants/add/`,
+                    {
+                      method: 'POST',
+                      headers: {'Content-Type': 'application/json'},
+                      body: JSON.stringify (payload),
+                    }
+                  );
+                  const dataResp = await response.json ();
+                  if (response.ok) {
+                    toast.success (dataResp.message);
+                    fetchLists ();
+                  } else {
+                    toast.error (
+                      dataResp.error || 'Error al mover el registro.'
+                    );
+                  }
+                } catch (err) {
+                  console.error (err);
+                  toast.error ('Error de conexión.');
+                }
+              }}
+              style={{backgroundColor: 'transparent', border: 'none'}}
+              title="Mover a Participantes"
+            >
+              {/* SVG para mover de no incluidos a participantes */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                style={{width: '16px', height: '16px', fill: 'white'}}
+              >
+                <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 301.3 297.4 164c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3L237.3 256 342.6 361.4z" />
+              </svg>
+            </button>
           </div>
         </td>
       </tr>
     );
   };
 
-  // Función similar para filas en la lista de no incluidos
   const renderBlacklistRow = item => {
     if (editRow === item.id) {
       return (
@@ -395,6 +430,44 @@ function Bases () {
               </svg>
             </button>
             <button
+              className="rojo"
+              onClick={async () => {
+                try {
+                  const response = await fetch (
+                    `${API_BASE_URL}/api/blacklist/add/`,
+                    {
+                      method: 'POST',
+                      headers: {'Content-Type': 'application/json'},
+                      body: JSON.stringify ({id: item.id}),
+                    }
+                  );
+                  const dataResp = await response.json ();
+                  if (response.ok) {
+                    toast.success (dataResp.message);
+                    fetchLists ();
+                  } else {
+                    toast.error (
+                      dataResp.error || 'Error al mover el registro.'
+                    );
+                  }
+                } catch (err) {
+                  console.error (err);
+                  toast.error ('Error de conexión.');
+                }
+              }}
+              style={{backgroundColor: 'transparent', border: 'none'}}
+              title="Mover a No incluidos"
+            >
+              {/* SVG para mover de participantes a no incluidos */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 384 512"
+                style={{width: '16px', height: '16px', fill: 'white'}}
+              >
+                <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+              </svg>
+            </button>
+            <button
               className="verde"
               onClick={async () => {
                 try {
@@ -440,7 +513,7 @@ function Bases () {
                 viewBox="0 0 448 512"
                 style={{width: '16px', height: '16px', fill: 'white'}}
               >
-                <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
+                <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 301.3 297.4 164c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3L237.3 256 342.6 361.4z" />
               </svg>
             </button>
           </div>

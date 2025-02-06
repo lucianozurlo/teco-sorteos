@@ -5,7 +5,7 @@ import csv
 from sorteo_app.models import Participante, RegistroActividad
 
 class Command(BaseCommand):
-    help = 'Carga datos de participantes desde CSV y excluye legajoss en la lista.'
+    help = 'Carga datos de participantes desde CSV y excluye legajos en la lista.'
 
     def add_arguments(self, parser):
         parser.add_argument(
