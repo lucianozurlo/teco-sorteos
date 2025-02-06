@@ -64,7 +64,7 @@ function AddToParticipants({onUpdate}) {
 
   return (
     <div className="add-to-participants-container">
-      <h4>Agregar Participante</h4>
+      <h4>Participante</h4>
       <div className="input-row">
         <div className="form-group">
           <label>Legajo *:</label>
