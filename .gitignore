@@ -9,3 +9,4 @@ staticfiles
 _bases
 data
 sorteo-frontend/build
+sorteo-frontend/node_modules
