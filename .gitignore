@@ -6,6 +6,6 @@ db.sqlite3
 .env.development
 .env.production
 staticfiles
-_base>
+_base
 data
 sorteo-frontend/build
