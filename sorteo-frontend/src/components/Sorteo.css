@@ -9,6 +9,10 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.sorteo-container hr {
+    margin-bottom: 22px;
+}
+
 .sorteo-section {
     margin-bottom: 20px;
 }

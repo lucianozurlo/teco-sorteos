@@ -1,97 +1,36 @@
 // sorteo-frontend/src/components/Bases.js
 
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import React, {useState, useEffect} from 'react';
+import {toast} from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { API_BASE_URL } from '../config';
+import {API_BASE_URL} from '../config';
 import UploadCSV from './UploadCSV';
-import AddToBlacklist from './AddToBlacklist'; // Se usará para exclusión individual (se recomienda actualizar su título interno)
+import AddToBlacklist from './AddToBlacklist';
+import AddToParticipants from './AddToParticipants';
 import './Bases.css';
 
-function Bases() {
-  // Estado para controlar la pestaña activa:
-  // 'participantes' → Listado participantes  
-  // 'no_incluidos' → Listado No incluidos  
-  // 'cargar' → Cargar bases
-  const [activeTab, setActiveTab] = useState('participantes');
+function Bases () {
+  const [activeTab, setActiveTab] = useState ('participantes');
+  const [data, setData] = useState ({participantes: [], blacklist: []});
+  const [loading, setLoading] = useState (false);
 
-  // Estado para los datos obtenidos del endpoint de listas  
-  // Se asume que el endpoint devuelve un objeto con dos arrays:
-  // data.participantes y data.blacklist (ahora serán "No incluidos")
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  // Estados para paginación (para ambas listas)
-  const itemsPerPage = 100;
-  const [currentPageParticipantes, setCurrentPageParticipantes] = useState(1);
-  const [currentPageNoIncluidos, setCurrentPageNoIncluidos] = useState(1);
-
-  // Función para obtener los datos desde la API
   const fetchLists = async () => {
-    setLoading(true);
+    setLoading (true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/lists/`);
-      const jsonData = await response.json();
-      setData(jsonData);
+      const response = await fetch (`${API_BASE_URL}/api/lists/`);
+      const jsonData = await response.json ();
+      setData (jsonData);
     } catch (error) {
-      console.error(error);
-      toast.error('Error al obtener las bases.');
+      console.error (error);
+      toast.error ('Error al obtener las bases.');
     } finally {
-      setLoading(false);
+      setLoading (false);
     }
   };
 
-  useEffect(() => {
-    fetchLists();
+  useEffect (() => {
+    fetchLists ();
   }, []);
-
-  // Paginación para Participantes
-  const totalRecordsParticipantes =
-    data && data.participantes ? data.participantes.length : 0;
-  const totalPagesParticipantes = Math.ceil(
-    totalRecordsParticipantes / itemsPerPage
-  );
-  const paginatedParticipantes =
-    data && data.participantes
-      ? data.participantes.slice(
-          (currentPageParticipantes - 1) * itemsPerPage,
-          currentPageParticipantes * itemsPerPage
-        )
-      : [];
-
-  const handleNextParticipantes = () => {
-    if (currentPageParticipantes < totalPagesParticipantes)
-      setCurrentPageParticipantes((prev) => prev + 1);
-  };
-
-  const handlePrevParticipantes = () => {
-    if (currentPageParticipantes > 1)
-      setCurrentPageParticipantes((prev) => prev - 1);
-  };
-
-  // Paginación para "No incluidos" (excluir)
-  const totalRecordsNoIncluidos =
-    data && data.blacklist ? data.blacklist.length : 0;
-  const totalPagesNoIncluidos = Math.ceil(
-    totalRecordsNoIncluidos / itemsPerPage
-  );
-  const paginatedNoIncluidos =
-    data && data.blacklist
-      ? data.blacklist.slice(
-          (currentPageNoIncluidos - 1) * itemsPerPage,
-          currentPageNoIncluidos * itemsPerPage
-        )
-      : [];
-
-  const handleNextNoIncluidos = () => {
-    if (currentPageNoIncluidos < totalPagesNoIncluidos)
-      setCurrentPageNoIncluidos((prev) => prev + 1);
-  };
-
-  const handlePrevNoIncluidos = () => {
-    if (currentPageNoIncluidos > 1)
-      setCurrentPageNoIncluidos((prev) => prev - 1);
-  };
 
   return (
     <div className="bases-container">
@@ -99,162 +38,227 @@ function Bases() {
       <div className="tabs">
         <button
           className={activeTab === 'participantes' ? 'tab active' : 'tab'}
-          onClick={() => setActiveTab('participantes')}
+          onClick={() => setActiveTab ('participantes')}
         >
           Listado participantes
         </button>
         <button
           className={activeTab === 'no_incluidos' ? 'tab active' : 'tab'}
-          onClick={() => setActiveTab('no_incluidos')}
+          onClick={() => setActiveTab ('no_incluidos')}
         >
           Listado No incluidos
         </button>
         <button
           className={activeTab === 'cargar' ? 'tab active' : 'tab'}
-          onClick={() => setActiveTab('cargar')}
+          onClick={() => setActiveTab ('cargar')}
         >
           Cargar bases
         </button>
       </div>
 
-      {activeTab === 'participantes' && (
+      {activeTab === 'participantes' &&
         <div className="list-section">
-          {loading ? (
-            <ClipLoader size={50} color="#123abc" />
-          ) : data && data.participantes && data.participantes.length > 0 ? (
-            <>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Legajo</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Área</th>
-                    <th>Dominio</th>
-                    <th>Cargo</th>
-                    <th>Email</th>
-                    <th>Localidad</th>
-                    <th>Provincia</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedParticipantes.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.id}</td>
-                      <td>{item.nombre}</td>
-                      <td>{item.apellido}</td>
-                      <td>{item.area}</td>
-                      <td>{item.dominio}</td>
-                      <td>{item.cargo}</td>
-                      <td>{item.email}</td>
-                      <td>{item.localidad}</td>
-                      <td>{item.provincia}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {totalPagesParticipantes > 1 && (
-                <div className="pagination">
-                  <button
-                    onClick={handlePrevParticipantes}
-                    disabled={currentPageParticipantes === 1}
-                  >
-                    Anterior
-                  </button>
-                  <span>
-                    Página {currentPageParticipantes} de {totalPagesParticipantes}
-                  </span>
-                  <button
-                    onClick={handleNextParticipantes}
-                    disabled={currentPageParticipantes === totalPagesParticipantes}
-                  >
-                    Siguiente
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <p>No se encontraron registros de participantes.</p>
-          )}
-        </div>
-      )}
+          {loading
+            ? <ClipLoader size={50} color="#123abc" />
+            : data.participantes && data.participantes.length > 0
+                ? <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Legajo</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Área</th>
+                        <th>Dominio</th>
+                        <th>Cargo</th>
+                        <th>Email</th>
+                        <th>Localidad</th>
+                        <th>Provincia</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.participantes.map (item => (
+                        <tr key={item.id}>
+                          <td>{item.id}</td>
+                          <td>{item.nombre}</td>
+                          <td>{item.apellido}</td>
+                          <td>{item.area}</td>
+                          <td>{item.dominio}</td>
+                          <td>{item.cargo}</td>
+                          <td>{item.email}</td>
+                          <td>{item.localidad}</td>
+                          <td>{item.provincia}</td>
+                          <td>
+                            <button
+                              className="rojo"
+                              onClick={async () => {
+                                try {
+                                  const response = await fetch (
+                                    `${API_BASE_URL}/api/blacklist/add/`,
+                                    {
+                                      method: 'POST',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                      },
+                                      body: JSON.stringify ({id: item.id}),
+                                    }
+                                  );
+                                  const dataResp = await response.json ();
+                                  if (response.ok) {
+                                    toast.success (dataResp.message);
+                                    fetchLists ();
+                                  } else {
+                                    toast.error (
+                                      dataResp.error ||
+                                        'Error al mover el registro.'
+                                    );
+                                  }
+                                } catch (err) {
+                                  console.error (err);
+                                  toast.error ('Error de conexión.');
+                                }
+                              }}
+                              style={{
+                                backgroundColor: 'transparent',
+                                border: 'none',
+                              }}
+                              title="Mover a No incluidos"
+                            >
+                              {/* SVG para mover de participantes a no incluidos (segundo SVG) */}
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 384 512"
+                                style={{
+                                  width: '16px',
+                                  height: '16px',
+                                  fill: 'white',
+                                }}
+                              >
+                                <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                : <p>No se encontraron registros de participantes.</p>}
+        </div>}
 
-      {activeTab === 'no_incluidos' && (
+      {activeTab === 'no_incluidos' &&
         <div className="list-section">
-          {loading ? (
-            <ClipLoader size={50} color="#123abc" />
-          ) : data && data.blacklist && data.blacklist.length > 0 ? (
-            <>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Legajo</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Área</th>
-                    <th>Dominio</th>
-                    <th>Cargo</th>
-                    <th>Email</th>
-                    <th>Localidad</th>
-                    <th>Provincia</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedNoIncluidos.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.id}</td>
-                      <td>{item.nombre}</td>
-                      <td>{item.apellido}</td>
-                      <td>{item.area}</td>
-                      <td>{item.dominio}</td>
-                      <td>{item.cargo}</td>
-                      <td>{item.email}</td>
-                      <td>{item.localidad}</td>
-                      <td>{item.provincia}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {totalPagesNoIncluidos > 1 && (
-                <div className="pagination">
-                  <button
-                    onClick={handlePrevNoIncluidos}
-                    disabled={currentPageNoIncluidos === 1}
-                  >
-                    Anterior
-                  </button>
-                  <span>
-                    Página {currentPageNoIncluidos} de {totalPagesNoIncluidos}
-                  </span>
-                  <button
-                    onClick={handleNextNoIncluidos}
-                    disabled={currentPageNoIncluidos === totalPagesNoIncluidos}
-                  >
-                    Siguiente
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <p>No se encontraron registros en el listado de No incluidos.</p>
-          )}
-        </div>
-      )}
+          {loading
+            ? <ClipLoader size={50} color="#123abc" />
+            : data.blacklist && data.blacklist.length > 0
+                ? <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Legajo</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Área</th>
+                        <th>Dominio</th>
+                        <th>Cargo</th>
+                        <th>Email</th>
+                        <th>Localidad</th>
+                        <th>Provincia</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.blacklist.map (item => (
+                        <tr key={item.id}>
+                          <td>{item.id}</td>
+                          <td>{item.nombre}</td>
+                          <td>{item.apellido}</td>
+                          <td>{item.area}</td>
+                          <td>{item.dominio}</td>
+                          <td>{item.cargo}</td>
+                          <td>{item.email}</td>
+                          <td>{item.localidad}</td>
+                          <td>{item.provincia}</td>
+                          <td>
+                            <button
+                              className="verde"
+                              onClick={async () => {
+                                try {
+                                  const payload = {
+                                    id: item.id,
+                                    nombre: item.nombre,
+                                    apellido: item.apellido,
+                                    email: item.email,
+                                    area: item.area,
+                                    dominio: item.dominio,
+                                    cargo: item.cargo,
+                                    localidad: item.localidad,
+                                    provincia: item.provincia,
+                                  };
+                                  const response = await fetch (
+                                    `${API_BASE_URL}/api/participants/add/`,
+                                    {
+                                      method: 'POST',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                      },
+                                      body: JSON.stringify (payload),
+                                    }
+                                  );
+                                  const dataResp = await response.json ();
+                                  if (response.ok) {
+                                    toast.success (dataResp.message);
+                                    fetchLists ();
+                                  } else {
+                                    toast.error (
+                                      dataResp.error ||
+                                        'Error al mover el registro.'
+                                    );
+                                  }
+                                } catch (err) {
+                                  console.error (err);
+                                  toast.error ('Error de conexión.');
+                                }
+                              }}
+                              style={{
+                                backgroundColor: 'transparent',
+                                border: 'none',
+                              }}
+                              title="Mover a Participantes"
+                            >
+                              {/* SVG para mover de no incluidos a participantes (primer SVG) */}
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                style={{
+                                  width: '16px',
+                                  height: '16px',
+                                  fill: 'white',
+                                }}
+                              >
+                                <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                : <p>
+                    No se encontraron registros en la lista de No incluidos.
+                  </p>}
+        </div>}
 
-      {activeTab === 'cargar' && (
+      {activeTab === 'cargar' &&
         <div className="cargar-section">
-          {/* Aquí se agrupan las funcionalidades para cargar bases */}
           <div className="cargar-item">
-            <h3>Cargar CSV</h3>
-            <UploadCSV />
+            <h3>Cargar base de participantes</h3>
+            <UploadCSV onUpdate={fetchLists} />
           </div>
           <div className="cargar-item">
-            <h3>Agregar individualmente</h3>
-            {/* Se recomienda actualizar el título interno del componente AddToBlacklist */}
-            <AddToBlacklist />
+            <h3>Agregar en forma individual</h3>
+            <AddToParticipants onUpdate={fetchLists} />
+            <AddToBlacklist onUpdate={fetchLists} />
           </div>
-        </div>
-      )}
+        </div>}
     </div>
   );
 }

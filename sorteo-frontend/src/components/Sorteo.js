@@ -307,7 +307,7 @@ return (
 	)}
 	<hr />
 	{/* Agregar Premios */}
-	<h3>Agregar Premios al Sorteo</h3>
+	<h4>Agregar Premios al Sorteo</h4>
 	<div className="sorteo-section">
 	<label>Seleccioná un premio:</label>
 	<select
@@ -353,7 +353,7 @@ return (
 		{items.map(item => (
 			<li key={item.id} className="sorteo-item">
 			{item.nombre_item} - Cantidad: {item.cantidad}
-			<button onClick={() => eliminarPremioDelSorteo(item.id)} className="eliminar">
+			<button onClick={() => eliminarPremioDelSorteo(item.id)} className="rojo">
 				Eliminar
 			</button>
 			</li>

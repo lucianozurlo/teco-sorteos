@@ -35,12 +35,6 @@
     width: 18%;
 }
 
-.filtro label {
-    font-weight: 600;
-    margin-right: 8px;
-    color: var(--primary-color);
-}
-
 .filtro input,
 .filtro select {
     padding: 8px;

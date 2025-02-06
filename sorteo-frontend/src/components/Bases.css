@@ -20,16 +20,55 @@
   line-height: 130%;
 }
 
-.bases-container table th:first-child {
-  text-align: right;
+/* Definir anchos para cada columna */
+.bases-container table th:nth-child(1),
+.bases-container table td:nth-child(1) {
+  width: 6.5%;
 }
 
-.bases-container table td {
-  padding: 6px 10px;
+.bases-container table th:nth-child(2),
+.bases-container table td:nth-child(2) {
+  width: 7.5%;
 }
 
-.bases-container table td:first-child {
-  text-align: right;
+.bases-container table th:nth-child(3),
+.bases-container table td:nth-child(3) {
+  width: 8%;
+}
+
+.bases-container table th:nth-child(4),
+.bases-container table td:nth-child(4) {
+  width: 10%;
+}
+
+.bases-container table th:nth-child(5),
+.bases-container table td:nth-child(5) {
+  width: 10%;
+}
+
+.bases-container table th:nth-child(6),
+.bases-container table td:nth-child(6) {
+  width: 9.5%;
+}
+
+.bases-container table th:nth-child(7),
+.bases-container table td:nth-child(7) {
+  width: 22%;
+}
+
+.bases-container table th:nth-child(8),
+.bases-container table td:nth-child(8) {
+  width: 8%;
+}
+
+.bases-container table th:nth-child(9),
+.bases-container table td:nth-child(9) {
+  width: 8%;
+}
+
+.bases-container table th:nth-child(10),
+.bases-container table td:nth-child(10) {
+  width: 10.5%;
 }
 
 .bases-container table th:last-child,
@@ -37,8 +76,8 @@
   text-align: center;
 }
 
-.bases-container table td:last-child {
-  width: 160px;
+.bases-container table td {
+  padding: 6px 10px;
 }
 
 .bases-container table td:last-child button {

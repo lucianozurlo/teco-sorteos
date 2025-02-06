@@ -147,12 +147,20 @@ button.ejecutar {
   width: 100%;
 }
 
-button.eliminar {
+button.rojo {
   background-color: red !important;
 }
 
-button:hover.eliminar {
+button:hover.rojo {
   background-color: darkred !important;
+}
+
+button.verde {
+  background-color: green !important;
+}
+
+button:hover.verde {
+  background-color: darkgreen !important;
 }
 
 input,
@@ -232,6 +240,22 @@ table th {
   font-weight: 600;
 }
 
+table button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  padding: 6px !important;
+}
+
+label {
+  font-weight: 500;
+  margin-left: 3px;
+  margin-right: 8px;
+  line-height: 2rem;
+  font-size: .95rem;
+}
+
 .d-flex {
   display: flex !important;
 }
@@ -276,7 +300,6 @@ table th {
     background-color: #f2f2f2;
     font-weight: 600;
   }
-
 
   header .header-logo {
     font-size: 1.3rem;

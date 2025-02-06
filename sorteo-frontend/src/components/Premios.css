@@ -9,8 +9,8 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.premios-section {
-    margin-bottom: 32px;
+.premios-container hr {
+    margin: 18px 0 22px;
 }
 
 .premios-section h3 {

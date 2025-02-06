@@ -5,7 +5,7 @@ import {toast} from 'react-toastify';
 import {API_BASE_URL} from '../config';
 import './AddToBlacklist.css';
 
-function AddToBlacklist () {
+function AddToBlacklist({onUpdate}) {
   const [participantId, setParticipantId] = useState ('');
 
   const handleAdd = async () => {
@@ -23,6 +23,7 @@ function AddToBlacklist () {
       if (response.ok) {
         toast.success (data.message);
         setParticipantId ('');
+        if (onUpdate) onUpdate ();
       } else {
         toast.error (data.error || 'Error al agregar a la lista.');
       }

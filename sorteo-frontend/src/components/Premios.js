@@ -194,12 +194,12 @@ function Premios() {
                     {editPremioId === premio.id ? (
                       <>
                         <button onClick={guardarEdicion}>Guardar</button>
-                        <button onClick={cancelarEdicion} className="eliminar">Cancelar</button>
+                        <button onClick={cancelarEdicion} className="rojo">Cancelar</button>
                       </>
                     ) : (
                       <>
                         <button onClick={() => iniciarEdicion(premio)}>Editar</button>
-                        <button onClick={() => eliminarPremio(premio.id)} className="eliminar">Eliminar</button>
+                        <button onClick={() => eliminarPremio(premio.id)} className="rojo">Eliminar</button>
                       </>
                     )}
                   </td>
