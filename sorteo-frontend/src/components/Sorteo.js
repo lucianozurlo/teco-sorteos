@@ -7,13 +7,13 @@ import {
   KeyboardSensor,
   PointerSensor,
   useSensor,
-  useSensors
+  useSensors,
 } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   useSortable,
-  verticalListSortingStrategy
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { toast } from 'react-toastify';
@@ -36,7 +36,7 @@ function SortableItem(props) {
     border: '1px solid #ccc',
     borderRadius: '4px',
     backgroundColor: '#fff',
-    cursor: 'grab'
+    cursor: 'grab',
   };
 
   return (
@@ -50,35 +50,36 @@ function SortableItem(props) {
 // Componente Sorteo
 //
 function Sorteo() {
-  // Campos básicos del sorteo
+  // 1) Campos básicos del sorteo
   const [nombreSorteo, setNombreSorteo] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  
-  // Filtros (opcional)
+
+  // 2) Filtros (opcional)
   const [usarFiltros, setUsarFiltros] = useState(false);
   const [provincias, setProvincias] = useState([]);
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState('');
   const [localidades, setLocalidades] = useState([]);
   const [localidadSeleccionada, setLocalidadSeleccionada] = useState('');
-  
-  // Premios a sortear (drag & drop)
+
+  // 3) Premios a sortear (con drag & drop)
+  // Cada ítem: { id, nombre_item, cantidad }
   const [items, setItems] = useState([]);
   const [availablePremios, setAvailablePremios] = useState([]);
   const [selectedPremioId, setSelectedPremioId] = useState('');
   const [selectedPremioCantidad, setSelectedPremioCantidad] = useState(1);
-  
-  // Resultado del sorteo
+
+  // 4) Resultado del sorteo
   const [resultado, setResultado] = useState(null);
-  
-  // Indicador de carga
+
+  // 5) Indicador de carga
   const [cargando, setCargando] = useState(false);
-  
+
   // Sensores para dnd-kit
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor)
   );
-  
+
   // Cargar provincias (si se usan filtros)
   useEffect(() => {
     if (usarFiltros) {
@@ -96,8 +97,8 @@ function Sorteo() {
       setLocalidadSeleccionada('');
     }
   }, [usarFiltros]);
-  
-  // Cargar localidades cuando cambia provincia
+
+  // Cargar localidades cuando cambia la provincia
   useEffect(() => {
     if (usarFiltros && provinciaSeleccionada) {
       fetch(`${API_BASE_URL}/api/localidades/?provincia=${provinciaSeleccionada}`)
@@ -112,17 +113,16 @@ function Sorteo() {
       setLocalidadSeleccionada('');
     }
   }, [usarFiltros, provinciaSeleccionada]);
-  
+
   // Cargar premios disponibles
   useEffect(() => {
     fetchAvailablePremios();
   }, []);
-  
+
   const fetchAvailablePremios = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/premios/`);
       const data = await response.json();
-      // Filtrar premios con stock > 0
       const available = data.filter(p => p.stock > 0);
       setAvailablePremios(available);
     } catch (error) {
@@ -130,7 +130,7 @@ function Sorteo() {
       toast.error('Error al obtener los premios.');
     }
   };
-  
+
   // Agregar un premio seleccionado al sorteo
   const agregarPremioAlSorteo = () => {
     if (!selectedPremioId) {
@@ -150,33 +150,37 @@ function Sorteo() {
       toast.error(`No hay suficiente stock para el premio ${premio.nombre}. Stock disponible: ${premio.stock}`);
       return;
     }
-    setItems([...items, {
-      id: premio.id,
-      nombre_item: premio.nombre,
-      cantidad: selectedPremioCantidad
-    }]);
-    // Remueve el premio de la lista disponible
+    setItems([
+      ...items,
+      {
+        id: premio.id,
+        nombre_item: premio.nombre,
+        cantidad: selectedPremioCantidad,
+      },
+    ]);
     setAvailablePremios(availablePremios.filter(p => p.id !== premio.id));
-    // Resetea la selección
     setSelectedPremioId('');
     setSelectedPremioCantidad(1);
     toast.success(`Premio "${premio.nombre}" agregado al sorteo.`);
   };
-  
+
   // Eliminar un premio del sorteo
+  // eslint-disable-next-line no-unused-vars
   const eliminarPremioDelSorteo = (id) => {
     const premio = items.find(p => p.id === id);
     if (!premio) return;
     setItems(items.filter(p => p.id !== id));
-    // Reinserta el premio a la lista de disponibles
-    setAvailablePremios([...availablePremios, {
-      id: premio.id,
-      nombre: premio.nombre_item,
-      stock: premio.cantidad
-    }]);
+    setAvailablePremios([
+      ...availablePremios,
+      {
+        id: premio.id,
+        nombre: premio.nombre_item,
+        stock: premio.cantidad,
+      },
+    ]);
     toast.info(`Premio "${premio.nombre_item}" eliminado del sorteo.`);
   };
-  
+
   // Manejar el fin del Drag & Drop
   const handleDragEnd = (event) => {
     const { active, over } = event;
@@ -186,8 +190,8 @@ function Sorteo() {
       setItems(arrayMove(items, oldIndex, newIndex));
     }
   };
-  
-  // Función para realizar el sorteo inmediatamente
+
+  // Ejecutar el sorteo
   const handleSortear = async () => {
     if (items.length === 0) {
       toast.error('Por favor, agregá al menos un premio para sortear.');
@@ -196,18 +200,17 @@ function Sorteo() {
     const premiosConOrden = items.map((it, index) => ({
       premio_id: it.id,
       orden_item: index + 1,
-      cantidad: it.cantidad
+      cantidad: it.cantidad,
     }));
     const payload = {
       nombre: nombreSorteo,
       descripcion: descripcion,
-      premios: premiosConOrden
+      premios: premiosConOrden,
     };
     if (usarFiltros) {
       payload.provincia = provinciaSeleccionada;
       payload.localidad = localidadSeleccionada;
     }
-    console.log("Enviando solicitud con payload:", payload);
     setCargando(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/sortear/`, {
@@ -216,7 +219,6 @@ function Sorteo() {
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      console.log("Respuesta del servidor:", data);
       if (response.ok) {
         setResultado(data);
         fetchAvailablePremios();
@@ -229,42 +231,30 @@ function Sorteo() {
         setResultado(null);
       }
     } catch (err) {
-      console.error("Error de conexión:", err);
+      console.error('Error de conexión:', err);
       toast.error('Error de conexión');
       setResultado(null);
     } finally {
       setCargando(false);
     }
   };
-  
-  // Función para programar el sorteo (en lugar de sortear inmediatamente)
+
+  // Programar sorteo
   const handleProgramarSorteo = async () => {
-    if (items.length === 0) {
-      toast.error('Por favor, agregá al menos un premio para programar el sorteo.');
-      return;
-    }
-    // Por ejemplo, solicitamos al usuario la fecha y hora en formato ISO
-    const fechaProgramada = window.prompt('Ingrese la fecha y hora para programar el sorteo (formato ISO, ej. 2025-05-01T14:30:00):');
-    if (!fechaProgramada) {
-      toast.info('Programación cancelada.');
-      return;
-    }
-    const premiosConOrden = items.map((it, index) => ({
-      premio_id: it.id,
-      orden_item: index + 1,
-      cantidad: it.cantidad
-    }));
+    const fechaProgramada = window.prompt(
+      'Ingrese la fecha y hora para programar el sorteo (ej. 2025-02-28T15:00):'
+    );
+    if (!fechaProgramada) return;
     const payload = {
       nombre: nombreSorteo,
       descripcion: descripcion,
-      premios: premiosConOrden,
-      fecha_programada: fechaProgramada  // Nuevo campo para programación
+      premios: items.map((it, index) => ({
+        premio_id: it.id,
+        orden_item: index + 1,
+        cantidad: it.cantidad,
+      })),
+      fecha_programada: fechaProgramada,
     };
-    if (usarFiltros) {
-      payload.provincia = provinciaSeleccionada;
-      payload.localidad = localidadSeleccionada;
-    }
-    console.log("Programando sorteo con payload:", payload);
     setCargando(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/schedule/`, {
@@ -273,10 +263,8 @@ function Sorteo() {
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      console.log("Respuesta del servidor (programación):", data);
       if (response.ok) {
-        toast.success('Sorteo programado exitosamente.');
-        // Reiniciar formulario
+        toast.success(data.message || 'Sorteo programado exitosamente.');
         setNombreSorteo('');
         setDescripcion('');
         setItems([]);
@@ -284,13 +272,18 @@ function Sorteo() {
         toast.error(data.error || 'Error al programar el sorteo.');
       }
     } catch (err) {
-      console.error("Error de conexión:", err);
-      toast.error('Error de conexión');
+      console.error(err);
+      toast.error('Error de conexión.');
     } finally {
       setCargando(false);
     }
   };
-  
+
+  // Reiniciar el sorteo para poder realizar uno nuevo
+  const handleNuevoSorteo = () => {
+    setResultado(null);
+  };
+
   return (
     <div className="sorteo-container">
       <h1>Realizar Sorteo</h1>
@@ -300,7 +293,7 @@ function Sorteo() {
         <input
           type="text"
           value={nombreSorteo}
-          onChange={(e) => setNombreSorteo(e.target.value)}
+          onChange={e => setNombreSorteo(e.target.value)}
           placeholder="Nombre del sorteo"
         />
       </div>
@@ -309,7 +302,7 @@ function Sorteo() {
         <input
           type="text"
           value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
+          onChange={e => setDescripcion(e.target.value)}
           placeholder="Descripción del sorteo"
         />
       </div>
@@ -326,39 +319,33 @@ function Sorteo() {
         </label>
       </div>
       {usarFiltros && (
-        <>
-          <div className="sorteo-section d-flex">
-            <div className="half">
-              <label>Provincia:</label>
-              <select
-                value={provinciaSeleccionada}
-                onChange={(e) => setProvinciaSeleccionada(e.target.value)}
-              >
-                <option value="">-- Seleccionar provincia --</option>
-                {provincias.map((prov, idx) => (
-                  <option key={idx} value={prov}>
-                    {prov}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="half">
-              <label>Localidad:</label>
-              <select
-                value={localidadSeleccionada}
-                onChange={(e) => setLocalidadSeleccionada(e.target.value)}
-                disabled={!provinciaSeleccionada}
-              >
-                <option value="">-- Seleccionar localidad --</option>
-                {localidades.map((loc, idx) => (
-                  <option key={idx} value={loc}>
-                    {loc}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <div className="sorteo-section d-flex">
+          <div className="half">
+            <label>Provincia:</label>
+            <select
+              value={provinciaSeleccionada}
+              onChange={e => setProvinciaSeleccionada(e.target.value)}
+            >
+              <option value="">-- Seleccionar provincia --</option>
+              {provincias.map((prov, idx) => (
+                <option key={idx} value={prov}>{prov}</option>
+              ))}
+            </select>
           </div>
-        </>
+          <div className="half">
+            <label>Localidad:</label>
+            <select
+              value={localidadSeleccionada}
+              onChange={e => setLocalidadSeleccionada(e.target.value)}
+              disabled={!provinciaSeleccionada}
+            >
+              <option value="">-- Seleccionar localidad --</option>
+              {localidades.map((loc, idx) => (
+                <option key={idx} value={loc}>{loc}</option>
+              ))}
+            </select>
+          </div>
+        </div>
       )}
       <hr />
       {/* Agregar Premios */}
@@ -367,7 +354,7 @@ function Sorteo() {
         <label>Seleccioná un premio:</label>
         <select
           value={selectedPremioId}
-          onChange={(e) => setSelectedPremioId(e.target.value)}
+          onChange={e => setSelectedPremioId(e.target.value)}
         >
           <option value="">-- Seleccionar premio --</option>
           {availablePremios.map(premio => (
@@ -380,7 +367,7 @@ function Sorteo() {
           type="number"
           placeholder="Cantidad"
           value={selectedPremioCantidad}
-          onChange={(e) => setSelectedPremioCantidad(Number(e.target.value))}
+          onChange={e => setSelectedPremioCantidad(Number(e.target.value))}
           min="1"
           style={{ marginLeft: '10px', width: '60px' }}
         />
@@ -388,7 +375,7 @@ function Sorteo() {
           Agregar Premio
         </button>
       </div>
-      {/* Lista de premios agregados */}
+      {/* Lista de premios agregados (con drag & drop) */}
       {items.length > 0 && (
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} sensors={sensors}>
           <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
@@ -400,17 +387,27 @@ function Sorteo() {
           </SortableContext>
         </DndContext>
       )}
-      {/* Botones para sortear o programar */}
       <hr />
       <div className="sortear">
-        <button onClick={handleSortear} className="ejecutar" disabled={cargando}>
-          {cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Sortear'}
-        </button>
-        <button onClick={handleProgramarSorteo} className="ejecutar" disabled={cargando} style={{ marginTop: '10px' }}>
-          {cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Programar sorteo'}
-        </button>
+        {resultado ? (
+          <button onClick={handleNuevoSorteo} className="ejecutar">
+            Realizar nuevo sorteo
+          </button>
+        ) : (
+          <>
+            <button onClick={handleSortear} className="ejecutar" disabled={cargando}>
+              {cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Sortear'}
+            </button>
+            <button
+              onClick={handleProgramarSorteo}
+              className="ejecutar coral"
+              disabled={cargando}
+            >
+              {cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Programar sorteo'}
+            </button>
+          </>
+        )}
       </div>
-      {/* Mostrar resultado */}
       {resultado && (
         <div className="sorteo-result">
           <h2>Resultado del Sorteo</h2>

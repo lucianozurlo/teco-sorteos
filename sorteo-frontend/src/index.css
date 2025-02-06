@@ -176,12 +176,22 @@ button:hover.verde {
 }
 
 button.azul {
-  background-color: blue !important;
+  background-color: dodgerblue !important;
 }
 
 button:hover.azul {
-  background-color: darkblue !important;
+  background-color: steelblue !important;
 }
+
+
+button.coral {
+  background-color: coral !important;
+}
+
+button:hover.coral {
+  background-color: indianred !important;
+}
+
 
 input,
 select {
