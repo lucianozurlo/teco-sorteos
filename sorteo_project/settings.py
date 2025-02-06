@@ -17,10 +17,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-*!)y=(x-y1vj5s5i^y5a_zv(4z1&wvl%f00umni1x6cv@8hwd2"
 
@@ -28,6 +24,29 @@ SECRET_KEY = "django-insecure-*!)y=(x-y1vj5s5i^y5a_zv(4z1&wvl%f00umni1x6cv@8hwd2
 DEBUG = True
 
 ALLOWED_HOSTS = ['web-production-0252.up.railway.app', 'localhost', '127.0.0.1']
+
+# DATABASE
+ENV = os.getenv('ENV', 'development')  # Por defecto development
+
+if ENV == 'development':
+    DEBUG = True
+    # Para desarrollo usaremos SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / "db.sqlite3",
+        }
+    }
+else:
+    DEBUG = False
+    # En producción usaremos Railway (ya tienes configurado dj_database_url)
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
 
 
 # Application definition
@@ -87,27 +106,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "sorteo_project.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600,  # Opcional: Tiempo máximo de conexión
-        ssl_require=True   # Necesario en Railway para habilitar conexiones seguras
-    )
-}
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

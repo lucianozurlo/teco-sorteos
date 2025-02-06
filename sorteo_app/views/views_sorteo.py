@@ -141,4 +141,3 @@ class ListadoResultadosSorteo(ListAPIView):
 class ListadoRegistroActividad(ListAPIView):
     queryset = RegistroActividad.objects.all().order_by('-fecha_hora')
     serializer_class = RegistroActividadSerializer
-
