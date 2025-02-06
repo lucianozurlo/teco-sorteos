@@ -65,89 +65,104 @@ function AddToParticipants({onUpdate}) {
   return (
     <div className="add-to-participants-container">
       <h4>Agregar Participante</h4>
-      <div className="form-group">
-        <label>Legajo *:</label>
-        <input
-          type="number"
-          value={legajo}
-          onChange={e => setLegajo (e.target.value)}
-          placeholder="Legajo"
-        />
+
+      <div className="input-row">
+        <div className="form-group">
+          <label>Legajo *:</label>
+          <input
+            type="number"
+            value={legajo}
+            onChange={e => setLegajo (e.target.value)}
+            placeholder="Legajo"
+          />
+        </div>
+        <div className="form-group">
+          <label>Nombre *:</label>
+          <input
+            type="text"
+            value={nombre}
+            onChange={e => setNombre (e.target.value)}
+            placeholder="Nombre"
+          />
+        </div>
+        <div className="form-group">
+          <label>Apellido *:</label>
+          <input
+            type="text"
+            value={apellido}
+            onChange={e => setApellido (e.target.value)}
+            placeholder="Apellido"
+          />
+        </div>
       </div>
-      <div className="form-group">
-        <label>Nombre *:</label>
-        <input
-          type="text"
-          value={nombre}
-          onChange={e => setNombre (e.target.value)}
-          placeholder="Nombre"
-        />
+
+      <div className="input-row">
+        <div className="form-group">
+          <label>Área:</label>
+          <input
+            type="text"
+            value={area}
+            onChange={e => setArea (e.target.value)}
+            placeholder="Área"
+          />
+        </div>
+        <div className="form-group">
+          <label>Dominio:</label>
+          <input
+            type="text"
+            value={dominio}
+            onChange={e => setDominio (e.target.value)}
+            placeholder="Dominio"
+          />
+        </div>
       </div>
-      <div className="form-group">
-        <label>Apellido *:</label>
-        <input
-          type="text"
-          value={apellido}
-          onChange={e => setApellido (e.target.value)}
-          placeholder="Apellido"
-        />
+
+      <div className="input-row">
+        <div className="form-group">
+          <label>Cargo:</label>
+          <input
+            type="text"
+            value={cargo}
+            onChange={e => setCargo (e.target.value)}
+            placeholder="Cargo"
+          />
+        </div>
+        <div className="form-group">
+          <label>Email *:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail (e.target.value)}
+            placeholder="Email"
+          />
+        </div>
       </div>
-      <div className="form-group">
-        <label>Email *:</label>
-        <input
-          type="email"
-          value={email}
-          onChange={e => setEmail (e.target.value)}
-          placeholder="Email"
-        />
+
+      <div className="input-row">
+        <div className="form-group">
+          <label>Localidad:</label>
+          <input
+            type="text"
+            value={localidad}
+            onChange={e => setLocalidad (e.target.value)}
+            placeholder="Localidad"
+          />
+        </div>
+        <div className="form-group">
+          <label>Provincia:</label>
+          <input
+            type="text"
+            value={provincia}
+            onChange={e => setProvincia (e.target.value)}
+            placeholder="Provincia"
+          />
+        </div>
       </div>
-      <div className="form-group">
-        <label>Área:</label>
-        <input
-          type="text"
-          value={area}
-          onChange={e => setArea (e.target.value)}
-          placeholder="Área"
-        />
+
+      <div className="input-row">
+        <button onClick={handleAdd}>Agregar Participante</button>
+        <p className="mandatory-note">(*) Campos obligatorios</p>
       </div>
-      <div className="form-group">
-        <label>Dominio:</label>
-        <input
-          type="text"
-          value={dominio}
-          onChange={e => setDominio (e.target.value)}
-          placeholder="Dominio"
-        />
-      </div>
-      <div className="form-group">
-        <label>Cargo:</label>
-        <input
-          type="text"
-          value={cargo}
-          onChange={e => setCargo (e.target.value)}
-          placeholder="Cargo"
-        />
-      </div>
-      <div className="form-group">
-        <label>Localidad:</label>
-        <input
-          type="text"
-          value={localidad}
-          onChange={e => setLocalidad (e.target.value)}
-          placeholder="Localidad"
-        />
-      </div>
-      <div className="form-group">
-        <label>Provincia:</label>
-        <input
-          type="text"
-          value={provincia}
-          onChange={e => setProvincia (e.target.value)}
-          placeholder="Provincia"
-        />
-      </div>
-      <button onClick={handleAdd}>Agregar Participante</button>
-      <p className="mandatory-note">(*) Campos obligatorios</p>
     </div>
   );
 }

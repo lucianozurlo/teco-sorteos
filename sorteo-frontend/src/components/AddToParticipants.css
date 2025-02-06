@@ -3,27 +3,34 @@
 .add-to-participants-container {
     padding: 1.5rem;
     border-radius: 8px;
-    max-width: 600px;
+    width: 100%;
     margin: 20px auto;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: var(--neutral-bg);
 }
 
 .add-to-participants-container h4 {
-    margin-bottom: 16px;
-    font-size: 1.25rem;
-    color: var(--primary-dark);
+    margin-top: -5px;
+}
+
+.input-row {
+    display: flex;
+    gap: 10px;
+}
+
+.input-row:nth-child(2) .form-group {
+    width: 39%;
+}
+
+.input-row:nth-child(2) .form-group:first-child {
+    width: 22%;
 }
 
 .form-group {
     margin-bottom: 12px;
     display: flex;
     flex-direction: column;
-}
-
-.form-group label {
-    font-weight: 600;
-    margin-bottom: 4px;
+    width: 100%;
 }
 
 .form-group input {
@@ -31,6 +38,7 @@
     border: 1px solid var(--neutral-border);
     border-radius: 4px;
     font-size: 1rem;
+    max-width: unset;
 }
 
 .add-to-participants-container button {
@@ -50,7 +58,9 @@
 }
 
 .mandatory-note {
-    margin-top: 8px;
+    margin: 10px 10px 0;
     font-size: 0.9rem;
     color: var(--neutral-disabled);
+    display: flex;
+    align-items: center;
 }
