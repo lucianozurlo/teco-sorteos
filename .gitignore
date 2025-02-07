@@ -12,3 +12,5 @@ sorteo-frontend/build
 build
 sorteo-frontend/node_modules
 node_modules
+/node_modules/
+**/node_modules/
