@@ -11,7 +11,7 @@ class UserProfile(models.Model):
     provincia = models.CharField(max_length=255)
 
     def __str__(self):
-        return f'Perfil de {self.user.username}'
+        return f'Perfil del usuario {self.user.username}'
 
 class Participante(models.Model):
     id = models.IntegerField(primary_key=True)
