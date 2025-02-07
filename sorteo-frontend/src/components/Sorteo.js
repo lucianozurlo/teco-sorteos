@@ -55,7 +55,7 @@ function Sorteo () {
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
 
-  // Nuevo toggle para programar sorteo
+  // Toggle para programar sorteo
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
 
@@ -220,7 +220,6 @@ function Sorteo () {
       payload.provincia = provinciaSeleccionada;
       payload.localidad = localidadSeleccionada;
     }
-    // Si el toggle de programar está activo, incluir fecha_programada en el payload
     if (programarSorteo) {
       if (!scheduledDate) {
         toast.error (
@@ -233,7 +232,8 @@ function Sorteo () {
     setCargando (true);
     try {
       if (programarSorteo) {
-        const response = await fetch (`${API_BASE_URL}/api/schedule/`, {
+        // Usar el endpoint /api/scheduled/ en lugar de /api/schedule/
+        const response = await fetch (`${API_BASE_URL}/api/scheduled/`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify (payload),
@@ -306,7 +306,7 @@ function Sorteo () {
         </div>
       </div>
       <hr />
-      {/* Toggle de restricción por provincia/localidad */}
+      {/* Toggle de restricción */}
       <div className="sorteo-section">
         <label>
           <input
@@ -316,37 +316,36 @@ function Sorteo () {
           />
           ¿Restringir por provincia/localidad?
         </label>
-        {usarFiltros &&
-          <div className="sorteo-section d-flex subsection">
-            <div className="half">
-              <label>Provincia:</label>
-              <select
-                value={provinciaSeleccionada}
-                onChange={e => setProvinciaSeleccionada (e.target.value)}
-              >
-                <option value="">-- Seleccionar provincia --</option>
-                {provincias.map ((prov, idx) => (
-                  <option key={idx} value={prov}>{prov}</option>
-                ))}
-              </select>
-            </div>
-            <div className="half">
-              <label>Localidad:</label>
-              <select
-                value={localidadSeleccionada}
-                onChange={e => setLocalidadSeleccionada (e.target.value)}
-                disabled={!provinciaSeleccionada}
-              >
-                <option value="">-- Seleccionar localidad --</option>
-                {localidades.map ((loc, idx) => (
-                  <option key={idx} value={loc}>{loc}</option>
-                ))}
-              </select>
-            </div>
-          </div>}
-
       </div>
-
+      {usarFiltros &&
+        <div className="sorteo-section d-flex">
+          <div className="half">
+            <label>Provincia:</label>
+            <select
+              value={provinciaSeleccionada}
+              onChange={e => setProvinciaSeleccionada (e.target.value)}
+            >
+              <option value="">-- Seleccionar provincia --</option>
+              {provincias.map ((prov, idx) => (
+                <option key={idx} value={prov}>{prov}</option>
+              ))}
+            </select>
+          </div>
+          <div className="half">
+            <label>Localidad:</label>
+            <select
+              value={localidadSeleccionada}
+              onChange={e => setLocalidadSeleccionada (e.target.value)}
+              disabled={!provinciaSeleccionada}
+            >
+              <option value="">-- Seleccionar localidad --</option>
+              {localidades.map ((loc, idx) => (
+                <option key={idx} value={loc}>{loc}</option>
+              ))}
+            </select>
+          </div>
+        </div>}
+      <hr />
       {/* Toggle para programar sorteo */}
       <div className="sorteo-section">
         <label>
@@ -358,7 +357,7 @@ function Sorteo () {
           Programar sorteo
         </label>
         {programarSorteo &&
-          <div className="sorteo-section subsection">
+          <div className="sorteo-section">
             <label>Fecha y hora:</label>
             <input
               type="datetime-local"
@@ -395,7 +394,7 @@ function Sorteo () {
           Agregar Premio
         </button>
       </div>
-      {/* Lista de premios agregados (con drag & drop) */}
+      {/* Lista de premios agregados */}
       {items.length > 0 &&
         <DndContext
           collisionDetection={closestCenter}
