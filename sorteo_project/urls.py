@@ -17,7 +17,7 @@ from sorteo_app.views.download_templates import DownloadParticipantesTemplate, D
 from sorteo_app.views.views_lists import ListLoadedData, ClearParticipantes, ClearListaNegra
 from sorteo_app.views.blacklist import AddToBlacklist
 from sorteo_app.views.add_participant import AddToParticipants
-from sorteo_app.views.reports import ReportesView, EstadisticasView, ScheduleSorteoView
+from sorteo_app.views.reports import ReportesView, EstadisticasView
 from sorteo_app.views.scheduled_sorteos import ScheduledSorteosList, ScheduledSorteoDetail
 
 router = routers.DefaultRouter()
