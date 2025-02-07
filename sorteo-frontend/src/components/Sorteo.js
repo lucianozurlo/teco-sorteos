@@ -1,6 +1,6 @@
 // sorteo-frontend/src/components/Sorteo.js
 
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   DndContext,
   closestCenter,
@@ -15,21 +15,24 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { toast } from 'react-toastify';
+import {CSS} from '@dnd-kit/utilities';
+import {toast} from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
-import { Modal, Button, Form } from 'react-bootstrap';
 import './Sorteo.css';
-import { API_BASE_URL } from '../config';
+import {API_BASE_URL} from '../config';
 
-//
-// Componente para cada ítem ordenable
-//
-function SortableItem(props) {
-  const { id, nombre_item, cantidad, index } = props;
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+function SortableItem (props) {
+  const {id, nombre_item, cantidad, index} = props;
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable ({id});
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Transform.toString (transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
     padding: '8px',
@@ -47,114 +50,119 @@ function SortableItem(props) {
   );
 }
 
-//
-// Componente Sorteo
-//
-function Sorteo() {
+function Sorteo () {
   // Campos básicos
-  const [nombreSorteo, setNombreSorteo] = useState('');
-  const [descripcion, setDescripcion] = useState('');
+  const [nombreSorteo, setNombreSorteo] = useState ('');
+  const [descripcion, setDescripcion] = useState ('');
+
+  // Nuevo toggle para programar sorteo
+  const [programarSorteo, setProgramarSorteo] = useState (false);
+  const [scheduledDate, setScheduledDate] = useState ('');
 
   // Filtros (opcional)
-  const [usarFiltros, setUsarFiltros] = useState(false);
-  const [provincias, setProvincias] = useState([]);
-  const [provinciaSeleccionada, setProvinciaSeleccionada] = useState('');
-  const [localidades, setLocalidades] = useState([]);
-  const [localidadSeleccionada, setLocalidadSeleccionada] = useState('');
+  const [usarFiltros, setUsarFiltros] = useState (false);
+  const [provincias, setProvincias] = useState ([]);
+  const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
+  const [localidades, setLocalidades] = useState ([]);
+  const [localidadSeleccionada, setLocalidadSeleccionada] = useState ('');
 
-  // Premios a sortear (con drag & drop)
-  const [items, setItems] = useState([]);
-  const [availablePremios, setAvailablePremios] = useState([]);
-  const [selectedPremioId, setSelectedPremioId] = useState('');
-  const [selectedPremioCantidad, setSelectedPremioCantidad] = useState(1);
+  // Premios a sortear
+  const [items, setItems] = useState ([]);
+  const [availablePremios, setAvailablePremios] = useState ([]);
+  const [selectedPremioId, setSelectedPremioId] = useState ('');
+  const [selectedPremioCantidad, setSelectedPremioCantidad] = useState (1);
 
   // Resultado del sorteo
-  const [resultado, setResultado] = useState(null);
+  const [resultado, setResultado] = useState (null);
 
   // Indicador de carga
-  const [cargando, setCargando] = useState(false);
+  const [cargando, setCargando] = useState (false);
 
-  // Estado para mostrar el modal de programación de sorteo
-  const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [scheduledDate, setScheduledDate] = useState('');
-
-  // Sensores para dnd-kit
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor)
+  // Sensores para drag & drop
+  const sensors = useSensors (
+    useSensor (PointerSensor),
+    useSensor (KeyboardSensor)
   );
 
-  // Cargar provincias
-  useEffect(() => {
-    if (usarFiltros) {
-      fetch(`${API_BASE_URL}/api/provincias/`)
-        .then((res) => res.json())
-        .then((data) => setProvincias(data))
-        .catch((err) => {
-          console.error(err);
-          toast.error('Error al cargar provincias.');
-        });
-    } else {
-      setProvincias([]);
-      setProvinciaSeleccionada('');
-      setLocalidades([]);
-      setLocalidadSeleccionada('');
-    }
-  }, [usarFiltros]);
+  useEffect (
+    () => {
+      if (usarFiltros) {
+        fetch (`${API_BASE_URL}/api/provincias/`)
+          .then (res => res.json ())
+          .then (data => setProvincias (data))
+          .catch (err => {
+            console.error (err);
+            toast.error ('Error al cargar provincias.');
+          });
+      } else {
+        setProvincias ([]);
+        setProvinciaSeleccionada ('');
+        setLocalidades ([]);
+        setLocalidadSeleccionada ('');
+      }
+    },
+    [usarFiltros]
+  );
 
-  // Cargar localidades cuando cambia la provincia
-  useEffect(() => {
-    if (usarFiltros && provinciaSeleccionada) {
-      fetch(`${API_BASE_URL}/api/localidades/?provincia=${provinciaSeleccionada}`)
-        .then((res) => res.json())
-        .then((data) => setLocalidades(data))
-        .catch((err) => {
-          console.error(err);
-          toast.error('Error al cargar localidades.');
-        });
-    } else {
-      setLocalidades([]);
-      setLocalidadSeleccionada('');
-    }
-  }, [usarFiltros, provinciaSeleccionada]);
+  useEffect (
+    () => {
+      if (usarFiltros && provinciaSeleccionada) {
+        fetch (
+          `${API_BASE_URL}/api/localidades/?provincia=${provinciaSeleccionada}`
+        )
+          .then (res => res.json ())
+          .then (data => setLocalidades (data))
+          .catch (err => {
+            console.error (err);
+            toast.error ('Error al cargar localidades.');
+          });
+      } else {
+        setLocalidades ([]);
+        setLocalidadSeleccionada ('');
+      }
+    },
+    [usarFiltros, provinciaSeleccionada]
+  );
 
-  // Cargar premios disponibles
-  useEffect(() => {
-    fetchAvailablePremios();
+  useEffect (() => {
+    fetchAvailablePremios ();
   }, []);
 
   const fetchAvailablePremios = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/premios/`);
-      const data = await response.json();
-      const available = data.filter((p) => p.stock > 0);
-      setAvailablePremios(available);
+      const response = await fetch (`${API_BASE_URL}/api/premios/`);
+      const data = await response.json ();
+      const available = data.filter (p => p.stock > 0);
+      setAvailablePremios (available);
     } catch (error) {
-      console.error('Error al obtener los premios:', error);
-      toast.error('Error al obtener los premios.');
+      console.error ('Error al obtener los premios:', error);
+      toast.error ('Error al obtener los premios.');
     }
   };
 
-  // Agregar premio al sorteo
   const agregarPremioAlSorteo = () => {
     if (!selectedPremioId) {
-      toast.error('Por favor, seleccioná un premio.');
+      toast.error ('Por favor, seleccioná un premio.');
       return;
     }
-    const premio = availablePremios.find((p) => p.id === parseInt(selectedPremioId));
+    const premio = availablePremios.find (
+      p => p.id === parseInt (selectedPremioId)
+    );
     if (!premio) {
-      toast.error('Premio no encontrado.');
+      toast.error ('Premio no encontrado.');
       return;
     }
     if (selectedPremioCantidad < 1) {
-      toast.error('La cantidad debe ser al menos 1.');
+      toast.error ('La cantidad debe ser al menos 1.');
       return;
     }
     if (selectedPremioCantidad > premio.stock) {
-      toast.error(`No hay suficiente stock para el premio ${premio.nombre}. Stock disponible: ${premio.stock}`);
+      toast.error (
+        `No hay suficiente stock para el premio ${premio.nombre}. Stock disponible: ${premio.stock}`
+      );
       return;
     }
-    setItems([
+    setItems ([
       ...items,
       {
         id: premio.id,
@@ -162,18 +170,18 @@ function Sorteo() {
         cantidad: selectedPremioCantidad,
       },
     ]);
-    setAvailablePremios(availablePremios.filter((p) => p.id !== premio.id));
-    setSelectedPremioId('');
-    setSelectedPremioCantidad(1);
-    toast.success(`Premio "${premio.nombre}" agregado al sorteo.`);
+    setAvailablePremios (availablePremios.filter (p => p.id !== premio.id));
+    setSelectedPremioId ('');
+    setSelectedPremioCantidad (1);
+    toast.success (`Premio "${premio.nombre}" agregado al sorteo.`);
   };
 
-  // Eliminar premio del sorteo
-  const eliminarPremioDelSorteo = (id) => {
-    const premio = items.find((p) => p.id === id);
+  // eslint-disable-next-line no-unused-vars
+  const eliminarPremioDelSorteo = id => {
+    const premio = items.find (p => p.id === id);
     if (!premio) return;
-    setItems(items.filter((p) => p.id !== id));
-    setAvailablePremios([
+    setItems (items.filter (p => p.id !== id));
+    setAvailablePremios ([
       ...availablePremios,
       {
         id: premio.id,
@@ -181,26 +189,24 @@ function Sorteo() {
         stock: premio.cantidad,
       },
     ]);
-    toast.info(`Premio "${premio.nombre_item}" eliminado del sorteo.`);
+    toast.info (`Premio "${premio.nombre_item}" eliminado del sorteo.`);
   };
 
-  // Fin del Drag & Drop
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
+  const handleDragEnd = event => {
+    const {active, over} = event;
     if (active.id !== over.id) {
-      const oldIndex = items.findIndex((item) => item.id === active.id);
-      const newIndex = items.findIndex((item) => item.id === over.id);
-      setItems(arrayMove(items, oldIndex, newIndex));
+      const oldIndex = items.findIndex (item => item.id === active.id);
+      const newIndex = items.findIndex (item => item.id === over.id);
+      setItems (arrayMove (items, oldIndex, newIndex));
     }
   };
 
-  // Ejecutar sorteo
   const handleSortear = async () => {
     if (items.length === 0) {
-      toast.error('Por favor, agregá al menos un premio para sortear.');
+      toast.error ('Por favor, agregá al menos un premio para sortear.');
       return;
     }
-    const premiosConOrden = items.map((it, index) => ({
+    const premiosConOrden = items.map ((it, index) => ({
       premio_id: it.id,
       orden_item: index + 1,
       cantidad: it.cantidad,
@@ -214,158 +220,153 @@ function Sorteo() {
       payload.provincia = provinciaSeleccionada;
       payload.localidad = localidadSeleccionada;
     }
-    setCargando(true);
+    // Si el toggle de programar está activo, incluir fecha_programada en el payload
+    if (programarSorteo) {
+      if (!scheduledDate) {
+        toast.error (
+          'Por favor, ingresá la fecha y hora para programar el sorteo.'
+        );
+        return;
+      }
+      payload.fecha_programada = scheduledDate;
+    }
+    setCargando (true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/sortear/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setResultado(data);
-        fetchAvailablePremios();
-        setNombreSorteo('');
-        setDescripcion('');
-        setItems([]);
-        toast.success('Sorteo realizado exitosamente.');
+      if (programarSorteo) {
+        const response = await fetch (`${API_BASE_URL}/api/schedule/`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify (payload),
+        });
+        const data = await response.json ();
+        if (response.ok) {
+          toast.success (data.message || 'Sorteo programado exitosamente.');
+          setNombreSorteo ('');
+          setDescripcion ('');
+          setItems ([]);
+          setScheduledDate ('');
+        } else {
+          toast.error (data.error || 'Error al programar el sorteo.');
+          setResultado (null);
+        }
       } else {
-        toast.error(data.error || 'Error al sortear');
-        setResultado(null);
+        const response = await fetch (`${API_BASE_URL}/api/sortear/`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify (payload),
+        });
+        const data = await response.json ();
+        if (response.ok) {
+          setResultado (data);
+          fetchAvailablePremios ();
+          setNombreSorteo ('');
+          setDescripcion ('');
+          setItems ([]);
+          toast.success ('Sorteo realizado exitosamente.');
+        } else {
+          toast.error (data.error || 'Error al sortear');
+          setResultado (null);
+        }
       }
     } catch (err) {
-      console.error('Error de conexión:', err);
-      toast.error('Error de conexión');
-      setResultado(null);
+      console.error ('Error de conexión:', err);
+      toast.error ('Error de conexión');
+      setResultado (null);
     } finally {
-      setCargando(false);
+      setCargando (false);
     }
   };
 
-  // Abrir modal para programar sorteo
-  const handleAbrirModal = () => {
-    setShowScheduleModal(true);
-  };
-
-  // Cerrar modal
-  const handleCerrarModal = () => {
-    setShowScheduleModal(false);
-    setScheduledDate('');
-  };
-
-  // Programar sorteo (desde modal)
-  const handleProgramarSorteo = async () => {
-    if (!scheduledDate) {
-      toast.error('Por favor, seleccioná una fecha y hora.');
-      return;
-    }
-    const payload = {
-      nombre: nombreSorteo,
-      descripcion: descripcion,
-      premios: items.map((it, index) => ({
-        premio_id: it.id,
-        orden_item: index + 1,
-        cantidad: it.cantidad,
-      })),
-      fecha_programada: scheduledDate,
-    };
-    setCargando(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/schedule/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        toast.success(data.message || 'Sorteo programado exitosamente.');
-        setNombreSorteo('');
-        setDescripcion('');
-        setItems([]);
-        handleCerrarModal();
-      } else {
-        toast.error(data.error || 'Error al programar el sorteo.');
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Error de conexión.');
-    } finally {
-      setCargando(false);
-    }
-  };
-
-  // Reiniciar el sorteo para poder realizar uno nuevo
   const handleNuevoSorteo = () => {
-    setResultado(null);
+    setResultado (null);
   };
 
   return (
     <div className="sorteo-container">
       <h1>Realizar Sorteo</h1>
-      {/* Datos del sorteo */}
-      <div className="sorteo-section">
-        <label>Nombre del sorteo:</label>
-        <input
-          type="text"
-          value={nombreSorteo}
-          onChange={(e) => setNombreSorteo(e.target.value)}
-          placeholder="Nombre del sorteo"
-        />
-      </div>
-      <div className="sorteo-section">
-        <label>Descripción:</label>
-        <input
-          type="text"
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          placeholder="Descripción del sorteo"
-        />
+      {/* Encabezado: Nombre y Descripción en la misma línea */}
+      <div className="sorteo-header">
+        <div className="sorteo-input-group">
+          <label>Nombre del sorteo:</label>
+          <input
+            type="text"
+            value={nombreSorteo}
+            onChange={e => setNombreSorteo (e.target.value)}
+            placeholder="Nombre del sorteo"
+          />
+        </div>
+        <div className="sorteo-input-group">
+          <label>Descripción:</label>
+          <input
+            type="text"
+            value={descripcion}
+            onChange={e => setDescripcion (e.target.value)}
+            placeholder="Descripción del sorteo"
+          />
+        </div>
       </div>
       <hr />
-      {/* Filtros */}
+      {/* Toggle de restricción por provincia/localidad */}
       <div className="sorteo-section">
         <label>
           <input
             type="checkbox"
             checked={usarFiltros}
-            onChange={() => setUsarFiltros(!usarFiltros)}
+            onChange={() => setUsarFiltros (!usarFiltros)}
           />
           ¿Restringir por provincia/localidad?
         </label>
+        {usarFiltros &&
+          <div className="sorteo-section d-flex subsection">
+            <div className="half">
+              <label>Provincia:</label>
+              <select
+                value={provinciaSeleccionada}
+                onChange={e => setProvinciaSeleccionada (e.target.value)}
+              >
+                <option value="">-- Seleccionar provincia --</option>
+                {provincias.map ((prov, idx) => (
+                  <option key={idx} value={prov}>{prov}</option>
+                ))}
+              </select>
+            </div>
+            <div className="half">
+              <label>Localidad:</label>
+              <select
+                value={localidadSeleccionada}
+                onChange={e => setLocalidadSeleccionada (e.target.value)}
+                disabled={!provinciaSeleccionada}
+              >
+                <option value="">-- Seleccionar localidad --</option>
+                {localidades.map ((loc, idx) => (
+                  <option key={idx} value={loc}>{loc}</option>
+                ))}
+              </select>
+            </div>
+          </div>}
+
       </div>
-      {usarFiltros && (
-        <div className="sorteo-section d-flex">
-          <div className="half">
-            <label>Provincia:</label>
-            <select
-              value={provinciaSeleccionada}
-              onChange={(e) => setProvinciaSeleccionada(e.target.value)}
-            >
-              <option value="">-- Seleccionar provincia --</option>
-              {provincias.map((prov, idx) => (
-                <option key={idx} value={prov}>
-                  {prov}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="half">
-            <label>Localidad:</label>
-            <select
-              value={localidadSeleccionada}
-              onChange={(e) => setLocalidadSeleccionada(e.target.value)}
-              disabled={!provinciaSeleccionada}
-            >
-              <option value="">-- Seleccionar localidad --</option>
-              {localidades.map((loc, idx) => (
-                <option key={idx} value={loc}>
-                  {loc}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      )}
+
+      {/* Toggle para programar sorteo */}
+      <div className="sorteo-section">
+        <label>
+          <input
+            type="checkbox"
+            checked={programarSorteo}
+            onChange={() => setProgramarSorteo (!programarSorteo)}
+          />
+          Programar sorteo
+        </label>
+        {programarSorteo &&
+          <div className="sorteo-section subsection">
+            <label>Fecha y hora:</label>
+            <input
+              type="datetime-local"
+              value={scheduledDate}
+              onChange={e => setScheduledDate (e.target.value)}
+            />
+          </div>}
+      </div>
       <hr />
       {/* Agregar Premios */}
       <h4>Agregar Premios al Sorteo</h4>
@@ -373,10 +374,10 @@ function Sorteo() {
         <label>Seleccioná un premio:</label>
         <select
           value={selectedPremioId}
-          onChange={(e) => setSelectedPremioId(e.target.value)}
+          onChange={e => setSelectedPremioId (e.target.value)}
         >
           <option value="">-- Seleccionar premio --</option>
-          {availablePremios.map((premio) => (
+          {availablePremios.map (premio => (
             <option key={premio.id} value={premio.id}>
               {premio.nombre} (Stock: {premio.stock})
             </option>
@@ -386,99 +387,85 @@ function Sorteo() {
           type="number"
           placeholder="Cantidad"
           value={selectedPremioCantidad}
-          onChange={(e) => setSelectedPremioCantidad(Number(e.target.value))}
+          onChange={e => setSelectedPremioCantidad (Number (e.target.value))}
           min="1"
-          style={{ marginLeft: '10px', width: '60px' }}
+          style={{marginLeft: '10px', width: '60px'}}
         />
-        <button onClick={agregarPremioAlSorteo} style={{ marginLeft: '10px' }}>
+        <button onClick={agregarPremioAlSorteo} style={{marginLeft: '10px'}}>
           Agregar Premio
         </button>
       </div>
       {/* Lista de premios agregados (con drag & drop) */}
-      {items.length > 0 && (
-        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} sensors={sensors}>
-          <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+      {items.length > 0 &&
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
+        >
+          <SortableContext
+            items={items.map (item => item.id)}
+            strategy={verticalListSortingStrategy}
+          >
             <ul className="sorteo-list">
-              {items.map((item, index) => (
-                <SortableItem key={item.id} id={item.id} nombre_item={item.nombre_item} cantidad={item.cantidad} index={index} />
+              {items.map ((item, index) => (
+                <SortableItem
+                  key={item.id}
+                  id={item.id}
+                  nombre_item={item.nombre_item}
+                  cantidad={item.cantidad}
+                  index={index}
+                />
               ))}
             </ul>
           </SortableContext>
-        </DndContext>
-      )}
+        </DndContext>}
       <hr />
       <div className="sortear">
-        {resultado ? (
-          <button onClick={handleNuevoSorteo} className="ejecutar">
-            Realizar nuevo sorteo
-          </button>
-        ) : (
-          <>
-            <button onClick={handleSortear} className="ejecutar" disabled={cargando}>
-              {cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Sortear'}
+        {resultado
+          ? <button onClick={handleNuevoSorteo} className="ejecutar">
+              Realizar nuevo sorteo
             </button>
-            <button
-              onClick={handleAbrirModal}
+          : <button
+              onClick={handleSortear}
               className="ejecutar"
               disabled={cargando}
-              style={{ marginTop: '10px' }}
             >
-              {cargando ? <ClipLoader size={20} color="#ffffff" /> : 'Programar sorteo'}
-            </button>
-          </>
-        )}
+              {cargando
+                ? <ClipLoader size={20} color="#ffffff" />
+                : programarSorteo ? 'Programar sorteo' : 'Sortear'}
+            </button>}
       </div>
-      {resultado && (
+      {resultado &&
         <div className="sorteo-result">
           <h2>Resultado del Sorteo</h2>
           <p>ID: {resultado.sorteo_id} - Nombre: {resultado.nombre_sorteo}</p>
-          {resultado.items && resultado.items.length > 0 ? (
-            <ul>
-              {resultado.items.map((itemObj, i) => (
-                <li key={i}>
-                  <strong>{itemObj.orden_item}° Premio:</strong> {itemObj.nombre_item}
-                  <ul>
-                    {itemObj.ganadores.map((ganador, j) => (
-                      <li key={j}>
-                        Ganador: {ganador.nombre} {ganador.apellido} ({ganador.email})
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>Sin items en la respuesta.</p>
-          )}
-        </div>
-      )}
-
-      {/* Modal para programar sorteo */}
-      <Modal show={showScheduleModal} onHide={handleCerrarModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Programar sorteo</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formScheduledDate">
-              <Form.Label>Fecha y hora</Form.Label>
-              <Form.Control
-                type="datetime-local"
-                value={scheduledDate}
-                onChange={(e) => setScheduledDate(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCerrarModal}>
-            Cancelar
-          </Button>
-          <Button variant="primary" onClick={handleProgramarSorteo}>
-            Guardar programación
-          </Button>
-        </Modal.Footer>
-      </Modal>
+          {resultado.items && resultado.items.length > 0
+            ? <ul>
+                {resultado.items.map ((itemObj, i) => (
+                  <li key={i}>
+                    <strong>{itemObj.orden_item}° Premio:</strong>
+                    {' '}
+                    {itemObj.nombre_item}
+                    <ul>
+                      {itemObj.ganadores.map ((ganador, j) => (
+                        <li key={j}>
+                          Ganador:
+                          {' '}
+                          {ganador.nombre}
+                          {' '}
+                          {ganador.apellido}
+                          {' '}
+                          (
+                          {ganador.email}
+                          )
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            : <p>Sin items en la respuesta.</p>}
+        </div>}
     </div>
   );
 }

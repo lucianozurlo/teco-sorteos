@@ -1,0 +1,83 @@
+/* sorteo-frontend/src/components/ScheduledSorteos.css */
+
+.scheduled-container {
+  background-color: var(--neutral-bg);
+  padding: 24px;
+  margin: 24px auto;
+  max-width: 1000px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: var(--font-family);
+}
+
+.scheduled-container h2 {
+  margin-bottom: 20px;
+  color: var(--primary-dark);
+}
+
+.scheduled-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--neutral-bg);
+  font-size: 0.95rem;
+}
+
+.scheduled-table th,
+.scheduled-table td {
+  border: 1px solid var(--neutral-border);
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.scheduled-table th {
+  background-color: #f2f2f2;
+  font-weight: 600;
+}
+
+.scheduled-table td input {
+  padding: 8px 10px;
+  border: 1px solid var(--neutral-border);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.acciones button {
+  margin-right: 5px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.azul {
+  background-color: blue;
+  color: #fff;
+}
+
+button.azul:hover {
+  background-color: darkblue;
+}
+
+button.rojo {
+  background-color: red;
+  color: #fff;
+}
+
+button.rojo:hover {
+  background-color: darkred;
+}
+
+button.ejecutar {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button.ejecutar:hover {
+  background-color: var(--primary-dark);
+}

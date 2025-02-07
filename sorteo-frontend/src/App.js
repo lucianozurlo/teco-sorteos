@@ -7,10 +7,10 @@ import Sorteo from './components/Sorteo';
 import Premios from './components/Premios';
 import Registro from './components/Registro';
 import Bases from './components/Bases';
+import ScheduledSorteos from './components/ScheduledSorteos';
 import AdminRedirect from './components/AdminRedirect';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import './App.css';
 
 function App () {
   return (
@@ -22,6 +22,7 @@ function App () {
           <Route path="/premios" element={<Premios />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/bases" element={<Bases />} />
+          <Route path="/scheduled" element={<ScheduledSorteos />} />
           <Route path="/admin" element={<AdminRedirect />} />
         </Routes>
       </div>

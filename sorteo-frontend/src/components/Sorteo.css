@@ -10,35 +10,77 @@
 }
 
 .sorteo-container hr {
-    margin-bottom: 22px;
+    margin: 22px 0;
+}
+
+.sorteo-header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.sorteo-header .sorteo-input-group {
+    width: 50%;
+}
+
+.sorteo-header .sorteo-input-group input {
+    max-width: unset;
+}
+
+.sorteo-field {
+    flex: 1;
+}
+
+.sorteo-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+
+.sorteo-field input {
+    width: 100%;
+    padding: 0 10px;
+    border: 1px solid var(--neutral-border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.sorteo-options {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.sorteo-options label {
+    font-size: 0.95rem;
+    color: var(--text-color);
 }
 
 .sorteo-section {
     margin-bottom: 20px;
 }
 
+.sorteo-header label,
 .sorteo-section label {
     display: block;
     margin-bottom: 8px;
-    margin-top: 20px;
+    margin-top: 0;
     font-weight: 600;
     font-size: 1rem;
     color: var(--primary-color);
 }
 
-.sorteo-section input,
-.sorteo-section select {
-    padding: 0 10px;
-    width: 100%;
-    max-width: 300px;
-    border: 1px solid var(--neutral-border);
-    border-radius: 4px;
-    font-size: .9rem;
+.sorteo-section.subsection {
+    margin-left: 29px;
 }
 
-.sorteo-section label input {
-    margin-right: 10px;
-    width: unset;
+.sorteo-section.subsection label {
+    font-size: .9rem;
+    color: var(--text-color);
+    margin-bottom: 0;
 }
 
 .sorteo-section .half {
@@ -50,30 +92,20 @@
     margin-right: 0;
 }
 
-.sorteo-section .half label {
-    margin-bottom: 0;
-}
-
-.sorteo-section h4 {
-    margin-top: 30px;
+.d-flex {
+    display: flex;
+    gap: 10px;
 }
 
 .sortear {
     margin-top: 30px;
     display: flex;
-    flex-direction: row;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
-.sortear button:first-child {
-    width: 70%;
-    font-weight: 700;
-}
-
-.sortear button:last-child {
-    width: 30%;
-    font-weight: 500;
-    font-size: 1.1rem;
+.sortear button {
+    flex: 1;
 }
 
 .sorteo-list {
@@ -94,21 +126,6 @@
     font-size: 0.95rem;
 }
 
-.eliminar-btn {
-    padding: 6px 12px;
-    background-color: var(--danger-color);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 0.9rem;
-}
-
-.eliminar-btn:hover {
-    background-color: var(--danger-hover);
-}
-
 .sorteo-result {
     margin-top: 20px;
     padding: 20px 30px 10px;
@@ -123,4 +140,52 @@
     margin-top: 0;
     margin-bottom: 20px;
     color: darkgreen;
+}
+
+/* Estilos para sorteos programados */
+.scheduled-sorteos {
+    margin-top: 40px;
+    padding: 16px;
+    border: 1px solid var(--neutral-border);
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.scheduled-sorteos h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.scheduled-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--neutral-border);
+}
+
+.scheduled-item:last-child {
+    border-bottom: none;
+}
+
+.scheduled-item input[type="datetime-local"] {
+    margin-left: 10px;
+    padding: 4px;
+    border: 1px solid var(--neutral-border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.scheduled-item button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.scheduled-item button:hover {
+    background-color: var(--primary-dark);
 }
