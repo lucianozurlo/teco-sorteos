@@ -10,6 +10,7 @@
   font-family: var(--font-family);
 }
 
+/* 
 .scheduled-container h2 {
   margin-bottom: 20px;
   color: var(--primary-dark);
@@ -40,44 +41,4 @@
   border-radius: 4px;
   font-size: 0.9rem;
   width: 100%;
-}
-
-.acciones button {
-  margin-right: 5px;
-  padding: 6px 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button.azul {
-  background-color: blue;
-  color: #fff;
-}
-
-button.azul:hover {
-  background-color: darkblue;
-}
-
-button.rojo {
-  background-color: red;
-  color: #fff;
-}
-
-button.rojo:hover {
-  background-color: darkred;
-}
-
-button.ejecutar {
-  background-color: var(--primary-color);
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button.ejecutar:hover {
-  background-color: var(--primary-dark);
-}
+} */
