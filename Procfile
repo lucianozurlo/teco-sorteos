@@ -1,1 +1,1 @@
-web: mkdir -p app/staticfiles && python manage.py collectstatic --noinput && gunicorn sorteo_project.wsgi --log-file -
+web: mkdir -p staticfiles && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn sorteo_project.wsgi --log-file -
