@@ -1,16 +1,83 @@
-.DS_Store
-venv
-__pycache__
-db.sqlite3
+# ============================
+# Custom
+# ============================
 .env
 .env.development
 .env.productions
-staticfiles
 _base
 data
-sorteo-frontend/build
-build
-sorteo-frontend/node_modules
-node_modules
-/node_modules/
-**/node_modules/
+
+# ============================
+# Archivos y carpetas de macOS
+# ============================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# ============================
+# Node.js / ReactJS
+# ============================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# Locks de gestores de dependencias (ajusta según tu preferencia)
+package-lock.json
+yarn.lock
+
+# Directorios de construcción (build) para React
+build/
+dist/
+
+# ============================
+# Python
+# ============================
+# Bytecode compilado de Python y cachés
+*.py[cod]
+*$$py.class
+__pycache__/
+.pytest_cache/
+
+# Archivos de log generados por pip u otros procesos
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Distribuciones y eggs
+*.egg-info/
+.eggs/
+
+# Entornos virtuales (virtualenv, venv, pyenv, etc.)
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# ============================
+# Django
+# ============================
+# Base de datos SQLite (si la usas)
+*.sqlite3
+db.sqlite3
+
+# Logs de Django u otros archivos de log
+*.log
+
+# Migraciones: ignora todos menos __init__.py para conservar el paquete
+**/migrations/*
+!**/migrations/__init__.py
+
+# Si manejas archivos estáticos o multimedia fuera de control de versiones
+staticfiles/
+media/
+
+# ============================
+# Configuraciones de IDE/Editor
+# ============================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
