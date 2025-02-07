@@ -45,13 +45,14 @@ class Sorteo(models.Model):
     descripcion = models.TextField(blank=True)
     premios = models.ManyToManyField(Premio, through='SorteoPremio')
     fecha_hora = models.DateTimeField(auto_now_add=True)
+    fecha_programada = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.nombre
 
 class SorteoPremio(models.Model):
     sorteo = models.ForeignKey(Sorteo, on_delete=models.CASCADE, related_name='sorteopremios')
-    premio = models.ForeignKey(Premio, on_delete=models.CASCADE)  # Quitamos el related_name aquí
+    premio = models.ForeignKey(Premio, on_delete=models.CASCADE)
     orden_item = models.PositiveIntegerField()
     cantidad = models.PositiveIntegerField()
 
@@ -61,7 +62,6 @@ class SorteoPremio(models.Model):
 
     def __str__(self):
         return f'{self.premio.nombre} en {self.sorteo.nombre} - Orden: {self.orden_item}, Cantidad: {self.cantidad}'
-
 
 class ResultadoSorteo(models.Model):
     sorteo = models.ForeignKey(Sorteo, on_delete=models.CASCADE)
@@ -80,14 +80,12 @@ class RegistroActividad(models.Model):
         return f"{self.evento} at {self.fecha_hora}"
 
 class ListaNegra(models.Model):
-    # Usamos la misma estructura que Participante, pero sin relación directa.
-    id = models.IntegerField(primary_key=True)  # ID del participante (único)
+    id = models.IntegerField(primary_key=True)
     nombre = models.CharField(max_length=255, blank=True, default="-")
     apellido = models.CharField(max_length=255, blank=True, default="-")
     area = models.CharField(max_length=255, blank=True, default="-")
     dominio = models.CharField(max_length=255, blank=True, default="-")
     cargo = models.CharField(max_length=255, blank=True, default="-")
-    # Para email, usamos CharField para permitir el valor "-" como default.
     email = models.CharField(max_length=255, blank=True, default="-")
     localidad = models.CharField(max_length=255, blank=True, default="-")
     provincia = models.CharField(max_length=255, blank=True, default="-")

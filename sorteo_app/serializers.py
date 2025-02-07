@@ -1,16 +1,8 @@
 # sorteo_app/serializers.py
 
 from rest_framework import serializers
-# Importar los modelos usando importación relativa
-from .models import Participante, RegistroActividad, Sorteo, SorteoPremio, ResultadoSorteo, Premio, UserProfile
+from .models import Participante, RegistroActividad, Sorteo, SorteoPremio, ResultadoSorteo, Premio
 
-# Serializer para UserProfile (si se usa en algún otro lado)
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = ['localidad', 'provincia']
-
-# Serializer para Participante (en lugar de User)
 class ParticipanteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participante
@@ -41,10 +33,11 @@ class SorteoSimpleSerializer(serializers.ModelSerializer):
 
 class SorteoSerializer(serializers.ModelSerializer):
     premios = SorteoPremioSerializer(many=True, source='sorteopremios')
+    fecha_programada = serializers.DateTimeField(required=False, allow_null=True)
 
     class Meta:
         model = Sorteo
-        fields = ['id', 'nombre', 'descripcion', 'fecha_hora', 'premios']
+        fields = ['id', 'nombre', 'descripcion', 'fecha_hora', 'fecha_programada', 'premios']
 
     def validate_nombre(self, value):
         if not value.strip():
@@ -76,7 +69,6 @@ class SorteoSerializer(serializers.ModelSerializer):
 class ResultadoSorteoSerializer(serializers.ModelSerializer):
     participante = ParticipanteSerializer(read_only=True)
     premio = PremioSerializer(read_only=True)
-    # Usamos un SerializerMethodField para el sorteo y devolver un dict con la info deseada.
     sorteo = serializers.SerializerMethodField()
 
     class Meta:
