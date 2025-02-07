@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { useNavigate } from 'react-router-dom';
 import './ScheduledSorteos.css';
 import { API_BASE_URL } from '../config';
 
@@ -11,6 +12,7 @@ function ScheduledSorteos() {
   const [cargando, setCargando] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editValues, setEditValues] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchScheduledSorteos();
@@ -78,6 +80,11 @@ function ScheduledSorteos() {
       console.error(error);
       toast.error('Error de conexión al actualizar el sorteo programado.');
     }
+  };
+
+  // Función que redirige al usuario a la página de Sorteo, pasando el sorteo programado
+  const handlePlay = (sorteo) => {
+    navigate('/', { state: { scheduledSorteo: sorteo } });
   };
 
   return (
@@ -150,14 +157,20 @@ function ScheduledSorteos() {
                       </button>
                     </>
                   ) : (
-                    <>
-                      <button onClick={() => startEditing(sorteo)} className="azul">
+                    <div className="acciones">
+                      <button onClick={() => startEditing(sorteo)} className="azul" title="Editar">
                         Editar
                       </button>
-                      <button onClick={() => handleDelete(sorteo.id)} className="rojo">
+                      <button onClick={() => handleDelete(sorteo.id)} className="rojo" title="Eliminar">
                         Eliminar
                       </button>
-                    </>
+                      <button onClick={() => handlePlay(sorteo)} className="ejecutar" title="Ejecutar sorteo">
+                        {/* Ícono de Play */}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{ width: '16px', height: '16px', fill: 'white' }}>
+                          <path d="M424.4 214.7L72.4 3.7C39.7-10.3 0 6.1 0 43.8v424.4c0 37.7 39.7 54.1 72.4 40.1l352-211c32.7-19.6 32.7-66.3 0-85.9z" />
+                        </svg>
+                      </button>
+                    </div>
                   )}
                 </td>
               </tr>

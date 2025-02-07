@@ -20,6 +20,7 @@ import {toast} from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
 import './Sorteo.css';
 import {API_BASE_URL} from '../config';
+import {useLocation} from 'react-router-dom';
 
 function SortableItem (props) {
   const {id, nombre_item, cantidad, index} = props;
@@ -54,34 +55,58 @@ function Sorteo () {
   // Campos básicos
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
-
   // Toggle para programar sorteo
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
-
-  // Filtros (opcional)
+  // Filtros
   const [usarFiltros, setUsarFiltros] = useState (false);
   const [provincias, setProvincias] = useState ([]);
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
   const [localidades, setLocalidades] = useState ([]);
   const [localidadSeleccionada, setLocalidadSeleccionada] = useState ('');
-
   // Premios a sortear
   const [items, setItems] = useState ([]);
   const [availablePremios, setAvailablePremios] = useState ([]);
   const [selectedPremioId, setSelectedPremioId] = useState ('');
   const [selectedPremioCantidad, setSelectedPremioCantidad] = useState (1);
-
   // Resultado del sorteo
   const [resultado, setResultado] = useState (null);
-
   // Indicador de carga
   const [cargando, setCargando] = useState (false);
-
   // Sensores para drag & drop
   const sensors = useSensors (
     useSensor (PointerSensor),
     useSensor (KeyboardSensor)
+  );
+  const location = useLocation ();
+
+  // Si se navega desde ScheduledSorteos, precargar datos
+  useEffect (
+    () => {
+      if (location.state && location.state.scheduledSorteo) {
+        const scheduled = location.state.scheduledSorteo;
+        setNombreSorteo (scheduled.nombre);
+        setDescripcion (scheduled.descripcion);
+        if (scheduled.fecha_programada) {
+          setProgramarSorteo (true);
+          // Convertir la fecha al formato adecuado para datetime-local
+          const dt = new Date (scheduled.fecha_programada);
+          const isoString = dt.toISOString ().slice (0, 16);
+          setScheduledDate (isoString);
+        }
+        if (scheduled.sorteopremios && scheduled.sorteopremios.length > 0) {
+          const premiosItems = scheduled.sorteopremios.map (sp => ({
+            id: sp.premio.id,
+            nombre_item: sp.premio.nombre,
+            cantidad: sp.cantidad,
+          }));
+          setItems (premiosItems);
+        }
+        // Limpia el state para evitar recarga continua
+        window.history.replaceState ({}, document.title);
+      }
+    },
+    [location.state]
   );
 
   useEffect (
@@ -232,7 +257,6 @@ function Sorteo () {
     setCargando (true);
     try {
       if (programarSorteo) {
-        // Usar el endpoint /api/scheduled/ en lugar de /api/schedule/
         const response = await fetch (`${API_BASE_URL}/api/scheduled/`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
