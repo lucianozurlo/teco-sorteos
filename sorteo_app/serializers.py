@@ -25,7 +25,6 @@ class PremioSerializer(serializers.ModelSerializer):
 
 class SorteoPremioSerializer(serializers.ModelSerializer):
     premio = PremioSerializer(read_only=True)
-    # Hacemos el campo writable usando source='premio'
     premio_id = serializers.PrimaryKeyRelatedField(queryset=Premio.objects.all(), source='premio')
 
     class Meta:
@@ -38,7 +37,6 @@ class SorteoSimpleSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre']
 
 class SorteoSerializer(serializers.ModelSerializer):
-    # Eliminamos read_only para permitir que se puedan recibir datos para los premios
     premios = SorteoPremioSerializer(many=True, source='sorteopremios')
     
     class Meta:
@@ -66,13 +64,12 @@ class SorteoSerializer(serializers.ModelSerializer):
             premio = premio_data['premio']
             orden_item = premio_data['orden_item']
             cantidad = premio_data['cantidad']
-
-            if premio.stock < cantidad:
-                raise serializers.ValidationError(f'No hay suficiente stock para el premio {premio.nombre}')
-
-            premio.stock -= cantidad
-            premio.save()
-
+            # Si se agendó el sorteo (fecha_programada definida), no se descuenta el stock
+            if not sorteo.fecha_programada:
+                if premio.stock < cantidad:
+                    raise serializers.ValidationError(f'No hay suficiente stock para el premio {premio.nombre}')
+                premio.stock -= cantidad
+                premio.save()
             SorteoPremio.objects.create(
                 sorteo=sorteo,
                 premio=premio,

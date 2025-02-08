@@ -2331,7 +2331,7 @@ function ScheduledSorteos() {
 
   return (
     <div className="scheduled-container">
-      <h2>Sorteos programados</h2>
+      <h2>Sorteos agendados</h2>
       {cargando ? (
         <ClipLoader size={50} color="#123abc" />
       ) : sorteosProgramados.length > 0 ? (
@@ -2420,7 +2420,7 @@ function ScheduledSorteos() {
           </tbody>
         </table>
       ) : (
-        <p>No hay sorteos programados.</p>
+        <p>No hay sorteos agendados.</p>
       )}
     </div>
   );

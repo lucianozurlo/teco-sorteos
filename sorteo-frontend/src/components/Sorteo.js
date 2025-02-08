@@ -52,13 +52,20 @@ function SortableItem (props) {
 }
 
 function Sorteo () {
-  // Campos básicos del sorteo
+  // Campos básicos
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
 
-  // Toggle para programar sorteo y fecha programada
+  // Toggle para agendar sorteo y campo de fecha (para agendar)
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
+
+  // Nuevo toggle para cargar un sorteo agendado existente
+  const [sorteoAgendado, setSorteoAgendado] = useState (false);
+  const [scheduledSorteos, setScheduledSorteos] = useState ([]);
+  const [selectedScheduledSorteoId, setSelectedScheduledSorteoId] = useState (
+    ''
+  );
 
   // Filtros opcionales
   const [usarFiltros, setUsarFiltros] = useState (false);
@@ -66,7 +73,6 @@ function Sorteo () {
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
   const [localidades, setLocalidades] = useState ([]);
   const [localidadSeleccionada, setLocalidadSeleccionada] = useState ('');
-  // Estado para almacenar el filtro "aplicado"
   const [appliedFilter, setAppliedFilter] = useState ({
     provincia: '',
     localidad: '',
@@ -92,7 +98,7 @@ function Sorteo () {
 
   const location = useLocation ();
 
-  // Si se navega desde "Sorteos programados", cargar todos los datos en el formulario
+  // Si se navega desde sorteos agendados por redirección, cargar sus datos
   useEffect (
     () => {
       if (location.state && location.state.scheduledSorteo) {
@@ -111,17 +117,17 @@ function Sorteo () {
           const isoString = dt.toISOString ().slice (0, 16);
           setScheduledDate (isoString);
         }
-        if (scheduled.sorteopremios && scheduled.sorteopremios.length > 0) {
-          const premiosItems = scheduled.sorteopremios.map (sp => ({
+        if (scheduled.premios && scheduled.premios.length > 0) {
+          const premiosItems = scheduled.premios.map (sp => ({
             id: sp.premio.id,
             nombre_item: sp.premio.nombre,
             cantidad: sp.cantidad,
           }));
           setItems (premiosItems);
         }
-        // Al cargar datos desde sorteo agendado, forzamos el toggle de programar sorteo a false
+        // Desactivar ambos toggles al cargar datos de un sorteo agendado
         setProgramarSorteo (false);
-        // Limpiar el state de navegación para evitar recargas posteriores
+        setSorteoAgendado (false);
         window.history.replaceState ({}, document.title);
       }
     },
@@ -188,14 +194,14 @@ function Sorteo () {
     }
   };
 
-  // Al cambiar la provincia, se limpia la localidad y el filtro aplicado
+  // Si se cambia la provincia, limpiar localidad y filtro aplicado
   const handleProvinciaChange = e => {
     setProvinciaSeleccionada (e.target.value);
     setLocalidadSeleccionada ('');
     setAppliedFilter ({provincia: '', localidad: ''});
   };
 
-  // Botón para aplicar el filtro y mostrar la elección
+  // Botón para aplicar el filtro
   const handleAplicarFiltro = () => {
     setAppliedFilter ({
       provincia: provinciaSeleccionada,
@@ -218,12 +224,73 @@ function Sorteo () {
     }
   };
 
-  // Manejador para el checkbox de "Programar sorteo"
+  // Manejador para el checkbox de "Agendar sorteo"
   const handleProgramarSorteoChange = () => {
     const nuevoValor = !programarSorteo;
     setProgramarSorteo (nuevoValor);
-    if (!nuevoValor) {
+    if (nuevoValor) {
+      // Si se activa Agendar sorteo, desactivar Sorteo agendado
+      setSorteoAgendado (false);
+    } else {
       setScheduledDate ('');
+    }
+  };
+
+  // Manejador para el checkbox de "Sorteo agendado"
+  const handleSorteoAgendadoChange = () => {
+    const nuevoValor = !sorteoAgendado;
+    setSorteoAgendado (nuevoValor);
+    if (nuevoValor) {
+      // Al activar Sorteo agendado, desactivar Agendar sorteo
+      setProgramarSorteo (false);
+      // Cargar los sorteos agendados
+      fetch (`${API_BASE_URL}/api/scheduled/`)
+        .then (res => res.json ())
+        .then (data => setScheduledSorteos (data))
+        .catch (err => {
+          console.error (err);
+          toast.error ('Error al cargar sorteos agendados.');
+        });
+    } else {
+      setSelectedScheduledSorteoId ('');
+    }
+  };
+
+  // Cuando se selecciona un sorteo agendado, cargar sus datos en el formulario
+  const handleScheduledSorteoSelect = e => {
+    const id = e.target.value;
+    setSelectedScheduledSorteoId (id);
+    const selected = scheduledSorteos.find (s => String (s.id) === id);
+    if (selected) {
+      setNombreSorteo (selected.nombre || '');
+      setDescripcion (selected.descripcion || '');
+      setProvinciaSeleccionada (selected.provincia || '');
+      setLocalidadSeleccionada (selected.localidad || '');
+      if (selected.fecha_programada) {
+        const dt = new Date (selected.fecha_programada);
+        const isoString = dt.toISOString ().slice (0, 16);
+        setScheduledDate (isoString);
+      } else {
+        setScheduledDate ('');
+      }
+      if (selected.premios && selected.premios.length > 0) {
+        const premiosItems = selected.premios.map (p => ({
+          id: p.premio.id,
+          nombre_item: p.premio.nombre,
+          cantidad: p.cantidad,
+        }));
+        setItems (premiosItems);
+      } else {
+        setItems ([]);
+      }
+      // Si hay filtros definidos en el sorteo agendado, activarlos
+      if (selected.provincia || selected.localidad) {
+        setUsarFiltros (true);
+        setAppliedFilter ({
+          provincia: selected.provincia || '',
+          localidad: selected.localidad || '',
+        });
+      }
     }
   };
 
@@ -292,7 +359,7 @@ function Sorteo () {
     if (programarSorteo) {
       if (!scheduledDate) {
         toast.error (
-          'Por favor, ingresá la fecha y hora para programar el sorteo.'
+          'Por favor, ingresá la fecha y hora para agendar el sorteo.'
         );
         return;
       }
@@ -308,13 +375,13 @@ function Sorteo () {
         });
         const data = await response.json ();
         if (response.ok) {
-          toast.success (data.message || 'Sorteo programado exitosamente.');
+          toast.success (data.message || 'Sorteo agendado exitosamente.');
           setNombreSorteo ('');
           setDescripcion ('');
           setItems ([]);
           setScheduledDate ('');
         } else {
-          toast.error (data.error || 'Error al programar el sorteo.');
+          toast.error (data.error || 'Error al agendar el sorteo.');
           setResultado (null);
         }
       } else {
@@ -352,6 +419,36 @@ function Sorteo () {
   return (
     <div className="sorteo-container">
       <h1>Realizar Sorteo</h1>
+      {/* Toggle para cargar un sorteo agendado existente */}
+      <div className="sorteo-section">
+        <label>
+          <input
+            type="checkbox"
+            checked={sorteoAgendado}
+            onChange={handleSorteoAgendadoChange}
+          />
+          Sorteo agendado
+        </label>
+        {sorteoAgendado &&
+          <div className="sorteo-section">
+            <label>Seleccioná un sorteo agendado:</label>
+            <select
+              value={selectedScheduledSorteoId}
+              onChange={handleScheduledSorteoSelect}
+            >
+              <option value="">-- Seleccionar sorteo agendado --</option>
+              {scheduledSorteos.map (sorteo => (
+                <option key={sorteo.id} value={sorteo.id}>
+                  {sorteo.nombre}
+                  {' '}
+                  (
+                  {new Date (sorteo.fecha_programada).toLocaleString ()}
+                  )
+                </option>
+              ))}
+            </select>
+          </div>}
+      </div>
       {/* Encabezado: Nombre y Descripción en la misma línea */}
       <div className="sorteo-header">
         <div className="sorteo-input-group">
@@ -419,7 +516,7 @@ function Sorteo () {
         </div>}
       {usarFiltros &&
         <div className="sorteo-section">
-          <button onClick={handleAplicarFiltro} className="ejecutar">
+          <button onClick={handleAplicarFiltro}>
             Aplicar Filtro
           </button>
           <p>
@@ -429,7 +526,7 @@ function Sorteo () {
           </p>
         </div>}
       <hr />
-      {/* Toggle para programar sorteo */}
+      {/* Toggle para agendar sorteo */}
       <div className="sorteo-section">
         <label>
           <input
@@ -437,7 +534,7 @@ function Sorteo () {
             checked={programarSorteo}
             onChange={handleProgramarSorteoChange}
           />
-          Programar sorteo
+          Agendar sorteo
         </label>
         {programarSorteo &&
           <div className="sorteo-section">
@@ -513,7 +610,7 @@ function Sorteo () {
             >
               {cargando
                 ? <ClipLoader size={20} color="#ffffff" />
-                : programarSorteo ? 'Programar sorteo' : 'Sortear'}
+                : programarSorteo ? 'Agendar sorteo' : 'Sortear'}
             </button>}
       </div>
       {resultado &&

@@ -14,7 +14,7 @@ function Header () {
           <li><NavLink to="/premios">Premios</NavLink></li>
           <li><NavLink to="/registro">Registro</NavLink></li>
           <li><NavLink to="/bases">Bases</NavLink></li>
-          <li><NavLink to="/scheduled">Sorteos Programados</NavLink></li>
+          <li><NavLink to="/scheduled">Sorteos Agendados</NavLink></li>
           <li>
             <a href="/admin" target="_blank" rel="noopener noreferrer">
               Admin
