@@ -82,7 +82,6 @@ function ScheduledSorteos() {
     }
   };
 
-  // Redirige al formulario de Sorteo precargando los datos completos
   const handlePlay = (sorteo) => {
     navigate('/', { state: { scheduledSorteo: sorteo } });
   };
@@ -99,8 +98,8 @@ function ScheduledSorteos() {
               <th>ID</th>
               <th>Nombre</th>
               <th>Descripción</th>
-              <th>Fecha y Hora Creación</th>
-              <th>Fecha Programada</th>
+              <th>Fecha y Hora de Creación</th>
+              <th>Fecha Agendada</th>
               <th>Provincia</th>
               <th>Localidad</th>
               <th>Premios</th>
@@ -142,9 +141,12 @@ function ScheduledSorteos() {
                   {editingId === sorteo.id ? (
                     <input
                       type="datetime-local"
-                      value={editValues.fecha_programada ? new Date(editValues.fecha_programada).toISOString().slice(0,16) : ''}
+                      value={editValues.fecha_programada || ''}
                       onChange={(e) =>
-                        setEditValues({ ...editValues, fecha_programada: e.target.value })
+                        setEditValues({
+                          ...editValues,
+                          fecha_programada: e.target.value,
+                        })
                       }
                     />
                   ) : (
@@ -203,11 +205,7 @@ function ScheduledSorteos() {
                         Eliminar
                       </button>
                       <button onClick={() => handlePlay(sorteo)} className="ejecutar" title="Ejecutar sorteo">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 448 512"
-                          style={{ width: '16px', height: '16px', fill: 'white' }}
-                        >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{ width: '16px', height: '16px', fill: 'white' }}>
                           <path d="M424.4 214.7L72.4 3.7C39.7-10.3 0 6.1 0 43.8v424.4c0 37.7 39.7 54.1 72.4 40.1l352-211c32.7-19.6 32.7-66.3 0-85.9z" />
                         </svg>
                       </button>

@@ -58,7 +58,7 @@ function SortableItem (props) {
 // Componente Sorteo
 //
 function Sorteo () {
-  // Campos básicos del sorteo
+  // Campos básicos
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
 
@@ -107,21 +107,15 @@ function Sorteo () {
           const isoString = dt.toISOString ().slice (0, 16);
           setScheduledDate (isoString);
         }
-        if (scheduled.premios && scheduled.premios.length > 0) {
-          const premiosItems = scheduled.premios.map (sp => ({
+        if (scheduled.sorteopremios && scheduled.sorteopremios.length > 0) {
+          const premiosItems = scheduled.sorteopremios.map (sp => ({
             id: sp.premio.id,
             nombre_item: sp.premio.nombre,
             cantidad: sp.cantidad,
           }));
           setItems (premiosItems);
         }
-        // Si se usaron filtros en el sorteo agendado, forzamos el toggle de filtros
-        if (scheduled.provincia || scheduled.localidad) {
-          setUsarFiltros (true);
-        } else {
-          setUsarFiltros (false);
-        }
-        // Forzamos a que el toggle de agendar sorteo quede desmarcado para operar en modo sorteo
+        // Forzamos el toggle "Programar sorteo" a false para cargar los datos
         setProgramarSorteo (false);
         // Limpiar el state de la navegación para evitar recargas posteriores
         window.history.replaceState ({}, document.title);
@@ -225,22 +219,6 @@ function Sorteo () {
     toast.success (`Premio "${premio.nombre}" agregado al sorteo.`);
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const eliminarPremioDelSorteo = id => {
-    const premio = items.find (p => p.id === id);
-    if (!premio) return;
-    setItems (items.filter (p => p.id !== id));
-    setAvailablePremios ([
-      ...availablePremios,
-      {
-        id: premio.id,
-        nombre: premio.nombre_item,
-        stock: premio.cantidad,
-      },
-    ]);
-    toast.info (`Premio "${premio.nombre_item}" eliminado del sorteo.`);
-  };
-
   const handleDragEnd = event => {
     const {active, over} = event;
     if (active.id !== over.id) {
@@ -271,7 +249,7 @@ function Sorteo () {
     if (programarSorteo) {
       if (!scheduledDate) {
         toast.error (
-          'Por favor, ingresá la fecha y hora para agendar el sorteo.'
+          'Por favor, ingresá la fecha y hora para programar el sorteo.'
         );
         return;
       }
@@ -287,13 +265,13 @@ function Sorteo () {
         });
         const data = await response.json ();
         if (response.ok) {
-          toast.success (data.message || 'Sorteo agendado exitosamente.');
+          toast.success (data.message || 'Sorteo programado exitosamente.');
           setNombreSorteo ('');
           setDescripcion ('');
           setItems ([]);
           setScheduledDate ('');
         } else {
-          toast.error (data.error || 'Error al agendar el sorteo.');
+          toast.error (data.error || 'Error al programar el sorteo.');
           setResultado (null);
         }
       } else {
@@ -374,9 +352,7 @@ function Sorteo () {
             >
               <option value="">-- Seleccionar provincia --</option>
               {provincias.map ((prov, idx) => (
-                <option key={idx} value={prov}>
-                  {prov}
-                </option>
+                <option key={idx} value={prov}>{prov}</option>
               ))}
             </select>
           </div>
@@ -389,15 +365,13 @@ function Sorteo () {
             >
               <option value="">-- Seleccionar localidad --</option>
               {localidades.map ((loc, idx) => (
-                <option key={idx} value={loc}>
-                  {loc}
-                </option>
+                <option key={idx} value={loc}>{loc}</option>
               ))}
             </select>
           </div>
         </div>}
       <hr />
-      {/* Toggle para agendar sorteo */}
+      {/* Toggle para programar sorteo */}
       <div className="sorteo-section">
         <label>
           <input
@@ -405,7 +379,7 @@ function Sorteo () {
             checked={programarSorteo}
             onChange={() => setProgramarSorteo (!programarSorteo)}
           />
-          Agendar sorteo
+          Programar sorteo
         </label>
         {programarSorteo &&
           <div className="sorteo-section">
@@ -445,7 +419,7 @@ function Sorteo () {
           Agregar Premio
         </button>
       </div>
-      {/* Lista de premios agregados (drag & drop) */}
+      {/* Lista de premios agregados */}
       {items.length > 0 &&
         <DndContext
           collisionDetection={closestCenter}
@@ -482,7 +456,7 @@ function Sorteo () {
             >
               {cargando
                 ? <ClipLoader size={20} color="#ffffff" />
-                : programarSorteo ? 'Agendar sorteo' : 'Sortear'}
+                : programarSorteo ? 'Programar sorteo' : 'Sortear'}
             </button>}
       </div>
       {resultado &&
