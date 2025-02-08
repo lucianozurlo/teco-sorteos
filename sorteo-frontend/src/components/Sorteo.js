@@ -1,6 +1,6 @@
 // sorteo-frontend/src/components/Sorteo.js
 
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   DndContext,
   closestCenter,
