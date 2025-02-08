@@ -55,45 +55,60 @@ function Sorteo () {
   // Campos básicos
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
-  // Toggle para programar sorteo
+
+  // Toggle para programar sorteo (por defecto en la página de sorteo queda desmarcado)
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
-  // Filtros
+
+  // Filtros (opcional)
   const [usarFiltros, setUsarFiltros] = useState (false);
   const [provincias, setProvincias] = useState ([]);
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
   const [localidades, setLocalidades] = useState ([]);
   const [localidadSeleccionada, setLocalidadSeleccionada] = useState ('');
+
   // Premios a sortear
   const [items, setItems] = useState ([]);
   const [availablePremios, setAvailablePremios] = useState ([]);
   const [selectedPremioId, setSelectedPremioId] = useState ('');
   const [selectedPremioCantidad, setSelectedPremioCantidad] = useState (1);
+
   // Resultado del sorteo
   const [resultado, setResultado] = useState (null);
+
   // Indicador de carga
   const [cargando, setCargando] = useState (false);
+
   // Sensores para drag & drop
   const sensors = useSensors (
     useSensor (PointerSensor),
     useSensor (KeyboardSensor)
   );
+
   const location = useLocation ();
 
-  // Si se navega desde ScheduledSorteos, precargar datos
+  // Precargar datos si se navega desde "Sorteos programados"
   useEffect (
     () => {
       if (location.state && location.state.scheduledSorteo) {
         const scheduled = location.state.scheduledSorteo;
-        setNombreSorteo (scheduled.nombre);
-        setDescripcion (scheduled.descripcion);
+        setNombreSorteo (scheduled.nombre || '');
+        setDescripcion (scheduled.descripcion || '');
+        // Precargar provincia y localidad, si existen
+        if (scheduled.provincia) {
+          setProvinciaSeleccionada (scheduled.provincia);
+        }
+        if (scheduled.localidad) {
+          setLocalidadSeleccionada (scheduled.localidad);
+        }
+        // Precargar fecha programada en el input, pero forzar el toggle a false
         if (scheduled.fecha_programada) {
-          setProgramarSorteo (true);
-          // Convertir la fecha al formato adecuado para datetime-local
+          // Convertir la fecha al formato adecuado para un input datetime-local
           const dt = new Date (scheduled.fecha_programada);
           const isoString = dt.toISOString ().slice (0, 16);
           setScheduledDate (isoString);
         }
+        // Precargar los premios asignados
         if (scheduled.sorteopremios && scheduled.sorteopremios.length > 0) {
           const premiosItems = scheduled.sorteopremios.map (sp => ({
             id: sp.premio.id,
@@ -102,7 +117,9 @@ function Sorteo () {
           }));
           setItems (premiosItems);
         }
-        // Limpia el state para evitar recarga continua
+        // Forzar el toggle de "Programar sorteo" a desmarcado (false)
+        setProgramarSorteo (false);
+        // Limpiar el state de la navegación para evitar recargas posteriores
         window.history.replaceState ({}, document.title);
       }
     },
