@@ -62,7 +62,7 @@ function Sorteo () {
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
 
-  // Toggle para agendar sorteo y fecha programada
+  // Toggle para agendar sorteo y campo para fecha programada
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
 
@@ -72,10 +72,10 @@ function Sorteo () {
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
   const [localidades, setLocalidades] = useState ([]);
   const [localidadSeleccionada, setLocalidadSeleccionada] = useState ('');
-  // Nuevo estado para guardar el filtro "aplicado"
-  const [appliedFilters, setAppliedFilters] = useState ({
-    provincia: '',
-    localidad: '',
+  // Estado para guardar el filtro aplicado
+  const [appliedFilter, setAppliedFilter] = useState ({
+    province: '',
+    locality: '',
   });
 
   // Premios a sortear
@@ -107,9 +107,9 @@ function Sorteo () {
         setDescripcion (scheduled.descripcion || '');
         setProvinciaSeleccionada (scheduled.provincia || '');
         setLocalidadSeleccionada (scheduled.localidad || '');
-        setAppliedFilters ({
-          provincia: scheduled.provincia || '',
-          localidad: scheduled.localidad || '',
+        setAppliedFilter ({
+          province: scheduled.provincia || '',
+          locality: scheduled.localidad || '',
         });
         if (scheduled.fecha_programada) {
           const dt = new Date (scheduled.fecha_programada);
@@ -124,15 +124,8 @@ function Sorteo () {
           }));
           setItems (premiosItems);
         }
-        // Si se usaron filtros en el sorteo agendado, forzamos el toggle de filtros
-        if (scheduled.provincia || scheduled.localidad) {
-          setUsarFiltros (true);
-        } else {
-          setUsarFiltros (false);
-        }
-        // Forzamos a que el toggle de agendar sorteo quede desmarcado para operar en modo sorteo
+        // Forzar que el toggle de agendar sorteo quede desmarcado para operar en modo sorteo
         setProgramarSorteo (false);
-        // Limpiar el state de la navegación para evitar recargas posteriores
         window.history.replaceState ({}, document.title);
       }
     },
@@ -234,8 +227,21 @@ function Sorteo () {
     toast.success (`Premio "${premio.nombre}" agregado al sorteo.`);
   };
 
-  // (Mantengo eliminarPremioDelSorteo comentado si se requiere en el futuro)
-  // const eliminarPremioDelSorteo = (id) => { ... };
+  // (La función eliminarPremioDelSorteo sigue existiendo pero no se usa en este flujo)
+  const eliminarPremioDelSorteo = id => {
+    const premio = items.find (p => p.id === id);
+    if (!premio) return;
+    setItems (items.filter (p => p.id !== id));
+    setAvailablePremios ([
+      ...availablePremios,
+      {
+        id: premio.id,
+        nombre: premio.nombre_item,
+        stock: premio.cantidad,
+      },
+    ]);
+    toast.info (`Premio "${premio.nombre_item}" eliminado del sorteo.`);
+  };
 
   const handleDragEnd = event => {
     const {active, over} = event;
@@ -244,6 +250,15 @@ function Sorteo () {
       const newIndex = items.findIndex (item => item.id === over.id);
       setItems (arrayMove (items, oldIndex, newIndex));
     }
+  };
+
+  // Función para aplicar el filtro de provincia/localidad
+  const handleApplyFilter = () => {
+    setAppliedFilter ({
+      province: provinciaSeleccionada,
+      locality: localidadSeleccionada,
+    });
+    toast.info ('Filtro aplicado.');
   };
 
   const handleSortear = async () => {
@@ -260,8 +275,8 @@ function Sorteo () {
       nombre: nombreSorteo,
       descripcion: descripcion,
       premios: premiosConOrden,
-      provincia: appliedFilters.provincia || '',
-      localidad: appliedFilters.localidad || '',
+      provincia: appliedFilter.province || '',
+      localidad: appliedFilter.locality || '',
     };
     if (programarSorteo) {
       if (!scheduledDate) {
@@ -323,17 +338,6 @@ function Sorteo () {
     setResultado (null);
   };
 
-  // Función para aplicar el filtro (guarda provincia y localidad en "appliedFilters")
-  const aplicarFiltro = () => {
-    setAppliedFilters ({
-      provincia: provinciaSeleccionada,
-      localidad: localidadSeleccionada, // Si se quiere permitir solo provincia, se deja vacío si no se selecciona localidad
-    });
-    toast.info (
-      `Filtro aplicado: Provincia: ${provinciaSeleccionada || 'ninguna'} - Localidad: ${localidadSeleccionada || 'ninguna'}`
-    );
-  };
-
   return (
     <div className="sorteo-container">
       <h1>Realizar Sorteo</h1>
@@ -359,7 +363,7 @@ function Sorteo () {
         </div>
       </div>
       <hr />
-      {/* Toggle de restricción */}
+      {/* Filtros: Toggle de restricción y botones para aplicar filtro */}
       <div className="sorteo-section">
         <label>
           <input
@@ -393,7 +397,7 @@ function Sorteo () {
               onChange={e => setLocalidadSeleccionada (e.target.value)}
               disabled={!provinciaSeleccionada}
             >
-              <option value="">-- Seleccionar localidad --</option>
+              <option value="">-- Seleccionar localidad (opcional) --</option>
               {localidades.map ((loc, idx) => (
                 <option key={idx} value={loc}>
                   {loc}
@@ -401,11 +405,23 @@ function Sorteo () {
               ))}
             </select>
           </div>
-          <div className="sorteo-section">
-            <button onClick={aplicarFiltro} className="ejecutar">
+          <div className="half" style={{alignSelf: 'flex-end'}}>
+            <button onClick={handleApplyFilter} className="ejecutar">
               Aplicar filtro
             </button>
           </div>
+        </div>}
+      {/* Mostrar el filtro aplicado */}
+      {usarFiltros &&
+        appliedFilter.province &&
+        <div className="sorteo-section">
+          <p>
+            Filtro aplicado:
+            {` Provincia: ${appliedFilter.province}`}
+            {appliedFilter.locality
+              ? `, Localidad: ${appliedFilter.locality}`
+              : ''}
+          </p>
         </div>}
       <hr />
       {/* Toggle para agendar sorteo */}
