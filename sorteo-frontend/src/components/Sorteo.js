@@ -58,31 +58,32 @@ function SortableItem (props) {
 // Componente Sorteo
 //
 function Sorteo () {
-  // Campos básicos
+  // 1) Campos básicos
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
 
-  // Toggle para programar sorteo y fecha programada
+  // Toggle para programar sorteo y campo de fecha programada
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
 
-  // Filtros opcionales
+  // 2) Filtros opcionales
   const [usarFiltros, setUsarFiltros] = useState (false);
   const [provincias, setProvincias] = useState ([]);
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
   const [localidades, setLocalidades] = useState ([]);
   const [localidadSeleccionada, setLocalidadSeleccionada] = useState ('');
 
-  // Premios a sortear
+  // 3) Premios a sortear (con drag & drop)
+  // Cada ítem: { id, nombre_item, cantidad }
   const [items, setItems] = useState ([]);
   const [availablePremios, setAvailablePremios] = useState ([]);
   const [selectedPremioId, setSelectedPremioId] = useState ('');
   const [selectedPremioCantidad, setSelectedPremioCantidad] = useState (1);
 
-  // Resultado del sorteo
+  // 4) Resultado del sorteo
   const [resultado, setResultado] = useState (null);
 
-  // Indicador de carga
+  // 5) Indicador de carga
   const [cargando, setCargando] = useState (false);
 
   // Sensores para drag & drop
@@ -107,17 +108,22 @@ function Sorteo () {
           const isoString = dt.toISOString ().slice (0, 16);
           setScheduledDate (isoString);
         }
-        if (scheduled.sorteopremios && scheduled.sorteopremios.length > 0) {
-          const premiosItems = scheduled.sorteopremios.map (sp => ({
+        // Usar la propiedad "premios" (no "sorteopremios")
+        if (scheduled.premios && scheduled.premios.length > 0) {
+          const premiosItems = scheduled.premios.map (sp => ({
             id: sp.premio.id,
             nombre_item: sp.premio.nombre,
             cantidad: sp.cantidad,
           }));
           setItems (premiosItems);
         }
-        // Forzamos el toggle "Programar sorteo" a false para cargar los datos
+        // Si el sorteo agendado tiene provincia o localidad, activar filtros
+        if (scheduled.provincia || scheduled.localidad) {
+          setUsarFiltros (true);
+        }
+        // Forzar el toggle de "Programar sorteo" a false (ya que se está editando un agendado)
         setProgramarSorteo (false);
-        // Limpiar el state de la navegación para evitar recargas posteriores
+        // Limpiar el state de navegación para evitar recargas posteriores
         window.history.replaceState ({}, document.title);
       }
     },
@@ -238,7 +244,6 @@ function Sorteo () {
       orden_item: index + 1,
       cantidad: it.cantidad,
     }));
-    // En el payload incluimos provincia y localidad (aunque sean vacíos)
     const payload = {
       nombre: nombreSorteo,
       descripcion: descripcion,
