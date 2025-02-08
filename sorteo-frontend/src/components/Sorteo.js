@@ -66,8 +66,7 @@ function Sorteo () {
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
   const [localidades, setLocalidades] = useState ([]);
   const [localidadSeleccionada, setLocalidadSeleccionada] = useState ('');
-
-  // Estado para el filtro "aplicado"
+  // Estado para almacenar el filtro "aplicado"
   const [appliedFilter, setAppliedFilter] = useState ({
     provincia: '',
     localidad: '',
@@ -93,7 +92,7 @@ function Sorteo () {
 
   const location = useLocation ();
 
-  // Si se navega desde "Sorteos Programados", cargar todos los datos en el formulario
+  // Si se navega desde "Sorteos programados", cargar todos los datos en el formulario
   useEffect (
     () => {
       if (location.state && location.state.scheduledSorteo) {
@@ -120,9 +119,9 @@ function Sorteo () {
           }));
           setItems (premiosItems);
         }
-        // Al cargar datos desde sorteo agendado, se fuerza el toggle de programar sorteo a false (ya está agendado)
+        // Al cargar datos desde sorteo agendado, forzamos el toggle de programar sorteo a false
         setProgramarSorteo (false);
-        // Limpiar el state de navegación
+        // Limpiar el state de navegación para evitar recargas posteriores
         window.history.replaceState ({}, document.title);
       }
     },
@@ -145,6 +144,7 @@ function Sorteo () {
         setProvinciaSeleccionada ('');
         setLocalidades ([]);
         setLocalidadSeleccionada ('');
+        setAppliedFilter ({provincia: '', localidad: ''});
       }
     },
     [usarFiltros]
@@ -188,22 +188,43 @@ function Sorteo () {
     }
   };
 
-  // Manejador de cambio de provincia: al cambiar, se limpia el filtro aplicado y la localidad
+  // Al cambiar la provincia, se limpia la localidad y el filtro aplicado
   const handleProvinciaChange = e => {
     setProvinciaSeleccionada (e.target.value);
     setLocalidadSeleccionada ('');
     setAppliedFilter ({provincia: '', localidad: ''});
   };
 
-  // Botón para aplicar el filtro
+  // Botón para aplicar el filtro y mostrar la elección
   const handleAplicarFiltro = () => {
     setAppliedFilter ({
       provincia: provinciaSeleccionada,
       localidad: localidadSeleccionada,
     });
-    toast.success (
-      `Filtro aplicado: ${provinciaSeleccionada}${localidadSeleccionada ? ', ' + localidadSeleccionada : ''}`
-    );
+    const filtroTexto = provinciaSeleccionada || localidadSeleccionada
+      ? `Filtro aplicado: ${provinciaSeleccionada}${localidadSeleccionada ? ', ' + localidadSeleccionada : ''}`
+      : 'No se aplicó ningún filtro';
+    toast.success (filtroTexto);
+  };
+
+  // Manejador para el checkbox de "¿Restringir por provincia/localidad?"
+  const handleUsarFiltrosChange = () => {
+    const nuevoValor = !usarFiltros;
+    setUsarFiltros (nuevoValor);
+    if (!nuevoValor) {
+      setProvinciaSeleccionada ('');
+      setLocalidadSeleccionada ('');
+      setAppliedFilter ({provincia: '', localidad: ''});
+    }
+  };
+
+  // Manejador para el checkbox de "Programar sorteo"
+  const handleProgramarSorteoChange = () => {
+    const nuevoValor = !programarSorteo;
+    setProgramarSorteo (nuevoValor);
+    if (!nuevoValor) {
+      setScheduledDate ('');
+    }
   };
 
   const agregarPremioAlSorteo = () => {
@@ -331,6 +352,7 @@ function Sorteo () {
   return (
     <div className="sorteo-container">
       <h1>Realizar Sorteo</h1>
+      {/* Encabezado: Nombre y Descripción en la misma línea */}
       <div className="sorteo-header">
         <div className="sorteo-input-group">
           <label>Nombre del sorteo:</label>
@@ -352,12 +374,13 @@ function Sorteo () {
         </div>
       </div>
       <hr />
+      {/* Filtros */}
       <div className="sorteo-section">
         <label>
           <input
             type="checkbox"
             checked={usarFiltros}
-            onChange={() => setUsarFiltros (!usarFiltros)}
+            onChange={handleUsarFiltrosChange}
           />
           ¿Restringir por provincia/localidad?
         </label>
@@ -399,14 +422,20 @@ function Sorteo () {
           <button onClick={handleAplicarFiltro} className="ejecutar">
             Aplicar Filtro
           </button>
+          <p>
+            {appliedFilter.provincia || appliedFilter.localidad
+              ? `Filtro aplicado: ${appliedFilter.provincia}${appliedFilter.localidad ? ', ' + appliedFilter.localidad : ''}`
+              : 'No se aplicó ningún filtro'}
+          </p>
         </div>}
       <hr />
+      {/* Toggle para programar sorteo */}
       <div className="sorteo-section">
         <label>
           <input
             type="checkbox"
             checked={programarSorteo}
-            onChange={() => setProgramarSorteo (!programarSorteo)}
+            onChange={handleProgramarSorteoChange}
           />
           Programar sorteo
         </label>
@@ -421,6 +450,7 @@ function Sorteo () {
           </div>}
       </div>
       <hr />
+      {/* Agregar Premios */}
       <div className="sorteo-section">
         <h4>Agregar Premios al Sorteo</h4>
         <label>Seleccioná un premio:</label>
