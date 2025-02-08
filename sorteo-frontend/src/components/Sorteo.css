@@ -85,7 +85,7 @@
 
 .sorteo-section .half {
     width: 41%;
-    margin-right: 8px;
+    /* margin-right: 8px; */
 }
 
 .sorteo-section .half:last-child {

@@ -529,12 +529,15 @@ function Sorteo () {
               ))}
             </select>
           </div>
+          <div className="half">
+            <button onClick={handleAplicarFiltro}>
+              Aplicar Filtro
+            </button>
+          </div>
         </div>}
       {usarFiltros &&
         <div className="sorteo-section">
-          <button onClick={handleAplicarFiltro} className="ejecutar">
-            Aplicar Filtro
-          </button>
+
           <p>
             {appliedFilter.provincia || appliedFilter.localidad
               ? `Filtro aplicado: ${appliedFilter.provincia}${appliedFilter.localidad ? ', ' + appliedFilter.localidad : ''}`
