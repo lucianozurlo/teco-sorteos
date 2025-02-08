@@ -56,8 +56,8 @@ function Sorteo () {
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
 
-  // Toggle para programar sorteo y fecha programada
-  const [programarSorteo, setProgramarSorteo] = useState (false);
+  // Toggle para agendar sorteo y fecha programada
+  const [agendarSorteo, setAgendarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
 
   // Filtros opcionales
@@ -87,7 +87,7 @@ function Sorteo () {
 
   const location = useLocation ();
 
-  // Precarga de datos si se viene de "Sorteos programados"
+  // Precarga de datos si se viene de "Sorteos Agendados"
   useEffect (
     () => {
       if (location.state && location.state.scheduledSorteo) {
@@ -109,9 +109,8 @@ function Sorteo () {
           }));
           setItems (premiosItems);
         }
-        // Forzamos el toggle "Programar sorteo" a false para cargar los datos
-        setProgramarSorteo (false);
-        // Limpiar el state de la navegación para evitar recargas posteriores
+        // Forzamos el toggle "Agendar sorteo" a false para cargar los datos en modo sorteo
+        setAgendarSorteo (false);
         window.history.replaceState ({}, document.title);
       }
     },
@@ -248,7 +247,6 @@ function Sorteo () {
       orden_item: index + 1,
       cantidad: it.cantidad,
     }));
-    // En el payload incluimos provincia y localidad (aunque sean vacíos)
     const payload = {
       nombre: nombreSorteo,
       descripcion: descripcion,
@@ -256,10 +254,10 @@ function Sorteo () {
       provincia: provinciaSeleccionada || '',
       localidad: localidadSeleccionada || '',
     };
-    if (programarSorteo) {
+    if (agendarSorteo) {
       if (!scheduledDate) {
         toast.error (
-          'Por favor, ingresá la fecha y hora para programar el sorteo.'
+          'Por favor, ingresá la fecha y hora para agendar el sorteo.'
         );
         return;
       }
@@ -267,7 +265,7 @@ function Sorteo () {
     }
     setCargando (true);
     try {
-      if (programarSorteo) {
+      if (agendarSorteo) {
         const response = await fetch (`${API_BASE_URL}/api/scheduled/`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -275,13 +273,13 @@ function Sorteo () {
         });
         const data = await response.json ();
         if (response.ok) {
-          toast.success (data.message || 'Sorteo programado exitosamente.');
+          toast.success (data.message || 'Sorteo agendado exitosamente.');
           setNombreSorteo ('');
           setDescripcion ('');
           setItems ([]);
           setScheduledDate ('');
         } else {
-          toast.error (data.error || 'Error al programar el sorteo.');
+          toast.error (data.error || 'Error al agendar el sorteo.');
           setResultado (null);
         }
       } else {
@@ -362,7 +360,9 @@ function Sorteo () {
             >
               <option value="">-- Seleccionar provincia --</option>
               {provincias.map ((prov, idx) => (
-                <option key={idx} value={prov}>{prov}</option>
+                <option key={idx} value={prov}>
+                  {prov}
+                </option>
               ))}
             </select>
           </div>
@@ -375,23 +375,25 @@ function Sorteo () {
             >
               <option value="">-- Seleccionar localidad --</option>
               {localidades.map ((loc, idx) => (
-                <option key={idx} value={loc}>{loc}</option>
+                <option key={idx} value={loc}>
+                  {loc}
+                </option>
               ))}
             </select>
           </div>
         </div>}
       <hr />
-      {/* Toggle para programar sorteo */}
+      {/* Toggle para agendar sorteo */}
       <div className="sorteo-section">
         <label>
           <input
             type="checkbox"
-            checked={programarSorteo}
-            onChange={() => setProgramarSorteo (!programarSorteo)}
+            checked={agendarSorteo}
+            onChange={() => setAgendarSorteo (!agendarSorteo)}
           />
-          Programar sorteo
+          Agendar sorteo
         </label>
-        {programarSorteo &&
+        {agendarSorteo &&
           <div className="sorteo-section">
             <label>Fecha y hora:</label>
             <input
@@ -466,7 +468,7 @@ function Sorteo () {
             >
               {cargando
                 ? <ClipLoader size={20} color="#ffffff" />
-                : programarSorteo ? 'Programar sorteo' : 'Sortear'}
+                : agendarSorteo ? 'Agendar sorteo' : 'Sortear'}
             </button>}
       </div>
       {resultado &&

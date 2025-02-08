@@ -26,28 +26,28 @@ function ScheduledSorteos() {
       setSorteosProgramados(data);
     } catch (error) {
       console.error(error);
-      toast.error('Error al cargar sorteos programados.');
+      toast.error('Error al cargar sorteos agendados.');
     } finally {
       setCargando(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('¿Estás seguro de eliminar este sorteo programado?')) return;
+    if (!window.confirm('¿Estás seguro de eliminar este sorteo agendado?')) return;
     try {
       const response = await fetch(`${API_BASE_URL}/api/scheduled/${id}/`, {
         method: 'DELETE',
       });
       if (response.ok) {
-        toast.info('Sorteo programado eliminado.');
+        toast.info('Sorteo agendado eliminado.');
         fetchScheduledSorteos();
       } else {
         const data = await response.json();
-        toast.error(data.error || 'Error al eliminar el sorteo programado.');
+        toast.error(data.error || 'Error al eliminar el sorteo agendado.');
       }
     } catch (error) {
       console.error(error);
-      toast.error('Error de conexión al eliminar el sorteo programado.');
+      toast.error('Error de conexión al eliminar el sorteo agendado.');
     }
   };
 
@@ -70,26 +70,26 @@ function ScheduledSorteos() {
       });
       const data = await response.json();
       if (response.ok) {
-        toast.success('Sorteo programado actualizado.');
+        toast.success('Sorteo agendado actualizado.');
         cancelEditing();
         fetchScheduledSorteos();
       } else {
-        toast.error(data.error || 'Error al actualizar el sorteo programado.');
+        toast.error(data.error || 'Error al actualizar el sorteo agendado.');
       }
     } catch (error) {
       console.error(error);
-      toast.error('Error de conexión al actualizar el sorteo programado.');
+      toast.error('Error de conexión al actualizar el sorteo agendado.');
     }
   };
 
-  // Redirige al usuario a la página de Sorteo, pasando el sorteo programado
+  // Redirige al formulario de Sorteo precargando los datos completos
   const handlePlay = (sorteo) => {
     navigate('/', { state: { scheduledSorteo: sorteo } });
   };
 
   return (
     <div className="scheduled-container">
-      <h2>Sorteos programados</h2>
+      <h2>Sorteos Agendados</h2>
       {cargando ? (
         <ClipLoader size={50} color="#123abc" />
       ) : sorteosProgramados.length > 0 ? (
@@ -99,8 +99,8 @@ function ScheduledSorteos() {
               <th>ID</th>
               <th>Nombre</th>
               <th>Descripción</th>
-              <th>Fecha y hora de creación</th>
-              <th>Fecha programada</th>
+              <th>Fecha y Hora Creación</th>
+              <th>Fecha Programada</th>
               <th>Provincia</th>
               <th>Localidad</th>
               <th>Premios</th>
@@ -142,7 +142,7 @@ function ScheduledSorteos() {
                   {editingId === sorteo.id ? (
                     <input
                       type="datetime-local"
-                      value={editValues.fecha_programada || ''}
+                      value={editValues.fecha_programada ? new Date(editValues.fecha_programada).toISOString().slice(0,16) : ''}
                       onChange={(e) =>
                         setEditValues({ ...editValues, fecha_programada: e.target.value })
                       }
@@ -178,26 +178,11 @@ function ScheduledSorteos() {
                   )}
                 </td>
                 <td>
-                  {editingId === sorteo.id ? (
-                    // Nota: Para editar premios se recomienda una interfaz específica.
-                    <input
-                      type="text"
-                      value={
-                        (editValues.premios &&
-                          editValues.premios
-                            .map((p) => `${p.premio.nombre} (x${p.cantidad})`)
-                            .join(', ')) ||
-                        ''
-                      }
-                      readOnly
-                    />
-                  ) : (
-                    sorteo.premios && sorteo.premios.length > 0
-                      ? sorteo.premios
-                          .map((p) => `${p.premio.nombre} (x${p.cantidad})`)
-                          .join(', ')
-                      : 'Sin premios'
-                  )}
+                  {sorteo.premios && sorteo.premios.length > 0
+                    ? sorteo.premios
+                        .map(p => `${p.premio.nombre} (x${p.cantidad})`)
+                        .join(', ')
+                    : 'Sin premios'}
                 </td>
                 <td>
                   {editingId === sorteo.id ? (
@@ -234,7 +219,7 @@ function ScheduledSorteos() {
           </tbody>
         </table>
       ) : (
-        <p>No hay sorteos programados.</p>
+        <p>No hay sorteos agendados.</p>
       )}
     </div>
   );
