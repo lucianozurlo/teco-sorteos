@@ -37,11 +37,11 @@ class SorteoSimpleSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre']
 
 class SorteoSerializer(serializers.ModelSerializer):
-    premios = SorteoPremioSerializer(many=True, source='sorteopremios', required=False)
-
+    premios = SorteoPremioSerializer(many=True, source='sorteopremios', read_only=True)
+    
     class Meta:
         model = Sorteo
-        # Se incluyen los nuevos campos: fecha_programada, provincia y localidad
+        # Se agregan los campos fecha_programada, provincia y localidad para los sorteos agendados
         fields = ['id', 'nombre', 'descripcion', 'fecha_hora', 'fecha_programada', 'provincia', 'localidad', 'premios']
 
     def validate_nombre(self, value):
