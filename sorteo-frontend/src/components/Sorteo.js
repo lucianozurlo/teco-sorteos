@@ -228,20 +228,20 @@ function Sorteo () {
   };
 
   // (La función eliminarPremioDelSorteo sigue existiendo pero no se usa en este flujo)
-  const eliminarPremioDelSorteo = id => {
-    const premio = items.find (p => p.id === id);
-    if (!premio) return;
-    setItems (items.filter (p => p.id !== id));
-    setAvailablePremios ([
-      ...availablePremios,
-      {
-        id: premio.id,
-        nombre: premio.nombre_item,
-        stock: premio.cantidad,
-      },
-    ]);
-    toast.info (`Premio "${premio.nombre_item}" eliminado del sorteo.`);
-  };
+  // const eliminarPremioDelSorteo = id => {
+  //   const premio = items.find (p => p.id === id);
+  //   if (!premio) return;
+  //   setItems (items.filter (p => p.id !== id));
+  //   setAvailablePremios ([
+  //     ...availablePremios,
+  //     {
+  //       id: premio.id,
+  //       nombre: premio.nombre_item,
+  //       stock: premio.cantidad,
+  //     },
+  //   ]);
+  //   toast.info (`Premio "${premio.nombre_item}" eliminado del sorteo.`);
+  // };
 
   const handleDragEnd = event => {
     const {active, over} = event;
