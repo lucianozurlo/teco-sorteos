@@ -62,7 +62,7 @@ function Sorteo () {
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
 
-  // Toggle para programar sorteo y fecha programada
+  // Toggle para agendar sorteo y fecha programada
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
 
@@ -72,6 +72,11 @@ function Sorteo () {
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
   const [localidades, setLocalidades] = useState ([]);
   const [localidadSeleccionada, setLocalidadSeleccionada] = useState ('');
+  // Nuevo estado para guardar el filtro "aplicado"
+  const [appliedFilters, setAppliedFilters] = useState ({
+    provincia: '',
+    localidad: '',
+  });
 
   // Premios a sortear
   const [items, setItems] = useState ([]);
@@ -102,6 +107,10 @@ function Sorteo () {
         setDescripcion (scheduled.descripcion || '');
         setProvinciaSeleccionada (scheduled.provincia || '');
         setLocalidadSeleccionada (scheduled.localidad || '');
+        setAppliedFilters ({
+          provincia: scheduled.provincia || '',
+          localidad: scheduled.localidad || '',
+        });
         if (scheduled.fecha_programada) {
           const dt = new Date (scheduled.fecha_programada);
           const isoString = dt.toISOString ().slice (0, 16);
@@ -225,21 +234,8 @@ function Sorteo () {
     toast.success (`Premio "${premio.nombre}" agregado al sorteo.`);
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const eliminarPremioDelSorteo = id => {
-    const premio = items.find (p => p.id === id);
-    if (!premio) return;
-    setItems (items.filter (p => p.id !== id));
-    setAvailablePremios ([
-      ...availablePremios,
-      {
-        id: premio.id,
-        nombre: premio.nombre_item,
-        stock: premio.cantidad,
-      },
-    ]);
-    toast.info (`Premio "${premio.nombre_item}" eliminado del sorteo.`);
-  };
+  // (Mantengo eliminarPremioDelSorteo comentado si se requiere en el futuro)
+  // const eliminarPremioDelSorteo = (id) => { ... };
 
   const handleDragEnd = event => {
     const {active, over} = event;
@@ -260,13 +256,12 @@ function Sorteo () {
       orden_item: index + 1,
       cantidad: it.cantidad,
     }));
-    // En el payload incluimos provincia y localidad (aunque sean vacíos)
     const payload = {
       nombre: nombreSorteo,
       descripcion: descripcion,
       premios: premiosConOrden,
-      provincia: provinciaSeleccionada || '',
-      localidad: localidadSeleccionada || '',
+      provincia: appliedFilters.provincia || '',
+      localidad: appliedFilters.localidad || '',
     };
     if (programarSorteo) {
       if (!scheduledDate) {
@@ -326,6 +321,17 @@ function Sorteo () {
 
   const handleNuevoSorteo = () => {
     setResultado (null);
+  };
+
+  // Función para aplicar el filtro (guarda provincia y localidad en "appliedFilters")
+  const aplicarFiltro = () => {
+    setAppliedFilters ({
+      provincia: provinciaSeleccionada,
+      localidad: localidadSeleccionada, // Si se quiere permitir solo provincia, se deja vacío si no se selecciona localidad
+    });
+    toast.info (
+      `Filtro aplicado: Provincia: ${provinciaSeleccionada || 'ninguna'} - Localidad: ${localidadSeleccionada || 'ninguna'}`
+    );
   };
 
   return (
@@ -394,6 +400,11 @@ function Sorteo () {
                 </option>
               ))}
             </select>
+          </div>
+          <div className="sorteo-section">
+            <button onClick={aplicarFiltro} className="ejecutar">
+              Aplicar filtro
+            </button>
           </div>
         </div>}
       <hr />
