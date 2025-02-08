@@ -25,7 +25,8 @@ class PremioSerializer(serializers.ModelSerializer):
 
 class SorteoPremioSerializer(serializers.ModelSerializer):
     premio = PremioSerializer(read_only=True)
-    premio_id = serializers.PrimaryKeyRelatedField(queryset=Premio.objects.all(), source='premio', write_only=True)
+    # Hacemos el campo writable usando source='premio'
+    premio_id = serializers.PrimaryKeyRelatedField(queryset=Premio.objects.all(), source='premio')
 
     class Meta:
         model = SorteoPremio
@@ -37,12 +38,21 @@ class SorteoSimpleSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre']
 
 class SorteoSerializer(serializers.ModelSerializer):
-    premios = SorteoPremioSerializer(many=True, source='sorteopremios', read_only=True)
+    # Eliminamos read_only para permitir que se puedan recibir datos para los premios
+    premios = SorteoPremioSerializer(many=True, source='sorteopremios')
     
     class Meta:
         model = Sorteo
-        # Se agregan los campos fecha_programada, provincia y localidad para los sorteos agendados
-        fields = ['id', 'nombre', 'descripcion', 'fecha_hora', 'fecha_programada', 'provincia', 'localidad', 'premios']
+        fields = [
+            'id',
+            'nombre',
+            'descripcion',
+            'fecha_hora',
+            'fecha_programada',
+            'provincia',
+            'localidad',
+            'premios'
+        ]
 
     def validate_nombre(self, value):
         if not value.strip():
