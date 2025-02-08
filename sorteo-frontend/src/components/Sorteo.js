@@ -60,7 +60,7 @@ function Sorteo () {
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
 
-  // Nuevo toggle para cargar un sorteo agendado existente
+  // Toggle para cargar un sorteo agendado existente
   const [sorteoAgendado, setSorteoAgendado] = useState (false);
   const [scheduledSorteos, setScheduledSorteos] = useState ([]);
   const [selectedScheduledSorteoId, setSelectedScheduledSorteoId] = useState (
@@ -116,6 +116,8 @@ function Sorteo () {
           const dt = new Date (scheduled.fecha_programada);
           const isoString = dt.toISOString ().slice (0, 16);
           setScheduledDate (isoString);
+        } else {
+          setScheduledDate ('');
         }
         if (scheduled.premios && scheduled.premios.length > 0) {
           const premiosItems = scheduled.premios.map (sp => ({
@@ -124,6 +126,8 @@ function Sorteo () {
             cantidad: sp.cantidad,
           }));
           setItems (premiosItems);
+        } else {
+          setItems ([]);
         }
         // Desactivar ambos toggles al cargar datos de un sorteo agendado
         setProgramarSorteo (false);
@@ -283,7 +287,7 @@ function Sorteo () {
       } else {
         setItems ([]);
       }
-      // Si hay filtros definidos en el sorteo agendado, activarlos
+      // Activar el filtro si el sorteo agendado tiene provincia o localidad
       if (selected.provincia || selected.localidad) {
         setUsarFiltros (true);
         setAppliedFilter ({
@@ -376,10 +380,7 @@ function Sorteo () {
         const data = await response.json ();
         if (response.ok) {
           toast.success (data.message || 'Sorteo agendado exitosamente.');
-          setNombreSorteo ('');
-          setDescripcion ('');
-          setItems ([]);
-          setScheduledDate ('');
+          resetForm ();
         } else {
           toast.error (data.error || 'Error al agendar el sorteo.');
           setResultado (null);
@@ -394,9 +395,7 @@ function Sorteo () {
         if (response.ok) {
           setResultado (data);
           fetchAvailablePremios ();
-          setNombreSorteo ('');
-          setDescripcion ('');
-          setItems ([]);
+          resetForm ();
           toast.success ('Sorteo realizado exitosamente.');
         } else {
           toast.error (data.error || 'Error al sortear');
@@ -412,8 +411,25 @@ function Sorteo () {
     }
   };
 
-  const handleNuevoSorteo = () => {
+  // Función para reiniciar el formulario a su estado inicial (sin afectar la lista de premios disponibles)
+  const resetForm = () => {
+    setNombreSorteo ('');
+    setDescripcion ('');
+    setItems ([]);
+    setScheduledDate ('');
+    setProvinciaSeleccionada ('');
+    setLocalidadSeleccionada ('');
+    setUsarFiltros (false);
+    setAppliedFilter ({provincia: '', localidad: ''});
+    setProgramarSorteo (false);
+    setSorteoAgendado (false);
+    setSelectedScheduledSorteoId ('');
+    // Nota: availablePremios no se limpia, pues se asume que se vuelve a cargar de la API.
     setResultado (null);
+  };
+
+  const handleNuevoSorteo = () => {
+    resetForm ();
   };
 
   return (
@@ -516,7 +532,7 @@ function Sorteo () {
         </div>}
       {usarFiltros &&
         <div className="sorteo-section">
-          <button onClick={handleAplicarFiltro}>
+          <button onClick={handleAplicarFiltro} className="ejecutar">
             Aplicar Filtro
           </button>
           <p>
