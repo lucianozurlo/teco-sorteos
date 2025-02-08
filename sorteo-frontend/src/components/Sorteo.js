@@ -1,6 +1,6 @@
 // sorteo-frontend/src/components/Sorteo.js
 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {
   DndContext,
   closestCenter,
@@ -22,6 +22,9 @@ import './Sorteo.css';
 import {API_BASE_URL} from '../config';
 import {useLocation} from 'react-router-dom';
 
+//
+// Componente para cada ítem ordenable
+//
 function SortableItem (props) {
   const {id, nombre_item, cantidad, index} = props;
   const {
@@ -51,13 +54,16 @@ function SortableItem (props) {
   );
 }
 
+//
+// Componente Sorteo
+//
 function Sorteo () {
-  // Campos básicos
+  // Campos básicos del sorteo
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
 
-  // Toggle para agendar sorteo y fecha programada
-  const [agendarSorteo, setAgendarSorteo] = useState (false);
+  // Toggle para programar sorteo y fecha programada
+  const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
 
   // Filtros opcionales
@@ -87,7 +93,7 @@ function Sorteo () {
 
   const location = useLocation ();
 
-  // Precarga de datos si se viene de "Sorteos Agendados"
+  // Si se viene de un sorteo agendado, precargar todos los datos (incluyendo premios y filtros)
   useEffect (
     () => {
       if (location.state && location.state.scheduledSorteo) {
@@ -101,16 +107,24 @@ function Sorteo () {
           const isoString = dt.toISOString ().slice (0, 16);
           setScheduledDate (isoString);
         }
-        if (scheduled.sorteopremios && scheduled.sorteopremios.length > 0) {
-          const premiosItems = scheduled.sorteopremios.map (sp => ({
+        // Aquí usamos "scheduled.premios" (el serializer retorna el campo "premios")
+        if (scheduled.premios && scheduled.premios.length > 0) {
+          const premiosItems = scheduled.premios.map (sp => ({
             id: sp.premio.id,
             nombre_item: sp.premio.nombre,
             cantidad: sp.cantidad,
           }));
           setItems (premiosItems);
         }
-        // Forzamos el toggle "Agendar sorteo" a false para cargar los datos en modo sorteo
-        setAgendarSorteo (false);
+        // Para cargar correctamente en el formulario, dejamos desmarcado "Programar sorteo"
+        setProgramarSorteo (false);
+        // Si se usaron filtros en el sorteo agendado, forzamos el toggle de filtros
+        if (scheduled.provincia || scheduled.localidad) {
+          setUsarFiltros (true);
+        } else {
+          setUsarFiltros (false);
+        }
+        // Limpiar el state de navegación para evitar recargas posteriores
         window.history.replaceState ({}, document.title);
       }
     },
@@ -254,10 +268,10 @@ function Sorteo () {
       provincia: provinciaSeleccionada || '',
       localidad: localidadSeleccionada || '',
     };
-    if (agendarSorteo) {
+    if (programarSorteo) {
       if (!scheduledDate) {
         toast.error (
-          'Por favor, ingresá la fecha y hora para agendar el sorteo.'
+          'Por favor, ingresá la fecha y hora para programar el sorteo.'
         );
         return;
       }
@@ -265,7 +279,7 @@ function Sorteo () {
     }
     setCargando (true);
     try {
-      if (agendarSorteo) {
+      if (programarSorteo) {
         const response = await fetch (`${API_BASE_URL}/api/scheduled/`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -388,12 +402,12 @@ function Sorteo () {
         <label>
           <input
             type="checkbox"
-            checked={agendarSorteo}
-            onChange={() => setAgendarSorteo (!agendarSorteo)}
+            checked={programarSorteo}
+            onChange={() => setProgramarSorteo (!programarSorteo)}
           />
           Agendar sorteo
         </label>
-        {agendarSorteo &&
+        {programarSorteo &&
           <div className="sorteo-section">
             <label>Fecha y hora:</label>
             <input
@@ -431,7 +445,7 @@ function Sorteo () {
           Agregar Premio
         </button>
       </div>
-      {/* Lista de premios agregados */}
+      {/* Lista de premios agregados (drag & drop) */}
       {items.length > 0 &&
         <DndContext
           collisionDetection={closestCenter}
@@ -468,7 +482,7 @@ function Sorteo () {
             >
               {cargando
                 ? <ClipLoader size={20} color="#ffffff" />
-                : agendarSorteo ? 'Agendar sorteo' : 'Sortear'}
+                : programarSorteo ? 'Agendar sorteo' : 'Sortear'}
             </button>}
       </div>
       {resultado &&
