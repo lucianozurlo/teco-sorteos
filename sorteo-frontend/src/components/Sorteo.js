@@ -93,7 +93,7 @@ function Sorteo () {
 
   const location = useLocation ();
 
-  // Si se viene de un sorteo agendado, precargar todos los datos (incluyendo premios y filtros)
+  // Precarga de datos si se viene de "Sorteos programados"
   useEffect (
     () => {
       if (location.state && location.state.scheduledSorteo) {
@@ -107,7 +107,6 @@ function Sorteo () {
           const isoString = dt.toISOString ().slice (0, 16);
           setScheduledDate (isoString);
         }
-        // Aquí usamos "scheduled.premios" (el serializer retorna el campo "premios")
         if (scheduled.premios && scheduled.premios.length > 0) {
           const premiosItems = scheduled.premios.map (sp => ({
             id: sp.premio.id,
@@ -116,15 +115,15 @@ function Sorteo () {
           }));
           setItems (premiosItems);
         }
-        // Para cargar correctamente en el formulario, dejamos desmarcado "Programar sorteo"
-        setProgramarSorteo (false);
         // Si se usaron filtros en el sorteo agendado, forzamos el toggle de filtros
         if (scheduled.provincia || scheduled.localidad) {
           setUsarFiltros (true);
         } else {
           setUsarFiltros (false);
         }
-        // Limpiar el state de navegación para evitar recargas posteriores
+        // Forzamos a que el toggle de agendar sorteo quede desmarcado para operar en modo sorteo
+        setProgramarSorteo (false);
+        // Limpiar el state de la navegación para evitar recargas posteriores
         window.history.replaceState ({}, document.title);
       }
     },
@@ -261,6 +260,7 @@ function Sorteo () {
       orden_item: index + 1,
       cantidad: it.cantidad,
     }));
+    // En el payload incluimos provincia y localidad (aunque sean vacíos)
     const payload = {
       nombre: nombreSorteo,
       descripcion: descripcion,
@@ -271,7 +271,7 @@ function Sorteo () {
     if (programarSorteo) {
       if (!scheduledDate) {
         toast.error (
-          'Por favor, ingresá la fecha y hora para programar el sorteo.'
+          'Por favor, ingresá la fecha y hora para agendar el sorteo.'
         );
         return;
       }
