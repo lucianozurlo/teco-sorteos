@@ -22,9 +22,6 @@ import './Sorteo.css';
 import {API_BASE_URL} from '../config';
 import {useLocation} from 'react-router-dom';
 
-//
-// Componente para cada ítem ordenable
-//
 function SortableItem (props) {
   const {id, nombre_item, cantidad, index} = props;
   const {
@@ -54,15 +51,12 @@ function SortableItem (props) {
   );
 }
 
-//
-// Componente Sorteo
-//
 function Sorteo () {
   // Campos básicos del sorteo
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
 
-  // Toggle para agendar sorteo y campo para fecha programada
+  // Toggle para programar sorteo y fecha programada
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
 
@@ -72,10 +66,11 @@ function Sorteo () {
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
   const [localidades, setLocalidades] = useState ([]);
   const [localidadSeleccionada, setLocalidadSeleccionada] = useState ('');
-  // Estado para guardar el filtro aplicado
+
+  // Estado para el filtro "aplicado"
   const [appliedFilter, setAppliedFilter] = useState ({
-    province: '',
-    locality: '',
+    provincia: '',
+    localidad: '',
   });
 
   // Premios a sortear
@@ -98,7 +93,7 @@ function Sorteo () {
 
   const location = useLocation ();
 
-  // Precarga de datos si se viene de "Sorteos programados"
+  // Si se navega desde "Sorteos Programados", cargar todos los datos en el formulario
   useEffect (
     () => {
       if (location.state && location.state.scheduledSorteo) {
@@ -107,25 +102,27 @@ function Sorteo () {
         setDescripcion (scheduled.descripcion || '');
         setProvinciaSeleccionada (scheduled.provincia || '');
         setLocalidadSeleccionada (scheduled.localidad || '');
+        setUsarFiltros (true);
         setAppliedFilter ({
-          province: scheduled.provincia || '',
-          locality: scheduled.localidad || '',
+          provincia: scheduled.provincia || '',
+          localidad: scheduled.localidad || '',
         });
         if (scheduled.fecha_programada) {
           const dt = new Date (scheduled.fecha_programada);
           const isoString = dt.toISOString ().slice (0, 16);
           setScheduledDate (isoString);
         }
-        if (scheduled.premios && scheduled.premios.length > 0) {
-          const premiosItems = scheduled.premios.map (sp => ({
+        if (scheduled.sorteopremios && scheduled.sorteopremios.length > 0) {
+          const premiosItems = scheduled.sorteopremios.map (sp => ({
             id: sp.premio.id,
             nombre_item: sp.premio.nombre,
             cantidad: sp.cantidad,
           }));
           setItems (premiosItems);
         }
-        // Forzar que el toggle de agendar sorteo quede desmarcado para operar en modo sorteo
+        // Al cargar datos desde sorteo agendado, se fuerza el toggle de programar sorteo a false (ya está agendado)
         setProgramarSorteo (false);
+        // Limpiar el state de navegación
         window.history.replaceState ({}, document.title);
       }
     },
@@ -191,6 +188,24 @@ function Sorteo () {
     }
   };
 
+  // Manejador de cambio de provincia: al cambiar, se limpia el filtro aplicado y la localidad
+  const handleProvinciaChange = e => {
+    setProvinciaSeleccionada (e.target.value);
+    setLocalidadSeleccionada ('');
+    setAppliedFilter ({provincia: '', localidad: ''});
+  };
+
+  // Botón para aplicar el filtro
+  const handleAplicarFiltro = () => {
+    setAppliedFilter ({
+      provincia: provinciaSeleccionada,
+      localidad: localidadSeleccionada,
+    });
+    toast.success (
+      `Filtro aplicado: ${provinciaSeleccionada}${localidadSeleccionada ? ', ' + localidadSeleccionada : ''}`
+    );
+  };
+
   const agregarPremioAlSorteo = () => {
     if (!selectedPremioId) {
       toast.error ('Por favor, seleccioná un premio.');
@@ -227,22 +242,6 @@ function Sorteo () {
     toast.success (`Premio "${premio.nombre}" agregado al sorteo.`);
   };
 
-  // (La función eliminarPremioDelSorteo sigue existiendo pero no se usa en este flujo)
-  // const eliminarPremioDelSorteo = id => {
-  //   const premio = items.find (p => p.id === id);
-  //   if (!premio) return;
-  //   setItems (items.filter (p => p.id !== id));
-  //   setAvailablePremios ([
-  //     ...availablePremios,
-  //     {
-  //       id: premio.id,
-  //       nombre: premio.nombre_item,
-  //       stock: premio.cantidad,
-  //     },
-  //   ]);
-  //   toast.info (`Premio "${premio.nombre_item}" eliminado del sorteo.`);
-  // };
-
   const handleDragEnd = event => {
     const {active, over} = event;
     if (active.id !== over.id) {
@@ -250,15 +249,6 @@ function Sorteo () {
       const newIndex = items.findIndex (item => item.id === over.id);
       setItems (arrayMove (items, oldIndex, newIndex));
     }
-  };
-
-  // Función para aplicar el filtro de provincia/localidad
-  const handleApplyFilter = () => {
-    setAppliedFilter ({
-      province: provinciaSeleccionada,
-      locality: localidadSeleccionada,
-    });
-    toast.info ('Filtro aplicado.');
   };
 
   const handleSortear = async () => {
@@ -275,13 +265,13 @@ function Sorteo () {
       nombre: nombreSorteo,
       descripcion: descripcion,
       premios: premiosConOrden,
-      provincia: appliedFilter.province || '',
-      localidad: appliedFilter.locality || '',
+      provincia: appliedFilter.provincia || '',
+      localidad: appliedFilter.localidad || '',
     };
     if (programarSorteo) {
       if (!scheduledDate) {
         toast.error (
-          'Por favor, ingresá la fecha y hora para agendar el sorteo.'
+          'Por favor, ingresá la fecha y hora para programar el sorteo.'
         );
         return;
       }
@@ -297,13 +287,13 @@ function Sorteo () {
         });
         const data = await response.json ();
         if (response.ok) {
-          toast.success (data.message || 'Sorteo agendado exitosamente.');
+          toast.success (data.message || 'Sorteo programado exitosamente.');
           setNombreSorteo ('');
           setDescripcion ('');
           setItems ([]);
           setScheduledDate ('');
         } else {
-          toast.error (data.error || 'Error al agendar el sorteo.');
+          toast.error (data.error || 'Error al programar el sorteo.');
           setResultado (null);
         }
       } else {
@@ -341,7 +331,6 @@ function Sorteo () {
   return (
     <div className="sorteo-container">
       <h1>Realizar Sorteo</h1>
-      {/* Encabezado: Nombre y Descripción en la misma línea */}
       <div className="sorteo-header">
         <div className="sorteo-input-group">
           <label>Nombre del sorteo:</label>
@@ -363,7 +352,6 @@ function Sorteo () {
         </div>
       </div>
       <hr />
-      {/* Filtros: Toggle de restricción y botones para aplicar filtro */}
       <div className="sorteo-section">
         <label>
           <input
@@ -380,7 +368,7 @@ function Sorteo () {
             <label>Provincia:</label>
             <select
               value={provinciaSeleccionada}
-              onChange={e => setProvinciaSeleccionada (e.target.value)}
+              onChange={handleProvinciaChange}
             >
               <option value="">-- Seleccionar provincia --</option>
               {provincias.map ((prov, idx) => (
@@ -397,7 +385,7 @@ function Sorteo () {
               onChange={e => setLocalidadSeleccionada (e.target.value)}
               disabled={!provinciaSeleccionada}
             >
-              <option value="">-- Seleccionar localidad (opcional) --</option>
+              <option value="">-- Seleccionar localidad --</option>
               {localidades.map ((loc, idx) => (
                 <option key={idx} value={loc}>
                   {loc}
@@ -405,26 +393,14 @@ function Sorteo () {
               ))}
             </select>
           </div>
-          <div className="half" style={{alignSelf: 'flex-end'}}>
-            <button onClick={handleApplyFilter} className="ejecutar">
-              Aplicar filtro
-            </button>
-          </div>
         </div>}
-      {/* Mostrar el filtro aplicado */}
       {usarFiltros &&
-        appliedFilter.province &&
         <div className="sorteo-section">
-          <p>
-            Filtro aplicado:
-            {` Provincia: ${appliedFilter.province}`}
-            {appliedFilter.locality
-              ? `, Localidad: ${appliedFilter.locality}`
-              : ''}
-          </p>
+          <button onClick={handleAplicarFiltro} className="ejecutar">
+            Aplicar Filtro
+          </button>
         </div>}
       <hr />
-      {/* Toggle para agendar sorteo */}
       <div className="sorteo-section">
         <label>
           <input
@@ -432,7 +408,7 @@ function Sorteo () {
             checked={programarSorteo}
             onChange={() => setProgramarSorteo (!programarSorteo)}
           />
-          Agendar sorteo
+          Programar sorteo
         </label>
         {programarSorteo &&
           <div className="sorteo-section">
@@ -445,9 +421,8 @@ function Sorteo () {
           </div>}
       </div>
       <hr />
-      {/* Agregar Premios */}
-      <h4>Agregar Premios al Sorteo</h4>
       <div className="sorteo-section">
+        <h4>Agregar Premios al Sorteo</h4>
         <label>Seleccioná un premio:</label>
         <select
           value={selectedPremioId}
@@ -472,7 +447,6 @@ function Sorteo () {
           Agregar Premio
         </button>
       </div>
-      {/* Lista de premios agregados (drag & drop) */}
       {items.length > 0 &&
         <DndContext
           collisionDetection={closestCenter}
@@ -509,7 +483,7 @@ function Sorteo () {
             >
               {cargando
                 ? <ClipLoader size={20} color="#ffffff" />
-                : programarSorteo ? 'Agendar sorteo' : 'Sortear'}
+                : programarSorteo ? 'Programar sorteo' : 'Sortear'}
             </button>}
       </div>
       {resultado &&
