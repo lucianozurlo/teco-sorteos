@@ -56,11 +56,11 @@ function Sorteo () {
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
 
-  // Toggle para programar sorteo (por defecto en la página de sorteo queda desmarcado)
+  // Toggle para programar sorteo y fecha programada
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
 
-  // Filtros (opcional)
+  // Filtros opcionales
   const [usarFiltros, setUsarFiltros] = useState (false);
   const [provincias, setProvincias] = useState ([]);
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
@@ -87,28 +87,20 @@ function Sorteo () {
 
   const location = useLocation ();
 
-  // Precargar datos si se navega desde "Sorteos programados"
+  // Precarga de datos si se viene de "Sorteos programados"
   useEffect (
     () => {
       if (location.state && location.state.scheduledSorteo) {
         const scheduled = location.state.scheduledSorteo;
         setNombreSorteo (scheduled.nombre || '');
         setDescripcion (scheduled.descripcion || '');
-        // Precargar provincia y localidad, si existen
-        if (scheduled.provincia) {
-          setProvinciaSeleccionada (scheduled.provincia);
-        }
-        if (scheduled.localidad) {
-          setLocalidadSeleccionada (scheduled.localidad);
-        }
-        // Precargar fecha programada en el input, pero forzar el toggle a false
+        setProvinciaSeleccionada (scheduled.provincia || '');
+        setLocalidadSeleccionada (scheduled.localidad || '');
         if (scheduled.fecha_programada) {
-          // Convertir la fecha al formato adecuado para un input datetime-local
           const dt = new Date (scheduled.fecha_programada);
           const isoString = dt.toISOString ().slice (0, 16);
           setScheduledDate (isoString);
         }
-        // Precargar los premios asignados
         if (scheduled.sorteopremios && scheduled.sorteopremios.length > 0) {
           const premiosItems = scheduled.sorteopremios.map (sp => ({
             id: sp.premio.id,
@@ -117,7 +109,7 @@ function Sorteo () {
           }));
           setItems (premiosItems);
         }
-        // Forzar el toggle de "Programar sorteo" a desmarcado (false)
+        // Forzamos el toggle "Programar sorteo" a false para cargar los datos
         setProgramarSorteo (false);
         // Limpiar el state de la navegación para evitar recargas posteriores
         window.history.replaceState ({}, document.title);
@@ -126,6 +118,7 @@ function Sorteo () {
     [location.state]
   );
 
+  // Cargar provincias
   useEffect (
     () => {
       if (usarFiltros) {
@@ -146,6 +139,7 @@ function Sorteo () {
     [usarFiltros]
   );
 
+  // Cargar localidades según la provincia
   useEffect (
     () => {
       if (usarFiltros && provinciaSeleccionada) {
@@ -166,6 +160,7 @@ function Sorteo () {
     [usarFiltros, provinciaSeleccionada]
   );
 
+  // Cargar premios disponibles
   useEffect (() => {
     fetchAvailablePremios ();
   }, []);
@@ -253,15 +248,14 @@ function Sorteo () {
       orden_item: index + 1,
       cantidad: it.cantidad,
     }));
+    // En el payload incluimos provincia y localidad (aunque sean vacíos)
     const payload = {
       nombre: nombreSorteo,
       descripcion: descripcion,
       premios: premiosConOrden,
+      provincia: provinciaSeleccionada || '',
+      localidad: localidadSeleccionada || '',
     };
-    if (usarFiltros) {
-      payload.provincia = provinciaSeleccionada;
-      payload.localidad = localidadSeleccionada;
-    }
     if (programarSorteo) {
       if (!scheduledDate) {
         toast.error (
