@@ -46,6 +46,9 @@ class Sorteo(models.Model):
     premios = models.ManyToManyField(Premio, through='SorteoPremio')
     fecha_hora = models.DateTimeField(auto_now_add=True)
     fecha_programada = models.DateTimeField(null=True, blank=True)
+    # Nuevos campos para almacenar información adicional en sorteos agendados:
+    provincia = models.CharField(max_length=255, blank=True, default='')
+    localidad = models.CharField(max_length=255, blank=True, default='')
 
     def __str__(self):
         return self.nombre

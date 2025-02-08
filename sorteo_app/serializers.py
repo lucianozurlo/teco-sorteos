@@ -1,7 +1,12 @@
 # sorteo_app/serializers.py
 
 from rest_framework import serializers
-from .models import Participante, RegistroActividad, Sorteo, SorteoPremio, ResultadoSorteo, Premio
+from .models import Participante, RegistroActividad, Sorteo, SorteoPremio, ResultadoSorteo, Premio, UserProfile
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['localidad', 'provincia']
 
 class ParticipanteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,12 +37,12 @@ class SorteoSimpleSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre']
 
 class SorteoSerializer(serializers.ModelSerializer):
-    premios = SorteoPremioSerializer(many=True, source='sorteopremios')
-    fecha_programada = serializers.DateTimeField(required=False, allow_null=True)
+    premios = SorteoPremioSerializer(many=True, source='sorteopremios', required=False)
 
     class Meta:
         model = Sorteo
-        fields = ['id', 'nombre', 'descripcion', 'fecha_hora', 'fecha_programada', 'premios']
+        # Se incluyen los nuevos campos: fecha_programada, provincia y localidad
+        fields = ['id', 'nombre', 'descripcion', 'fecha_hora', 'fecha_programada', 'provincia', 'localidad', 'premios']
 
     def validate_nombre(self, value):
         if not value.strip():
@@ -45,7 +50,7 @@ class SorteoSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        premios_data = validated_data.pop('sorteopremios')
+        premios_data = validated_data.pop('sorteopremios', [])
         sorteo = Sorteo.objects.create(**validated_data)
         for premio_data in premios_data:
             premio = premio_data['premio']
@@ -76,7 +81,6 @@ class ResultadoSorteoSerializer(serializers.ModelSerializer):
         fields = ['id', 'sorteo', 'participante', 'premio', 'fecha']
 
     def get_sorteo(self, obj):
-        # Devuelve un diccionario con el id y nombre del sorteo
         if obj.sorteo:
             return {'id': obj.sorteo.id, 'nombre': obj.sorteo.nombre}
         return None
