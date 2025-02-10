@@ -21,7 +21,7 @@ import {API_BASE_URL} from '../config';
 import {useLocation} from 'react-router-dom';
 
 function SortableItem (props) {
-  const {id, nombre_item, cantidad, index} = props;
+  const {id, nombre_item, cantidad, index, onDelete} = props;
   const {
     attributes,
     listeners,
@@ -30,6 +30,7 @@ function SortableItem (props) {
     transition,
     isDragging,
   } = useSortable ({id});
+
   const style = {
     transform: CSS.Transform.toString (transform),
     transition,
@@ -39,12 +40,43 @@ function SortableItem (props) {
     border: '1px solid #ccc',
     borderRadius: '4px',
     backgroundColor: '#fff',
-    cursor: 'grab',
   };
 
   return (
-    <li ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <strong>{index + 1}°</strong> {nombre_item} - Cantidad: {cantidad}
+    <li ref={setNodeRef} style={style} {...attributes}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        {/* El área de arrastre se asigna al span con los listeners */}
+        <span {...listeners} style={{cursor: 'grab'}}>
+          <strong>{index + 1}°</strong> {nombre_item} - Cantidad: {cantidad}
+        </span>
+        <button
+          className="rojo d-flex"
+          onClick={e => {
+            e.stopPropagation ();
+            console.log ('Eliminar clicked for id:', id);
+            onDelete (id);
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 384 512"
+            style={{
+              width: '16px',
+              height: '16px',
+              fill: 'white',
+            }}
+          >
+            <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+          </svg>
+          Eliminar
+        </button>
+      </div>
     </li>
   );
 }
@@ -63,6 +95,19 @@ function Modal({children, onClose}) {
 }
 
 function Sorteo () {
+  // Función para limpiar los mensajes de error
+  const parseErrorMessage = errorMsg => {
+    if (typeof errorMsg === 'string') {
+      let cleaned = errorMsg.replace (/[\[\]]/g, '');
+      cleaned = cleaned.replace (
+        /ErrorDetail\(string='(.*?)', code='.*?'\)/,
+        '$1'
+      );
+      return cleaned;
+    }
+    return errorMsg;
+  };
+
   // Control del accordion: "crear" o "realizar"
   const [activeSection, setActiveSection] = useState ('crear');
 
@@ -93,6 +138,9 @@ function Sorteo () {
   });
   const [filteredParticipants, setFilteredParticipants] = useState ([]);
 
+  // Estado para el total de participantes activos (la base)
+  const [participantsCount, setParticipantsCount] = useState (null);
+
   // Premios a sortear
   const [items, setItems] = useState ([]);
   const [availablePremios, setAvailablePremios] = useState ([]);
@@ -113,6 +161,21 @@ function Sorteo () {
   );
 
   const location = useLocation ();
+
+  // Al iniciar, obtener la base activa de participantes
+  useEffect (() => {
+    fetch (`${API_BASE_URL}/api/lists/`)
+      .then (res => res.json ())
+      .then (data => {
+        setParticipantsCount (
+          data.participantes ? data.participantes.length : 0
+        );
+      })
+      .catch (err => {
+        console.error (err);
+        toast.error ('Error al cargar participantes.');
+      });
+  }, []);
 
   // Si se navega desde sorteos agendados, cargar sus datos
   useEffect (
@@ -136,10 +199,18 @@ function Sorteo () {
           setScheduledDate ('');
         }
         if (scheduled.premios && scheduled.premios.length > 0) {
-          const premiosItems = scheduled.premios.map (sp => ({
-            id: sp.premio.id,
-            nombre_item: sp.premio.nombre,
-            cantidad: sp.cantidad,
+          const premiosConStock = scheduled.premios.filter (
+            p => p.premio.stock > 0
+          );
+          scheduled.premios.forEach (p => {
+            if (p.premio.stock <= 0) {
+              toast.error (`No hay stock para el premio ${p.premio.nombre}`);
+            }
+          });
+          const premiosItems = premiosConStock.map (p => ({
+            id: p.premio.id,
+            nombre_item: p.premio.nombre,
+            cantidad: p.cantidad,
           }));
           setItems (premiosItems);
         } else {
@@ -261,7 +332,7 @@ function Sorteo () {
     }
   };
 
-  // Al seleccionar un sorteo agendado, cargar sus datos
+  // Al seleccionar un sorteo agendado, cargar sus datos (filtrando premios sin stock)
   const handleScheduledSorteoSelect = e => {
     const id = e.target.value;
     setSelectedScheduledSorteoId (id);
@@ -279,7 +350,15 @@ function Sorteo () {
         setScheduledDate ('');
       }
       if (selected.premios && selected.premios.length > 0) {
-        const premiosItems = selected.premios.map (p => ({
+        const premiosConStock = selected.premios.filter (
+          p => p.premio.stock > 0
+        );
+        selected.premios.forEach (p => {
+          if (p.premio.stock <= 0) {
+            toast.error (`No hay stock para el premio ${p.premio.nombre}`);
+          }
+        });
+        const premiosItems = premiosConStock.map (p => ({
           id: p.premio.id,
           nombre_item: p.premio.nombre,
           cantidad: p.cantidad,
@@ -320,23 +399,58 @@ function Sorteo () {
       );
       return;
     }
+    // Agregar el premio guardando también la propiedad "stock"
     setItems ([
       ...items,
       {
         id: premio.id,
         nombre_item: premio.nombre,
         cantidad: selectedPremioCantidad,
+        stock: premio.stock, // Guardamos el stock original
       },
     ]);
+    // Quitar el premio de la lista de disponibles
     setAvailablePremios (availablePremios.filter (p => p.id !== premio.id));
     setSelectedPremioId ('');
     setSelectedPremioCantidad (1);
     toast.success (`Premio "${premio.nombre}" agregado al sorteo.`);
   };
 
+  // Función para eliminar un premio de la lista
+  const handleEliminarPremio = id => {
+    // Buscar el premio que se eliminará en el estado items
+    const removedPrize = items.find (item => String (item.id) === String (id));
+    // Actualizar items eliminando el premio
+    setItems (prevItems =>
+      prevItems.filter (item => String (item.id) !== String (id))
+    );
+    // Si se encontró el premio eliminado, reintegrarlo a availablePremios
+    if (removedPrize) {
+      setAvailablePremios (prevAvailable => {
+        // Evitamos duplicados
+        const exists = prevAvailable.find (
+          p => String (p.id) === String (removedPrize.id)
+        );
+        if (!exists) {
+          // Se agrega en el formato esperado en el desplegable: { id, nombre, stock }
+          return [
+            ...prevAvailable,
+            {
+              id: removedPrize.id,
+              nombre: removedPrize.nombre_item,
+              stock: removedPrize.stock,
+            },
+          ];
+        }
+        return prevAvailable;
+      });
+    }
+  };
+
   // Drag & drop: se usa el manejador onDragEnd para reordenar los premios
   const handleDragEnd = event => {
     const {active, over} = event;
+    if (!over || items.length < 2) return;
     if (active.id !== over.id) {
       const oldIndex = items.findIndex (item => item.id === active.id);
       const newIndex = items.findIndex (item => item.id === over.id);
@@ -421,7 +535,9 @@ function Sorteo () {
           toast.success (data.message || 'Sorteo agendado exitosamente.');
           resetForm ();
         } else {
-          toast.error (data.error || 'Error al agendar el sorteo.');
+          toast.error (
+            parseErrorMessage (data.error) || 'Error al agendar el sorteo.'
+          );
         }
       } else {
         // Caso: Realizar sorteo de forma inmediata
@@ -435,7 +551,6 @@ function Sorteo () {
           setModalResult (data);
           setShowModal (true);
           fetchAvailablePremios ();
-          // Si se seleccionó un sorteo agendado, se elimina de la lista
           if (selectedScheduledSorteoId) {
             await fetch (
               `${API_BASE_URL}/api/scheduled/${selectedScheduledSorteoId}/`,
@@ -447,7 +562,7 @@ function Sorteo () {
           resetForm ();
           toast.success ('Sorteo realizado exitosamente.');
         } else {
-          toast.error (data.error || 'Error al sortear');
+          toast.error (parseErrorMessage (data.error) || 'Error al sortear');
         }
       }
     } catch (err) {
@@ -647,6 +762,7 @@ function Sorteo () {
                         nombre_item={item.nombre_item}
                         cantidad={item.cantidad}
                         index={index}
+                        onDelete={handleEliminarPremio}
                       />
                     ))}
                   </ul>
@@ -691,11 +807,13 @@ function Sorteo () {
                     </ul>
                   : <p>No hay participantes que cumplan el filtro.</p>
               : <p>
-                  {filteredParticipants.length > 0
-                    ? filteredParticipants.length
-                    : 'No se cargaron participantes'}
+                  Se realizará el sorteo sobre la base activa de participantes con
                   {' '}
-                  en la base.
+                  {participantsCount !== null
+                    ? participantsCount
+                    : 'cargando...'}
+                  {' '}
+                  participantes.
                 </p>}
           </div>
           <div className="sortear">
@@ -740,6 +858,7 @@ function Sorteo () {
           onClose={() => {
             setShowModal (false);
             resetForm ();
+            setActiveSection ('crear');
           }}
         >
           <h2>Resultado del Sorteo</h2>
