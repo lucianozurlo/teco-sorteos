@@ -98,7 +98,7 @@ function Sorteo () {
   // Función para limpiar los mensajes de error
   const parseErrorMessage = errorMsg => {
     if (typeof errorMsg === 'string') {
-      let cleaned = errorMsg.replace (/[\[\]]/g, '');
+      let cleaned = errorMsg.replace (/[[]\]]/g, '');
       cleaned = cleaned.replace (
         /ErrorDetail\(string='(.*?)', code='.*?'\)/,
         '$1'
