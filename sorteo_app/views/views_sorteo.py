@@ -103,7 +103,7 @@ def realizar_sorteo(request):
             participantes=participants_info,
             ganadores=winners_info,
         )
-
+        
         # Registrar la actividad (si se hace)
         RegistroActividad.objects.create(
             evento=f"Sorteo (ID={sorteo.id}) '{sorteo.nombre}' realizado con {total_premios} premios."
