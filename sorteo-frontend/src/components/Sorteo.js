@@ -562,7 +562,7 @@ function Sorteo () {
               </div>
             </div>}
           {usarFiltros &&
-            <div className="sorteo-section">
+            <div className="sorteo-section filtrotxt">
               <p>
                 {appliedFilter.provincia || appliedFilter.localidad
                   ? `Filtro aplicado: ${appliedFilter.provincia}${appliedFilter.localidad ? ', ' + appliedFilter.localidad : ''}`

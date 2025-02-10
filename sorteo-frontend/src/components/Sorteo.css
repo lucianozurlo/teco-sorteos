@@ -100,6 +100,12 @@ label.check {
     margin-right: 0;
 }
 
+.sorteo-section.filtrotxt p {
+    font-size: .95rem;
+    margin-left: 5px;
+}
+
+
 .d-flex {
     display: flex;
     gap: 10px;
@@ -182,6 +188,7 @@ label.check {
     border: 1px solid var(--neutral-border);
     border-radius: 4px;
     font-size: 0.9rem;
+    width: auto;
 }
 
 .scheduled-item button {
