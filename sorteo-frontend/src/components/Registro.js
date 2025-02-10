@@ -20,9 +20,12 @@ function Registro () {
   const [cargandoActividad, setCargandoActividad] = useState (false);
 
   // Estados para filtros en Sorteos Realizados
+  // Si ESLint reclama estas variables, se pueden deshabilitar localmente
+  /* eslint-disable no-unused-vars */
   const [filtroSorteoNombre, setFiltroSorteoNombre] = useState ('');
   const [filtroSorteoDescripcion, setFiltroSorteoDescripcion] = useState ('');
   const [filtroSorteoFecha, setFiltroSorteoFecha] = useState ('');
+  /* eslint-enable no-unused-vars */
   const [sortConfigSorteo, setSortConfigSorteo] = useState ({
     key: 'fecha_hora',
     direction: 'desc',
@@ -87,8 +90,8 @@ function Registro () {
     fetchActividad ();
   }, []);
 
-  // Opciones de filtro para Sorteos Realizados (si se desea implementarlas en el futuro)
-  // Se pueden dejar si se planea usarlas, pero por ahora se eliminan si no se utilizan.
+  // Opciones de filtro para Sorteos Realizados (si las necesitas)
+  // En este ejemplo se omiten explícitamente los setters si no se usan más allá de onChange
 
   const requestSortSorteo = key => {
     let direction = 'asc';
