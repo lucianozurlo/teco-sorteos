@@ -1,6 +1,5 @@
-// sorteo-frontend/src/components/Sorteo.js
-
-import React, {useState, useEffect} from 'react';
+// src/components/Sorteo.js
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   DndContext,
   KeyboardSensor,
@@ -8,7 +7,12 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import {arrayMove, useSortable} from '@dnd-kit/sortable';
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import {toast} from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
@@ -59,6 +63,9 @@ function Modal({children, onClose}) {
 }
 
 function Sorteo () {
+  // Control del accordion: "crear" o "realizar"
+  const [activeSection, setActiveSection] = useState ('crear');
+
   // Campos básicos
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
@@ -84,8 +91,6 @@ function Sorteo () {
     provincia: '',
     localidad: '',
   });
-
-  // Lista de participantes filtrados (para el resumen)
   const [filteredParticipants, setFilteredParticipants] = useState ([]);
 
   // Premios a sortear
@@ -94,9 +99,9 @@ function Sorteo () {
   const [selectedPremioId, setSelectedPremioId] = useState ('');
   const [selectedPremioCantidad, setSelectedPremioCantidad] = useState (1);
 
-  // Estado para mostrar el resultado en modal
-  const [modalResult, setModalResult] = useState (null);
+  // Estado para el modal
   const [showModal, setShowModal] = useState (false);
+  const [modalResult, setModalResult] = useState (null);
 
   // Indicador de carga
   const [cargando, setCargando] = useState (false);
@@ -227,17 +232,6 @@ function Sorteo () {
     toast.success (filtroTexto);
   };
 
-  // Manejador para el checkbox "¿Restringir por provincia/localidad?"
-  const handleUsarFiltrosChange = () => {
-    const nuevoValor = !usarFiltros;
-    setUsarFiltros (nuevoValor);
-    if (!nuevoValor) {
-      setProvinciaSeleccionada ('');
-      setLocalidadSeleccionada ('');
-      setAppliedFilter ({provincia: '', localidad: ''});
-    }
-  };
-
   // Manejador para el checkbox "Agendar sorteo"
   const handleProgramarSorteoChange = () => {
     const nuevoValor = !programarSorteo;
@@ -340,7 +334,7 @@ function Sorteo () {
     toast.success (`Premio "${premio.nombre}" agregado al sorteo.`);
   };
 
-  // Función para manejar el drag and drop
+  // Drag & drop: se usa el manejador onDragEnd para reordenar los premios
   const handleDragEnd = event => {
     const {active, over} = event;
     if (active.id !== over.id) {
@@ -350,29 +344,31 @@ function Sorteo () {
     }
   };
 
-  // Función para obtener participantes filtrados (para mostrar un resumen)
-  const fetchFilteredParticipants = async () => {
-    try {
-      const response = await fetch (`${API_BASE_URL}/api/lists/`);
-      const data = await response.json ();
-      const allParticipants = data.participantes || [];
-      const filtered = allParticipants.filter (p => {
-        let match = true;
-        if (appliedFilter.provincia) {
-          match = match && p.provincia === appliedFilter.provincia;
-        }
-        if (appliedFilter.localidad) {
-          match = match && p.localidad === appliedFilter.localidad;
-        }
-        return match;
-      });
-      // Se actualiza el estado (aunque eslint advierta, es necesario para el render)
-      setFilteredParticipants (filtered);
-    } catch (error) {
-      console.error (error);
-      toast.error ('Error al cargar participantes.');
-    }
-  };
+  // Función para obtener participantes filtrados (o totales si no hay filtro)
+  const fetchFilteredParticipants = useCallback (
+    async () => {
+      try {
+        const response = await fetch (`${API_BASE_URL}/api/lists/`);
+        const data = await response.json ();
+        const allParticipants = data.participantes || [];
+        const filtered = allParticipants.filter (p => {
+          let match = true;
+          if (appliedFilter.provincia) {
+            match = match && p.provincia === appliedFilter.provincia;
+          }
+          if (appliedFilter.localidad) {
+            match = match && p.localidad === appliedFilter.localidad;
+          }
+          return match;
+        });
+        setFilteredParticipants (filtered);
+      } catch (error) {
+        console.error (error);
+        toast.error ('Error al cargar participantes.');
+      }
+    },
+    [appliedFilter]
+  );
 
   useEffect (
     () => {
@@ -382,7 +378,7 @@ function Sorteo () {
         setFilteredParticipants ([]);
       }
     },
-    [usarFiltros, appliedFilter]
+    [usarFiltros, appliedFilter, fetchFilteredParticipants]
   );
 
   const handleSortear = async () => {
@@ -451,7 +447,6 @@ function Sorteo () {
     }
   };
 
-  // Función para reiniciar el formulario (sin afectar availablePremios)
   const resetForm = () => {
     setNombreSorteo ('');
     setDescripcion ('');
@@ -464,246 +459,268 @@ function Sorteo () {
     setProgramarSorteo (false);
     setSorteoAgendado (false);
     setSelectedScheduledSorteoId ('');
-    setModalResult (null);
   };
 
   return (
     <div className="sorteo-container">
       <h1>Realizar Sorteo</h1>
-      {/* Se elimina el bloque de accordion headers para siempre mostrar el formulario completo */}
-      <div className="accordion-content">
-        <div className="sorteo-section">
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={sorteoAgendado}
-              onChange={handleSorteoAgendadoChange}
-            />
-            Sorteo agendado
-          </label>
-          {sorteoAgendado &&
-            <div className="sorteo-section">
-              <label>Seleccioná un sorteo agendado:</label>
-              <select
-                value={selectedScheduledSorteoId}
-                onChange={handleScheduledSorteoSelect}
-              >
-                <option value="">-- Seleccionar sorteo agendado --</option>
-                {scheduledSorteos.map (sorteo => (
-                  <option key={sorteo.id} value={sorteo.id}>
-                    {sorteo.nombre}
-                    {' '}
-                    (
-                    {new Date (sorteo.fecha_programada).toLocaleString ()}
-                    )
-                  </option>
-                ))}
-              </select>
-            </div>}
-        </div>
-        <div className="sorteo-header">
-          <div className="sorteo-input-group">
-            <label>Nombre del sorteo:</label>
-            <input
-              type="text"
-              value={nombreSorteo}
-              onChange={e => setNombreSorteo (e.target.value)}
-              placeholder="Nombre del sorteo"
-            />
-          </div>
-          <div className="sorteo-input-group">
-            <label>Descripción:</label>
-            <input
-              type="text"
-              value={descripcion}
-              onChange={e => setDescripcion (e.target.value)}
-              placeholder="Descripción del sorteo"
-            />
-          </div>
-        </div>
-        <hr />
-        <div className="sorteo-section">
-          <label>
-            <input
-              type="checkbox"
-              checked={usarFiltros}
-              onChange={handleUsarFiltrosChange}
-            />
-            ¿Restringir por provincia/localidad?
-          </label>
-        </div>
-        {usarFiltros &&
-          <div className="sorteo-section d-flex">
-            <div className="half">
-              <label>Provincia:</label>
-              <select
-                value={provinciaSeleccionada}
-                onChange={handleProvinciaChange}
-              >
-                <option value="">-- Seleccionar provincia --</option>
-                {provincias.map ((prov, idx) => (
-                  <option key={idx} value={prov}>
-                    {prov}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="half">
-              <label>Localidad:</label>
-              <select
-                value={localidadSeleccionada}
-                onChange={e => setLocalidadSeleccionada (e.target.value)}
-                disabled={!provinciaSeleccionada}
-              >
-                <option value="">-- Seleccionar localidad --</option>
-                {localidades.map ((loc, idx) => (
-                  <option key={idx} value={loc}>
-                    {loc}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="half bottom">
-              <button onClick={handleAplicarFiltro}>Aplicar Filtro</button>
-            </div>
-          </div>}
-        {usarFiltros &&
+      {activeSection === 'crear' &&
+        <div className="accordion-content">
           <div className="sorteo-section">
-            <p>
-              {appliedFilter.provincia || appliedFilter.localidad
-                ? `Filtro aplicado: ${appliedFilter.provincia}${appliedFilter.localidad ? ', ' + appliedFilter.localidad : ''}`
-                : 'No se aplicó ningún filtro'}
-            </p>
-          </div>}
-        <hr />
-        <div className="sorteo-section">
-          <label>
-            <input
-              type="checkbox"
-              checked={programarSorteo}
-              onChange={handleProgramarSorteoChange}
-            />
-            Agendar sorteo
-          </label>
-          {programarSorteo &&
-            <div className="sorteo-section">
-              <label>Fecha y hora:</label>
+            <label className="check">
               <input
-                type="datetime-local"
-                value={scheduledDate}
-                onChange={e => setScheduledDate (e.target.value)}
+                type="checkbox"
+                checked={sorteoAgendado}
+                onChange={handleSorteoAgendadoChange}
               />
-            </div>}
-        </div>
-        <hr />
-        <div className="sorteo-section">
-          <h4>Agregar Premios al Sorteo</h4>
-          <label>Seleccioná un premio:</label>
-          <select
-            value={selectedPremioId}
-            onChange={e => setSelectedPremioId (e.target.value)}
-          >
-            <option value="">-- Seleccionar premio --</option>
-            {availablePremios.map (premio => (
-              <option key={premio.id} value={premio.id}>
-                {premio.nombre} (Stock: {premio.stock})
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            placeholder="Cantidad"
-            value={selectedPremioCantidad}
-            onChange={e => setSelectedPremioCantidad (Number (e.target.value))}
-            min="1"
-            style={{marginLeft: '10px', width: '60px'}}
-          />
-          <button onClick={agregarPremioAlSorteo} style={{marginLeft: '10px'}}>
-            Agregar Premio
-          </button>
-        </div>
-        {items.length > 0 &&
+              Sorteo agendado
+            </label>
+            {sorteoAgendado &&
+              <div className="sorteo-section">
+                <label>Seleccioná un sorteo agendado:</label>
+                <select
+                  value={selectedScheduledSorteoId}
+                  onChange={handleScheduledSorteoSelect}
+                >
+                  <option value="">-- Seleccionar sorteo agendado --</option>
+                  {scheduledSorteos.map (sorteo => (
+                    <option key={sorteo.id} value={sorteo.id}>
+                      {sorteo.nombre}
+                      {' '}
+                      (
+                      {new Date (sorteo.fecha_programada).toLocaleString ()}
+                      )
+                    </option>
+                  ))}
+                </select>
+              </div>}
+          </div>
+          <div className="sorteo-header">
+            <div className="sorteo-input-group">
+              <label>Nombre del sorteo:</label>
+              <input
+                type="text"
+                value={nombreSorteo}
+                onChange={e => setNombreSorteo (e.target.value)}
+                placeholder="Nombre del sorteo"
+              />
+            </div>
+            <div className="sorteo-input-group">
+              <label>Descripción:</label>
+              <input
+                type="text"
+                value={descripcion}
+                onChange={e => setDescripcion (e.target.value)}
+                placeholder="Descripción del sorteo"
+              />
+            </div>
+          </div>
+          <hr />
           <div className="sorteo-section">
-            <h4>Premios agregados</h4>
-            <ul className="sorteo-list">
-              {items.map ((item, index) => (
-                <SortableItem
-                  key={item.id}
-                  id={item.id}
-                  nombre_item={item.nombre_item}
-                  cantidad={item.cantidad}
-                  index={index}
+            <label>
+              <input
+                type="checkbox"
+                checked={usarFiltros}
+                onChange={() => setUsarFiltros (!usarFiltros)}
+              />
+              ¿Restringir por provincia/localidad?
+            </label>
+          </div>
+          {usarFiltros &&
+            <div className="sorteo-section d-flex">
+              <div className="half">
+                <label>Provincia:</label>
+                <select
+                  value={provinciaSeleccionada}
+                  onChange={handleProvinciaChange}
+                >
+                  <option value="">-- Seleccionar provincia --</option>
+                  {provincias.map ((prov, idx) => (
+                    <option key={idx} value={prov}>
+                      {prov}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="half">
+                <label>Localidad:</label>
+                <select
+                  value={localidadSeleccionada}
+                  onChange={e => setLocalidadSeleccionada (e.target.value)}
+                  disabled={!provinciaSeleccionada}
+                >
+                  <option value="">-- Seleccionar localidad --</option>
+                  {localidades.map ((loc, idx) => (
+                    <option key={idx} value={loc}>
+                      {loc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="half bottom">
+                <button onClick={handleAplicarFiltro}>Aplicar Filtro</button>
+              </div>
+            </div>}
+          {usarFiltros &&
+            <div className="sorteo-section">
+              <p>
+                {appliedFilter.provincia || appliedFilter.localidad
+                  ? `Filtro aplicado: ${appliedFilter.provincia}${appliedFilter.localidad ? ', ' + appliedFilter.localidad : ''}`
+                  : 'No se aplicó ningún filtro'}
+              </p>
+            </div>}
+          <hr />
+          <div className="sorteo-section">
+            <label>
+              <input
+                type="checkbox"
+                checked={programarSorteo}
+                onChange={handleProgramarSorteoChange}
+              />
+              Agendar sorteo
+            </label>
+            {programarSorteo &&
+              <div className="sorteo-section">
+                <label>Fecha y hora:</label>
+                <input
+                  type="datetime-local"
+                  value={scheduledDate}
+                  onChange={e => setScheduledDate (e.target.value)}
                 />
+              </div>}
+          </div>
+          <hr />
+          <div className="sorteo-section">
+            <h4>Agregar Premios al Sorteo</h4>
+            <label>Seleccioná un premio:</label>
+            <select
+              value={selectedPremioId}
+              onChange={e => setSelectedPremioId (e.target.value)}
+            >
+              <option value="">-- Seleccionar premio --</option>
+              {availablePremios.map (premio => (
+                <option key={premio.id} value={premio.id}>
+                  {premio.nombre} (Stock: {premio.stock})
+                </option>
               ))}
-            </ul>
-          </div>}
-      </div>
-      <div className="accordion-content">
-        <h2>Resumen del sorteo</h2>
-        <p>
-          <strong>Nombre:</strong> {nombreSorteo || 'N/A'}
-        </p>
-        <p>
-          <strong>Descripción:</strong> {descripcion || 'N/A'}
-        </p>
-        <p>
-          <strong>Filtro aplicado:</strong>{' '}
-          {appliedFilter.provincia || appliedFilter.localidad
-            ? `${appliedFilter.provincia}${appliedFilter.localidad ? ', ' + appliedFilter.localidad : ''}`
-            : 'Ninguno'}
-        </p>
-        <p>
-          <strong>Premios:</strong>{' '}
-          {items.length > 0
-            ? items
-                .map (item => `${item.nombre_item} (x${item.cantidad})`)
-                .join (', ')
-            : 'Sin premios'}
-        </p>
-        <div className="participants-summary">
-          <strong>Participantes:</strong>
-          {usarFiltros
-            ? filteredParticipants.length > 0
-                ? <ul>
-                    {filteredParticipants.map (p => (
-                      <li key={p.id}>
-                        {p.nombre} {p.apellido} ({p.email})
-                      </li>
+            </select>
+            <input
+              type="number"
+              placeholder="Cantidad"
+              value={selectedPremioCantidad}
+              onChange={e =>
+                setSelectedPremioCantidad (Number (e.target.value))}
+              min="1"
+              style={{marginLeft: '10px', width: '60px'}}
+            />
+            <button
+              onClick={agregarPremioAlSorteo}
+              style={{marginLeft: '10px'}}
+            >
+              Agregar Premio
+            </button>
+          </div>
+          {items.length > 0 &&
+            <div className="sorteo-section">
+              <h4>Premios agregados</h4>
+              <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+                <SortableContext
+                  items={items.map (item => item.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <ul className="sorteo-list">
+                    {items.map ((item, index) => (
+                      <SortableItem
+                        key={item.id}
+                        id={item.id}
+                        nombre_item={item.nombre_item}
+                        cantidad={item.cantidad}
+                        index={index}
+                      />
                     ))}
                   </ul>
-                : <p>No hay participantes que cumplan el filtro.</p>
-            : <p>
-                {filteredParticipants.length > 0
-                  ? filteredParticipants.length
-                  : 'No se cargaron participantes'}
-                {' '}
-                en la base.
-              </p>}
-        </div>
-        <div className="sortear">
-          <button
-            onClick={handleSortear}
-            className="ejecutar"
-            disabled={cargando}
-          >
-            {cargando
-              ? <ClipLoader size={20} color="#ffffff" />
-              : programarSorteo ? 'Agendar sorteo' : 'Sortear'}
-          </button>
-        </div>
-      </div>
+                </SortableContext>
+              </DndContext>
+            </div>}
+        </div>}
+      {activeSection === 'realizar' &&
+        <div className="accordion-content">
+          <h2>Resumen del sorteo</h2>
+          <p>
+            <strong>Nombre:</strong> {nombreSorteo || 'N/A'}
+          </p>
+          <p>
+            <strong>Descripción:</strong> {descripcion || 'N/A'}
+          </p>
+          <p>
+            <strong>Filtro aplicado:</strong>{' '}
+            {appliedFilter.provincia || appliedFilter.localidad
+              ? `${appliedFilter.provincia}${appliedFilter.localidad ? ', ' + appliedFilter.localidad : ''}`
+              : 'Ninguno'}
+          </p>
+          <p>
+            <strong>Premios:</strong>{' '}
+            {items.length > 0
+              ? items
+                  .map (item => `${item.nombre_item} (x${item.cantidad})`)
+                  .join (', ')
+              : 'Sin premios'}
+          </p>
+          <div className="participants-summary">
+            <strong>Participantes:</strong>
+            {usarFiltros
+              ? filteredParticipants.length > 0
+                  ? <ul>
+                      {filteredParticipants.map (p => (
+                        <li key={p.id}>
+                          {p.nombre} {p.apellido} ({p.email})
+                        </li>
+                      ))}
+                    </ul>
+                  : <p>No hay participantes que cumplan el filtro.</p>
+              : <p>
+                  {filteredParticipants.length > 0
+                    ? filteredParticipants.length
+                    : 'No se cargaron participantes'}
+                  {' '}
+                  en la base.
+                </p>}
+          </div>
+          <div className="sortear">
+            <button
+              onClick={handleSortear}
+              className="ejecutar"
+              disabled={cargando}
+            >
+              {cargando
+                ? <ClipLoader size={20} color="#ffffff" />
+                : programarSorteo ? 'Agendar sorteo' : 'Sortear'}
+            </button>
+          </div>
+        </div>}
       <hr />
       <div className="accordion-toggle">
-        <button className="azul volver" onClick={resetForm}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 448 512"
-            style={{width: '16px', height: '16px', fill: 'white'}}
-          >
-            <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
-          </svg>
-          Volver a Crear sorteo
-        </button>
+        {activeSection === 'crear'
+          ? <button
+              className="ejecutar"
+              onClick={() => setActiveSection ('realizar')}
+              disabled={!(nombreSorteo.trim () && items.length > 0)}
+            >
+              Realizar sorteo
+            </button>
+          : <button
+              className="azul volver"
+              onClick={() => setActiveSection ('crear')}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                style={{width: '16px', height: '16px', fill: 'white'}}
+              >
+                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+              </svg>
+              Volver a Crear sorteo
+            </button>}
       </div>
       {showModal &&
         modalResult &&

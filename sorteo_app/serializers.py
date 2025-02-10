@@ -37,7 +37,6 @@ class SorteoSimpleSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre']
 
 class SorteoSerializer(serializers.ModelSerializer):
-    # Usamos el serializer de SorteoPremio para el campo de premios
     premios = SorteoPremioSerializer(many=True, source='sorteopremios')
 
     class Meta:
@@ -55,7 +54,7 @@ class SorteoSerializer(serializers.ModelSerializer):
 
     def validate_nombre(self, value):
         if not value.strip():
-            raise serializers.ValidationError("Sorteo sin nombre")
+            return "Sorteo sin nombre"
         return value
 
     def create(self, validated_data):
@@ -69,7 +68,7 @@ class SorteoSerializer(serializers.ModelSerializer):
             if premio.stock < cantidad:
                 raise serializers.ValidationError(f'No hay suficiente stock para el premio {premio.nombre}')
 
-            # Solo descontar el stock si el sorteo se ejecuta (no se agenda)
+            # Si el sorteo se realiza (no se agenda) se descuenta el stock.
             if not validated_data.get('fecha_programada'):
                 premio.stock -= cantidad
                 premio.save()

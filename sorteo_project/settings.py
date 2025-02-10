@@ -162,4 +162,3 @@ logging.config.dictConfig({
 })
 
 # Posibles mejoras: agregar configuración de email, roles, etc.
-
