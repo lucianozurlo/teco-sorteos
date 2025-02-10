@@ -212,7 +212,7 @@ function Sorteo () {
       localidad: localidadSeleccionada,
     });
     const filtroTexto = provinciaSeleccionada || localidadSeleccionada
-      ? `Filtro aplicado: ${provinciaSeleccionada}${localidadSeleccionada ? ', ' + localidadSeleccionada : ''}`
+      ? `Filtro: ${provinciaSeleccionada}${localidadSeleccionada ? ', ' + localidadSeleccionada : ''}`
       : 'No se aplicó ningún filtro';
     toast.success (filtroTexto);
   };
@@ -437,7 +437,7 @@ function Sorteo () {
       <h1>Realizar Sorteo</h1>
       {/* Toggle para cargar un sorteo agendado existente */}
       <div className="sorteo-section">
-        <label>
+        <label className="check">
           <input
             type="checkbox"
             checked={sorteoAgendado}
@@ -529,7 +529,7 @@ function Sorteo () {
               ))}
             </select>
           </div>
-          <div className="half">
+          <div className="half bottom">
             <button onClick={handleAplicarFiltro}>
               Aplicar Filtro
             </button>
@@ -538,9 +538,9 @@ function Sorteo () {
       {usarFiltros &&
         <div className="sorteo-section">
 
-          <p>
+          <p style={{marginLeft: '5px', fontSize: '.95rem'}}>
             {appliedFilter.provincia || appliedFilter.localidad
-              ? `Filtro aplicado: ${appliedFilter.provincia}${appliedFilter.localidad ? ', ' + appliedFilter.localidad : ''}`
+              ? `Filtro: ${appliedFilter.provincia}${appliedFilter.localidad ? ', ' + appliedFilter.localidad : ''}`
               : 'No se aplicó ningún filtro'}
           </p>
         </div>}

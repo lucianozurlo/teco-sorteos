@@ -156,7 +156,7 @@ function Premios() {
         {cargando ? (
           <ClipLoader size={50} color="#123abc" />
         ) : (
-          <table className="premios-table">
+          <table className="premios-table text">
             <thead>
               <tr>
                 <th>Nombre</th>

@@ -73,6 +73,10 @@
     color: var(--primary-color);
 }
 
+label.check {
+    margin-bottom: 15px;
+}
+
 .sorteo-section.subsection {
     margin-left: 29px;
 }
@@ -85,7 +89,11 @@
 
 .sorteo-section .half {
     width: 41%;
-    /* margin-right: 8px; */
+}
+
+.sorteo-section .half.bottom {
+    display: flex;
+    align-items: flex-end;
 }
 
 .sorteo-section .half:last-child {
