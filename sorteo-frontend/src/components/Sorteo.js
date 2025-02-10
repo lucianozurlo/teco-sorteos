@@ -97,7 +97,8 @@ function Sorteo () {
   const parseErrorMessage = errorMsg => {
     if (typeof errorMsg === 'string') {
       // Remueve los caracteres "[" y "]" sin escapes innecesarios
-      let cleaned = errorMsg.replace (/[\[\]]/g, '');
+      let cleaned = errorMsg.replace(/[[]\]]/g, '');
+
       cleaned = cleaned.replace (
         /ErrorDetail\(string='(.*?)', code='.*?'\)/,
         '$1'
