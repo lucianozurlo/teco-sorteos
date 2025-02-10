@@ -410,6 +410,7 @@ function Sorteo () {
     setCargando (true);
     try {
       if (programarSorteo) {
+        // Caso: Agendar sorteo
         const response = await fetch (`${API_BASE_URL}/api/scheduled/`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -423,6 +424,7 @@ function Sorteo () {
           toast.error (data.error || 'Error al agendar el sorteo.');
         }
       } else {
+        // Caso: Realizar sorteo de forma inmediata
         const response = await fetch (`${API_BASE_URL}/api/sortear/`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -433,6 +435,15 @@ function Sorteo () {
           setModalResult (data);
           setShowModal (true);
           fetchAvailablePremios ();
+          // Si se seleccionó un sorteo agendado, se elimina de la lista
+          if (selectedScheduledSorteoId) {
+            await fetch (
+              `${API_BASE_URL}/api/scheduled/${selectedScheduledSorteoId}/`,
+              {
+                method: 'DELETE',
+              }
+            );
+          }
           resetForm ();
           toast.success ('Sorteo realizado exitosamente.');
         } else {
@@ -649,9 +660,10 @@ function Sorteo () {
           <p>
             <strong>Nombre:</strong> {nombreSorteo || 'N/A'}
           </p>
-          <p>
-            <strong>Descripción:</strong> {descripcion || 'N/A'}
-          </p>
+          {descripcion &&
+            <p>
+              <strong>Descripción:</strong> {descripcion}
+            </p>}
           <p>
             <strong>Filtro aplicado:</strong>{' '}
             {appliedFilter.provincia || appliedFilter.localidad
