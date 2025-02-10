@@ -139,7 +139,7 @@
 
 .sorteo-header {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
 }
 

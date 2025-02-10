@@ -180,6 +180,7 @@ function Registro () {
   return (
     <div className="registro-container">
       <h2>Registro de Sorteos y Actividades</h2>
+
       <h3>Resultados de Sorteos</h3>
       <div className="registro-section">
         {cargandoResultados
@@ -223,7 +224,9 @@ function Registro () {
               </tbody>
             </table>}
       </div>
+
       <hr />
+
       <h3>Lista de Sorteos Realizados</h3>
       <div
         className="filtros-container"
@@ -271,6 +274,7 @@ function Registro () {
           <button onClick={clearSorteoFilters}>Eliminar Filtros</button>
         </div>
       </div>
+
       <div className="registro-section">
         {cargandoSorteos
           ? <ClipLoader size={50} color="#123abc" />
@@ -355,9 +359,11 @@ function Registro () {
                     ))}
                   </tbody>
                 </table>
-              : <p>No se encontraron registros de sorteos.</p>}
+              : <p>No se encontraron sorteos agendados.</p>}
       </div>
+
       <hr />
+
       <h3>Registro de Actividades</h3>
       <div className="registro-section">
         {cargandoActividad

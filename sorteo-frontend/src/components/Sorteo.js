@@ -50,7 +50,7 @@ function SortableItem (props) {
           alignItems: 'center',
         }}
       >
-        {/* Área de arrastre: se aplican los listeners solo al span */}
+        {/* Se aplican los listeners únicamente al texto para el drag */}
         <span {...listeners} style={{cursor: 'grab'}}>
           <strong>{index + 1}°</strong> {nombre_item} - Cantidad: {cantidad}
         </span>
@@ -93,10 +93,11 @@ function Modal({children, onClose}) {
 }
 
 function Sorteo () {
-  // Función para limpiar los mensajes de error
+  // Para evitar el warning "no-useless-escape", reescribimos la regex para remover los caracteres "[" y "]"
   const parseErrorMessage = errorMsg => {
     if (typeof errorMsg === 'string') {
-      let cleaned = errorMsg.replace (/[\[\]]/g, '');
+      // La expresión [\]\[] define un conjunto que contiene el carácter ']' y el carácter '['
+      let cleaned = errorMsg.replace (/[\]\[]/g, '');
       cleaned = cleaned.replace (
         /ErrorDetail\(string='(.*?)', code='.*?'\)/,
         '$1'
@@ -106,7 +107,7 @@ function Sorteo () {
     return errorMsg;
   };
 
-  // Estados para el formulario de sorteo
+  // Estados del formulario de sorteo
   const [activeSection, setActiveSection] = useState ('crear');
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
@@ -154,7 +155,7 @@ function Sorteo () {
 
   const location = useLocation ();
 
-  // Obtener la base activa de participantes al iniciar
+  // Obtener la base activa de participantes
   useEffect (() => {
     fetch (`${API_BASE_URL}/api/lists/`)
       .then (res => res.json ())
@@ -785,7 +786,7 @@ function Sorteo () {
                     </ul>
                   : <p>No hay participantes que cumplan el filtro.</p>
               : <p>
-                  Se realizará el sorteo sobre la base activa con
+                  Se realizará el sorteo sobre la base activa de participantes con
                   {' '}
                   {participantsCount !== null
                     ? participantsCount
