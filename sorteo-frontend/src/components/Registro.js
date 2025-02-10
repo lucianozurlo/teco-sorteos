@@ -1,10 +1,12 @@
 // sorteo-frontend/src/components/Registro.js
 
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { API_BASE_URL } from '../config';
 import './Registro.css';
+/* eslint-enable no-unused-vars */
 
 function Registro() {
   // Estados para "Resultados de Sorteos"
@@ -28,7 +30,7 @@ function Registro() {
   const [filtroSorteoFecha, setFiltroSorteoFecha] = useState('');
   const [sortConfigSorteo, setSortConfigSorteo] = useState({ key: 'fecha_hora', direction: 'desc' });
 
-  // Opciones de filtro para Sorteos Realizados
+  // Opciones de filtro para "Sorteos Realizados"
   const [opcionesSorteoNombre, setOpcionesSorteoNombre] = useState([]);
   const [opcionesSorteoFecha, setOpcionesSorteoFecha] = useState([]);
 
@@ -38,6 +40,7 @@ function Registro() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/resultados_sorteo/`);
       const data = await response.json();
+      // Ordenar de más nuevo a más viejo según "fecha"
       const resultadosOrdenados = data.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
       setResultados(resultadosOrdenados);
     } catch (error) {
@@ -54,9 +57,8 @@ function Registro() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/sorteos/`);
       const data = await response.json();
-      const sorteosOrdenados = data.sort(
-        (a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora)
-      );
+      // Ordenar de más nuevo a más viejo según "fecha_hora"
+      const sorteosOrdenados = data.sort((a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
       setSorteos(sorteosOrdenados);
     } catch (error) {
       console.error('Error al obtener sorteos:', error);
@@ -87,7 +89,25 @@ function Registro() {
     fetchActividad();
   }, []);
 
-  // Ordenar Resultados de Sorteos
+  // Opciones de filtro para "Sorteos Realizados"
+  useEffect(() => {
+    const nombres = Array.from(new Set(sorteos.map((s) => s.nombre).filter(Boolean)));
+    setOpcionesSorteoNombre(nombres);
+
+    const fechas = Array.from(
+      new Set(
+        sorteos
+          .map((s) => {
+            const d = new Date(s.fecha_hora);
+            return `${d.getFullYear()}-${('0' + (d.getMonth() + 1)).slice(-2)}-${('0' + d.getDate()).slice(-2)}`;
+          })
+          .filter(Boolean)
+      )
+    );
+    setOpcionesSorteoFecha(fechas);
+  }, [sorteos]);
+
+  // Función para ordenar Resultados de Sorteos
   const sortedResultados = useMemo(() => {
     let sortableItems = [...resultados];
     if (sortConfig !== null) {
@@ -125,7 +145,7 @@ function Registro() {
     return sortableItems;
   }, [resultados, sortConfig]);
 
-  // Ordenar Sorteos Realizados
+  // Función para ordenar Sorteos Realizados
   const requestSortSorteo = (key) => {
     let direction = 'asc';
     if (sortConfigSorteo.key === key && sortConfigSorteo.direction === 'asc') {
@@ -135,7 +155,7 @@ function Registro() {
   };
 
   const sortedSorteos = useMemo(() => {
-    let sortableItems = [...sorteos.filter(s => {
+    let sortableItems = [...sorteos.filter((s) => {
       const matchNombre = filtroSorteoNombre ? s.nombre === filtroSorteoNombre : true;
       const matchDescripcion = filtroSorteoDescripcion
         ? s.descripcion.toLowerCase().includes(filtroSorteoDescripcion.toLowerCase())
@@ -194,19 +214,44 @@ function Registro() {
           <table className="registro-table">
             <thead>
               <tr>
-                <th onClick={() => setSortConfig({ key: 'id', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })} style={{ cursor: 'pointer' }}>
+                <th
+                  onClick={() =>
+                    setSortConfig({ key: 'id', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })
+                  }
+                  style={{ cursor: 'pointer' }}
+                >
                   ID {sortConfig.key === 'id' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
-                <th onClick={() => setSortConfig({ key: 'sorteo', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })} style={{ cursor: 'pointer' }}>
+                <th
+                  onClick={() =>
+                    setSortConfig({ key: 'sorteo', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })
+                  }
+                  style={{ cursor: 'pointer' }}
+                >
                   Sorteo {sortConfig.key === 'sorteo' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
-                <th onClick={() => setSortConfig({ key: 'participante', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })} style={{ cursor: 'pointer' }}>
+                <th
+                  onClick={() =>
+                    setSortConfig({ key: 'participante', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })
+                  }
+                  style={{ cursor: 'pointer' }}
+                >
                   Participante {sortConfig.key === 'participante' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
-                <th onClick={() => setSortConfig({ key: 'premio', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })} style={{ cursor: 'pointer' }}>
+                <th
+                  onClick={() =>
+                    setSortConfig({ key: 'premio', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })
+                  }
+                  style={{ cursor: 'pointer' }}
+                >
                   Premio {sortConfig.key === 'premio' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
-                <th onClick={() => setSortConfig({ key: 'fecha', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })} style={{ cursor: 'pointer' }}>
+                <th
+                  onClick={() =>
+                    setSortConfig({ key: 'fecha', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })
+                  }
+                  style={{ cursor: 'pointer' }}
+                >
                   Fecha {sortConfig.key === 'fecha' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
               </tr>
