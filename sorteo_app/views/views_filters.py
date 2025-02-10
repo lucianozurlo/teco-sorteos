@@ -1,13 +1,11 @@
 # sorteo_app/views/views_filters.py
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import Participante  # Asegurate de importar Participante, no User
+from ..models import Participante
 
 @api_view(['GET'])
 def listar_provincias(request):
-    # Obtener provincias únicas de Participante
     provincias = Participante.objects.values_list('provincia', flat=True).distinct()
     provincias_list = sorted(provincias)
     return Response(provincias_list, status=status.HTTP_200_OK)

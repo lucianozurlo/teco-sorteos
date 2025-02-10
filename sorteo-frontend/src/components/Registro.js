@@ -1,40 +1,34 @@
-// sorteo-frontend/src/components/Registro.js
-
+// src/components/Registro.js
 import React, {useState, useEffect, useMemo} from 'react';
 import {toast} from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
 import {API_BASE_URL} from '../config';
-import {useNavigate} from 'react-router-dom';
 import './Registro.css';
 
 function Registro () {
-  // Estados para "Resultados de Sorteos"
+  // Estados para Resultados de Sorteos
   const [resultados, setResultados] = useState ([]);
   const [cargandoResultados, setCargandoResultados] = useState (false);
 
-  // Estados para "Sorteos Realizados"
+  // Estados para Sorteos Realizados
   const [sorteos, setSorteos] = useState ([]);
   const [cargandoSorteos, setCargandoSorteos] = useState (false);
 
-  // Estado para "Registro de Actividades"
+  // Estado para Registro de Actividades
   const [actividad, setActividad] = useState ([]);
   const [cargandoActividad, setCargandoActividad] = useState (false);
 
   // Estados para filtros en Sorteos Realizados
-  // Si ESLint reclama estas variables, se pueden deshabilitar localmente
-  /* eslint-disable no-unused-vars */
   const [filtroSorteoNombre, setFiltroSorteoNombre] = useState ('');
   const [filtroSorteoDescripcion, setFiltroSorteoDescripcion] = useState ('');
   const [filtroSorteoFecha, setFiltroSorteoFecha] = useState ('');
-  /* eslint-enable no-unused-vars */
   const [sortConfigSorteo, setSortConfigSorteo] = useState ({
     key: 'fecha_hora',
     direction: 'desc',
   });
+  const [opcionesSorteoNombre, setOpcionesSorteoNombre] = useState ([]);
+  const [opcionesSorteoFecha, setOpcionesSorteoFecha] = useState ([]);
 
-  const navigate = useNavigate ();
-
-  // Función para obtener Resultados de Sorteos
   const fetchResultados = async () => {
     setCargandoResultados (true);
     try {
@@ -52,7 +46,6 @@ function Registro () {
     }
   };
 
-  // Función para obtener Sorteos Realizados
   const fetchSorteos = async () => {
     setCargandoSorteos (true);
     try {
@@ -70,7 +63,6 @@ function Registro () {
     }
   };
 
-  // Función para obtener Registro de Actividades
   const fetchActividad = async () => {
     setCargandoActividad (true);
     try {
@@ -91,8 +83,26 @@ function Registro () {
     fetchActividad ();
   }, []);
 
-  // Opciones de filtro para Sorteos Realizados (si las necesitas)
-  // En este ejemplo se omiten explícitamente los setters si no se usan más allá de onChange
+  useEffect (
+    () => {
+      const nombres = Array.from (
+        new Set (sorteos.map (s => s.nombre).filter (Boolean))
+      );
+      setOpcionesSorteoNombre (nombres);
+      const fechas = Array.from (
+        new Set (
+          sorteos
+            .map (s => {
+              const d = new Date (s.fecha_hora);
+              return `${d.getFullYear ()}-${('0' + (d.getMonth () + 1)).slice (-2)}-${('0' + d.getDate ()).slice (-2)}`;
+            })
+            .filter (Boolean)
+        )
+      );
+      setOpcionesSorteoFecha (fechas);
+    },
+    [sorteos]
+  );
 
   const requestSortSorteo = key => {
     let direction = 'asc';
@@ -161,11 +171,15 @@ function Registro () {
     ]
   );
 
+  const clearSorteoFilters = () => {
+    setFiltroSorteoNombre ('');
+    setFiltroSorteoDescripcion ('');
+    setFiltroSorteoFecha ('');
+  };
+
   return (
     <div className="registro-container">
       <h2>Registro de Sorteos y Actividades</h2>
-
-      {/* Resultados de Sorteos */}
       <h3>Resultados de Sorteos</h3>
       <div className="registro-section">
         {cargandoResultados
@@ -209,11 +223,54 @@ function Registro () {
               </tbody>
             </table>}
       </div>
-
       <hr />
-
-      {/* Lista de Sorteos Realizados */}
       <h3>Lista de Sorteos Realizados</h3>
+      <div
+        className="filtros-container"
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: '1rem',
+        }}
+      >
+        <div className="filtro">
+          <label>Nombre:</label>
+          <select
+            value={filtroSorteoNombre}
+            onChange={e => setFiltroSorteoNombre (e.target.value)}
+          >
+            <option value="">Todos</option>
+            {opcionesSorteoNombre.map ((nombre, idx) => (
+              <option key={idx} value={nombre}>{nombre}</option>
+            ))}
+          </select>
+        </div>
+        <div className="filtro">
+          <label>Descripción:</label>
+          <input
+            type="text"
+            value={filtroSorteoDescripcion}
+            onChange={e => setFiltroSorteoDescripcion (e.target.value)}
+            placeholder="Buscar descripción..."
+          />
+        </div>
+        <div className="filtro">
+          <label>Fecha:</label>
+          <select
+            value={filtroSorteoFecha}
+            onChange={e => setFiltroSorteoFecha (e.target.value)}
+          >
+            <option value="">Todas</option>
+            {opcionesSorteoFecha.map ((fecha, idx) => (
+              <option key={idx} value={fecha}>{fecha}</option>
+            ))}
+          </select>
+        </div>
+        <div className="filtro">
+          <button onClick={clearSorteoFilters}>Eliminar Filtros</button>
+        </div>
+      </div>
       <div className="registro-section">
         {cargandoSorteos
           ? <ClipLoader size={50} color="#123abc" />
@@ -269,12 +326,7 @@ function Registro () {
                   </thead>
                   <tbody>
                     {sortedSorteos.map (sorteo => (
-                      <tr
-                        key={sorteo.id}
-                        onClick={() =>
-                          navigate (`/detalle-sorteo/${sorteo.id}`)}
-                        style={{cursor: 'pointer'}}
-                      >
+                      <tr key={sorteo.id}>
                         <td>{sorteo.id}</td>
                         <td>{sorteo.nombre || 'Sin nombre'}</td>
                         <td>{sorteo.descripcion || '-'}</td>
@@ -291,7 +343,7 @@ function Registro () {
                         <td>{sorteo.provincia || '-'}</td>
                         <td>{sorteo.localidad || '-'}</td>
                         <td>
-                          {sorteo.premios && sorteos[0].premios
+                          {sorteo.premios && sorteo.premios.length > 0
                             ? sorteos[0].premios
                                 .map (
                                   p => `${p.premio.nombre} (x${p.cantidad})`
@@ -305,10 +357,7 @@ function Registro () {
                 </table>
               : <p>No se encontraron registros de sorteos.</p>}
       </div>
-
       <hr />
-
-      {/* Registro de Actividades */}
       <h3>Registro de Actividades</h3>
       <div className="registro-section">
         {cargandoActividad

@@ -1,5 +1,5 @@
 # sorteo_app/views/views_lists.py
-
+from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,9 +7,7 @@ from ..models import Participante, ListaNegra
 
 class ListLoadedData(APIView):
     """
-    Devuelve el contenido actual:
-      - Participantes: todos los registros de Participante.
-      - Blacklist: todos los registros de ListaNegra.
+    Devuelve el contenido actual: participantes y lista negra.
     """
     def get(self, request):
         try:
@@ -32,17 +30,14 @@ class ClearParticipantes(APIView):
 
 class ClearListaNegra(APIView):
     """
-    Elimina todos los registros de la Lista Negra y reintegra a los participantes.
-    Es decir, los participantes excluidos se vuelven a agregar a la base de participantes.
+    Elimina todos los registros de la lista negra y reintegra a los participantes.
     """
     def delete(self, request):
         try:
             with transaction.atomic():
-                # Obtener todos los registros de la lista negra
                 blacklist_items = ListaNegra.objects.all()
                 reinserted = 0
                 for item in blacklist_items:
-                    # Solo reinsertar si no existe ya en Participante
                     if not Participante.objects.filter(id=item.id).exists():
                         Participante.objects.create(
                             id=item.id,
@@ -56,14 +51,10 @@ class ClearListaNegra(APIView):
                             provincia=item.provincia if item.provincia != '-' else '',
                         )
                         reinserted += 1
-                # Luego, borrar la lista negra
                 deleted, _ = ListaNegra.objects.all().delete()
         except Exception as e:
-            return Response({
-                'error': f'Error al vaciar y reintegrar la lista de no incluidos: {str(e)}'
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            return Response({'error': f'Error al vaciar la lista negra: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response({
-            'message': f'Lista de no incluidos vaciada. Se reintegraron {reinserted} participantes.',
+            'message': f'Lista negra vaciada. Se reintegraron {reinserted} participantes.',
             'deleted': deleted
         }, status=status.HTTP_200_OK)

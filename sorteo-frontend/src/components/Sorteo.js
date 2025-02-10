@@ -30,7 +30,6 @@ function SortableItem (props) {
     transition,
     isDragging,
   } = useSortable ({id});
-
   const style = {
     transform: CSS.Transform.toString (transform),
     transition,
@@ -51,7 +50,7 @@ function SortableItem (props) {
           alignItems: 'center',
         }}
       >
-        {/* El área de arrastre se asigna al span con los listeners */}
+        {/* Área de arrastre: se aplican los listeners solo al span */}
         <span {...listeners} style={{cursor: 'grab'}}>
           <strong>{index + 1}°</strong> {nombre_item} - Cantidad: {cantidad}
         </span>
@@ -59,7 +58,6 @@ function SortableItem (props) {
           className="rojo d-flex"
           onClick={e => {
             e.stopPropagation ();
-            console.log ('Eliminar clicked for id:', id);
             onDelete (id);
           }}
         >
@@ -98,7 +96,7 @@ function Sorteo () {
   // Función para limpiar los mensajes de error
   const parseErrorMessage = errorMsg => {
     if (typeof errorMsg === 'string') {
-      let cleaned = errorMsg.replace (/[[]\]]/g, '');
+      let cleaned = errorMsg.replace (/[\[\]]/g, '');
       cleaned = cleaned.replace (
         /ErrorDetail\(string='(.*?)', code='.*?'\)/,
         '$1'
@@ -108,25 +106,19 @@ function Sorteo () {
     return errorMsg;
   };
 
-  // Control del accordion: "crear" o "realizar"
+  // Estados para el formulario de sorteo
   const [activeSection, setActiveSection] = useState ('crear');
-
-  // Campos básicos
   const [nombreSorteo, setNombreSorteo] = useState ('');
   const [descripcion, setDescripcion] = useState ('');
-
-  // Toggle para agendar sorteo y campo de fecha (para agendar)
   const [programarSorteo, setProgramarSorteo] = useState (false);
   const [scheduledDate, setScheduledDate] = useState ('');
-
-  // Toggle para cargar un sorteo agendado existente
   const [sorteoAgendado, setSorteoAgendado] = useState (false);
   const [scheduledSorteos, setScheduledSorteos] = useState ([]);
   const [selectedScheduledSorteoId, setSelectedScheduledSorteoId] = useState (
     ''
   );
 
-  // Filtros opcionales
+  // Estados para filtros opcionales
   const [usarFiltros, setUsarFiltros] = useState (false);
   const [provincias, setProvincias] = useState ([]);
   const [provinciaSeleccionada, setProvinciaSeleccionada] = useState ('');
@@ -138,20 +130,20 @@ function Sorteo () {
   });
   const [filteredParticipants, setFilteredParticipants] = useState ([]);
 
-  // Estado para el total de participantes activos (la base)
+  // Estado para la base activa de participantes
   const [participantsCount, setParticipantsCount] = useState (null);
 
-  // Premios a sortear
+  // Estados para premios a sortear
   const [items, setItems] = useState ([]);
   const [availablePremios, setAvailablePremios] = useState ([]);
   const [selectedPremioId, setSelectedPremioId] = useState ('');
   const [selectedPremioCantidad, setSelectedPremioCantidad] = useState (1);
 
-  // Estado para el modal
+  // Estados para el modal de resultado
   const [showModal, setShowModal] = useState (false);
   const [modalResult, setModalResult] = useState (null);
 
-  // Indicador de carga
+  // Estado de carga
   const [cargando, setCargando] = useState (false);
 
   // Sensores para drag & drop
@@ -162,7 +154,7 @@ function Sorteo () {
 
   const location = useLocation ();
 
-  // Al iniciar, obtener la base activa de participantes
+  // Obtener la base activa de participantes al iniciar
   useEffect (() => {
     fetch (`${API_BASE_URL}/api/lists/`)
       .then (res => res.json ())
@@ -211,6 +203,7 @@ function Sorteo () {
             id: p.premio.id,
             nombre_item: p.premio.nombre,
             cantidad: p.cantidad,
+            stock: p.premio.stock,
           }));
           setItems (premiosItems);
         } else {
@@ -284,14 +277,12 @@ function Sorteo () {
     }
   };
 
-  // Cuando cambia la provincia, limpiar la localidad y el filtro aplicado
   const handleProvinciaChange = e => {
     setProvinciaSeleccionada (e.target.value);
     setLocalidadSeleccionada ('');
     setAppliedFilter ({provincia: '', localidad: ''});
   };
 
-  // Botón para aplicar el filtro
   const handleAplicarFiltro = () => {
     setAppliedFilter ({
       provincia: provinciaSeleccionada,
@@ -303,7 +294,6 @@ function Sorteo () {
     toast.success (filtroTexto);
   };
 
-  // Manejador para el checkbox "Agendar sorteo"
   const handleProgramarSorteoChange = () => {
     const nuevoValor = !programarSorteo;
     setProgramarSorteo (nuevoValor);
@@ -314,7 +304,6 @@ function Sorteo () {
     }
   };
 
-  // Manejador para el checkbox "Sorteo agendado" (para cargar un sorteo agendado)
   const handleSorteoAgendadoChange = () => {
     const nuevoValor = !sorteoAgendado;
     setSorteoAgendado (nuevoValor);
@@ -332,7 +321,6 @@ function Sorteo () {
     }
   };
 
-  // Al seleccionar un sorteo agendado, cargar sus datos (filtrando premios sin stock)
   const handleScheduledSorteoSelect = e => {
     const id = e.target.value;
     setSelectedScheduledSorteoId (id);
@@ -362,6 +350,7 @@ function Sorteo () {
           id: p.premio.id,
           nombre_item: p.premio.nombre,
           cantidad: p.cantidad,
+          stock: p.premio.stock,
         }));
         setItems (premiosItems);
       } else {
@@ -399,40 +388,33 @@ function Sorteo () {
       );
       return;
     }
-    // Agregar el premio guardando también la propiedad "stock"
+    // Al agregar, se guarda también el valor "stock"
     setItems ([
       ...items,
       {
         id: premio.id,
         nombre_item: premio.nombre,
         cantidad: selectedPremioCantidad,
-        stock: premio.stock, // Guardamos el stock original
+        stock: premio.stock,
       },
     ]);
-    // Quitar el premio de la lista de disponibles
     setAvailablePremios (availablePremios.filter (p => p.id !== premio.id));
     setSelectedPremioId ('');
     setSelectedPremioCantidad (1);
     toast.success (`Premio "${premio.nombre}" agregado al sorteo.`);
   };
 
-  // Función para eliminar un premio de la lista
   const handleEliminarPremio = id => {
-    // Buscar el premio que se eliminará en el estado items
     const removedPrize = items.find (item => String (item.id) === String (id));
-    // Actualizar items eliminando el premio
     setItems (prevItems =>
       prevItems.filter (item => String (item.id) !== String (id))
     );
-    // Si se encontró el premio eliminado, reintegrarlo a availablePremios
     if (removedPrize) {
       setAvailablePremios (prevAvailable => {
-        // Evitamos duplicados
         const exists = prevAvailable.find (
           p => String (p.id) === String (removedPrize.id)
         );
         if (!exists) {
-          // Se agrega en el formato esperado en el desplegable: { id, nombre, stock }
           return [
             ...prevAvailable,
             {
@@ -447,7 +429,6 @@ function Sorteo () {
     }
   };
 
-  // Drag & drop: se usa el manejador onDragEnd para reordenar los premios
   const handleDragEnd = event => {
     const {active, over} = event;
     if (!over || items.length < 2) return;
@@ -458,7 +439,6 @@ function Sorteo () {
     }
   };
 
-  // Función para obtener participantes filtrados (o totales si no hay filtro)
   const fetchFilteredParticipants = useCallback (
     async () => {
       try {
@@ -524,7 +504,6 @@ function Sorteo () {
     setCargando (true);
     try {
       if (programarSorteo) {
-        // Caso: Agendar sorteo
         const response = await fetch (`${API_BASE_URL}/api/scheduled/`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -540,7 +519,6 @@ function Sorteo () {
           );
         }
       } else {
-        // Caso: Realizar sorteo de forma inmediata
         const response = await fetch (`${API_BASE_URL}/api/sortear/`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},

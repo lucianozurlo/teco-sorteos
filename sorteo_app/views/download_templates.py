@@ -1,5 +1,4 @@
 # sorteo_app/views/download_templates.py
-
 import csv
 from django.http import HttpResponse
 from rest_framework.views import APIView
@@ -30,7 +29,7 @@ class DownloadParticipantesTemplate(APIView):
 class DownloadListaNegraTemplate(APIView):
     """
     Devuelve un archivo CSV con la plantilla para la lista negra.
-    Se utiliza el mismo orden de columnas que para participantes, lo que permite incluir además del ID el nombre y los demás datos.
+    Se utiliza el mismo orden de columnas que para participantes.
     """
     permission_classes = [AllowAny]
 

@@ -1,5 +1,4 @@
 # sorteo_app/views/views_upload.py
-
 import csv
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,9 +9,9 @@ from ..models import RegistroActividad, Participante, ListaNegra
 
 class UploadCSVView(APIView):
     """
-    Permite subir de a un archivo:
+    Permite subir archivos CSV:
       - usuarios.csv: Crea/actualiza Participante.
-      - lista_negra.csv: Crea/actualiza ListaNegra con los datos completos del CSV.
+      - lista_negra.csv: Crea/actualiza ListaNegra con los datos completos.
     """
     def post(self, request, format=None):
         file_usuarios = request.FILES.get('usuarios')
@@ -21,7 +20,6 @@ class UploadCSVView(APIView):
         mensaje = {}
         total_excluidos = 0
 
-        # Procesar CSV de lista negra (si se envía)
         if file_lista_negra:
             try:
                 text_file_ln = TextIOWrapper(file_lista_negra.file, encoding='utf-8')
@@ -51,10 +49,8 @@ class UploadCSVView(APIView):
                 if errores_ln:
                     mensaje['errores_lista_negra'] = errores_ln
             except Exception as e:
-                return Response({'error': f"Error al procesar lista_negra.csv: {str(e)}"},
-                                status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': f"Error al procesar lista_negra.csv: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Procesar CSV de usuarios (si se envía)
         if file_usuarios:
             contador = 0
             errores = []
@@ -65,7 +61,6 @@ class UploadCSVView(APIView):
                     for row in reader_u:
                         try:
                             user_id = int(row['ID'])
-                            # Si el usuario ya se encuentra en la lista negra, se omite
                             if ListaNegra.objects.filter(id=user_id).exists():
                                 total_excluidos += 1
                                 continue
@@ -96,11 +91,9 @@ class UploadCSVView(APIView):
                 if errores:
                     mensaje['errores_usuarios'] = errores
             except Exception as e:
-                return Response({'error': f"Error al procesar usuarios.csv: {str(e)}"},
-                                status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': f"Error al procesar usuarios.csv: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
         if not file_usuarios and not file_lista_negra:
-            return Response({'error': 'Debe enviar al menos uno de los archivos.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Debe enviar al menos uno de los archivos.'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(mensaje, status=status.HTTP_200_OK)

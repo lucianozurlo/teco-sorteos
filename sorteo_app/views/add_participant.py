@@ -1,5 +1,4 @@
 # sorteo_app/views/add_participant.py
-
 import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,7 +20,6 @@ class AddToParticipants(APIView):
       - cargo (opcional)
       - localidad (opcional)
       - provincia (opcional)
-
     (*) Campos requeridos.
     Además, si el legajo ya se encuentra en la lista negra, se elimina para no duplicar.
     """
@@ -43,7 +41,6 @@ class AddToParticipants(APIView):
                 {"error": "El legajo (id) debe ser un número."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
         try:
             participante, created = Participante.objects.update_or_create(
                 id=legajo,
@@ -58,12 +55,10 @@ class AddToParticipants(APIView):
                     'provincia': data.get('provincia', ''),
                 }
             )
-            # Si el participante está en la lista negra, se elimina
             if ListaNegra.objects.filter(id=legajo).exists():
                 ListaNegra.objects.filter(id=legajo).delete()
         except Exception as e:
             logger.error("Error al crear/actualizar participante: %s", e)
             return Response({"error": "Error interno al procesar el participante."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
         message = "Participante creado exitosamente." if created else "Participante actualizado exitosamente."
         return Response({"message": message}, status=status.HTTP_200_OK)
