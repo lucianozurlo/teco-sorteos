@@ -344,6 +344,14 @@ button.ejecutar:disabled {
   font-family: var(--font-family);
 }
 
+.scheduled-container .acciones {
+  gap: 8px;
+}
+
+.scheduled-container table.text button {
+  padding: 8px !important;
+}
+
 
 
 
