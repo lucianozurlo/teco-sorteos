@@ -1,4 +1,5 @@
 // sorteo-frontend/src/components/Registro.js
+
 import React, {useState, useEffect, useMemo} from 'react';
 import {toast} from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
