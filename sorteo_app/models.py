@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -67,6 +68,17 @@ class SorteoPremio(models.Model):
     def __str__(self):
         return f'{self.premio.nombre} en {self.sorteo.nombre} - Orden: {self.orden_item}, Cantidad: {self.cantidad}'
 
+class SorteoSnapshot(models.Model):
+    sorteo = models.ForeignKey('Sorteo', on_delete=models.CASCADE, related_name='snapshots')
+    nombre = models.CharField(max_length=255)
+    descripcion = models.TextField(blank=True)
+    fecha_realizado = models.DateTimeField(default=timezone.now)
+    participantes = models.JSONField()  # Guarda la "base" de usuarios participantes
+    ganadores = models.JSONField()       # Guarda los ganadores del sorteo
+
+    def __str__(self):
+        return f"Snapshot de {self.nombre} - {self.fecha_realizado.strftime('%Y-%m-%d %H:%M')}"
+    
 class ResultadoSorteo(models.Model):
     sorteo = models.ForeignKey(Sorteo, on_delete=models.CASCADE)
     participante = models.ForeignKey(Participante, on_delete=models.CASCADE)

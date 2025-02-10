@@ -132,27 +132,37 @@ function Premios() {
 
   return (
     <div className="premios-container">
-      <h2>Premios</h2>
-      <div className="premios-section">
-        <h3>Agregar Nuevo Premio</h3>
-        <input
-          type="text"
-          placeholder="Nombre del premio"
-          value={nuevoNombre}
-          onChange={(e) => setNuevoNombre(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Stock"
-          value={nuevoStock}
-          onChange={(e) => setNuevoStock(Number(e.target.value))}
-          min="1"
-        />
-        <button onClick={agregarPremio}>Agregar Premio</button>
-      </div>
-      <hr />
-      <div className="premios-section">
-        <h3>Lista de Premios</h3>
+		<h2>Premios</h2>
+		<div className="premios-section">
+			<h3>Agregar Nuevo Premio</h3>
+			<div className="premios-header">
+				<div className="premios-input-group">
+					<label>Premio:</label>
+					<input
+					type="text"
+					placeholder="Nombre del premio"
+					value={nuevoNombre}
+					onChange={(e) => setNuevoNombre(e.target.value)}
+					/>
+				</div>
+				<div className="sorteo-input-group">
+					<label>Stock:</label>
+					<input
+					type="number"
+					placeholder="Stock"
+					value={nuevoStock}
+					onChange={(e) => setNuevoStock(Number(e.target.value))}
+					min="1"
+					/>
+				</div>
+				<div className="sorteo-input-group">
+					<button onClick={agregarPremio}>Agregar Premio</button>
+				</div>
+			</div>
+		</div>
+		<hr />
+		<div className="premios-section">
+			<h3>Lista de Premios</h3>
         {cargando ? (
           <ClipLoader size={50} color="#123abc" />
         ) : (

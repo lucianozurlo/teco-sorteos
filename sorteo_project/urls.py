@@ -19,6 +19,8 @@ from sorteo_app.views.blacklist import AddToBlacklist
 from sorteo_app.views.add_participant import AddToParticipants
 from sorteo_app.views.reports import ReportesView, EstadisticasView
 from sorteo_app.views.scheduled_sorteos import ScheduledSorteosList, ScheduledSorteoDetail
+from sorteo_app.views.snapshot_detail import SorteoSnapshotDetail
+from sorteo_app.views.snapshot_list import SorteoSnapshotList
 
 router = routers.DefaultRouter()
 router.register(r'premios', PremioViewSet, basename='premio')
@@ -39,7 +41,8 @@ urlpatterns = [
     path('api/registro_actividad/', ListadoRegistroActividad.as_view(), name='listado_registro_actividad'),
     path('api/provincias/', listar_provincias, name='listar_provincias'),
     path('api/localidades/', listar_localidades, name='listar_localidades'),
-    # Funcionalidades adicionales:
+    path('api/snapshot/<int:pk>/', SorteoSnapshotDetail.as_view(), name='snapshot_detail'),
+    path('api/sorteos/snapshots/', SorteoSnapshotList.as_view(), name='snapshot_list'),
     path('api/reports/', ReportesView.as_view(), name='reports'),
     path('api/estadisticas/', EstadisticasView.as_view(), name='estadisticas'),
     path('api/scheduled/', ScheduledSorteosList.as_view(), name='scheduled_sorteos_list'),

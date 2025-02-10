@@ -1,7 +1,7 @@
 # sorteo_app/serializers.py
 
 from rest_framework import serializers
-from .models import Participante, RegistroActividad, Sorteo, SorteoPremio, ResultadoSorteo, Premio, UserProfile
+from .models import Participante, RegistroActividad, Sorteo, SorteoPremio, ResultadoSorteo, Premio, UserProfile, SorteoSnapshot
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,6 +36,11 @@ class SorteoSimpleSerializer(serializers.ModelSerializer):
         model = Sorteo
         fields = ['id', 'nombre']
 
+class SorteoSnapshotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SorteoSnapshot
+        fields = '__all__'
+                
 class SorteoSerializer(serializers.ModelSerializer):
     premios = SorteoPremioSerializer(many=True, source='sorteopremios')
 
