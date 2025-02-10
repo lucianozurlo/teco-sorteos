@@ -190,7 +190,7 @@ function Registro () {
                 <tr>
                   <th>ID</th>
                   <th>Sorteo</th>
-                  <th>Participante</th>
+                  <th>Ganador</th>
                   <th>Premio</th>
                   <th>Fecha</th>
                 </tr>

@@ -96,8 +96,8 @@ function Sorteo () {
   // Para evitar el warning "no-useless-escape", reescribimos la regex para remover los caracteres "[" y "]"
   const parseErrorMessage = errorMsg => {
     if (typeof errorMsg === 'string') {
-      // La expresión [\]\[] define un conjunto que contiene el carácter ']' y el carácter '['
-      let cleaned = errorMsg.replace (/[\]\[]/g, '');
+      // Esta expresión busca y elimina ambos corchetes '[' y ']'
+      let cleaned = errorMsg.replace (/[\[\]]/g, '');
       cleaned = cleaned.replace (
         /ErrorDetail\(string='(.*?)', code='.*?'\)/,
         '$1'
