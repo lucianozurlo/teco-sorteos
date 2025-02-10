@@ -21,17 +21,16 @@ function Registro () {
   const [cargandoActividad, setCargandoActividad] = useState (false);
 
   // Estados para filtros en Sorteos Realizados
+  // Si ESLint reclama estas variables, se pueden deshabilitar localmente
+  /* eslint-disable no-unused-vars */
   const [filtroSorteoNombre, setFiltroSorteoNombre] = useState ('');
   const [filtroSorteoDescripcion, setFiltroSorteoDescripcion] = useState ('');
   const [filtroSorteoFecha, setFiltroSorteoFecha] = useState ('');
+  /* eslint-enable no-unused-vars */
   const [sortConfigSorteo, setSortConfigSorteo] = useState ({
     key: 'fecha_hora',
     direction: 'desc',
   });
-
-  // Opciones de filtro para Sorteos Realizados
-  const [opcionesSorteoNombre, setOpcionesSorteoNombre] = useState ([]);
-  const [opcionesSorteoFecha, setOpcionesSorteoFecha] = useState ([]);
 
   const navigate = useNavigate ();
 
@@ -92,27 +91,8 @@ function Registro () {
     fetchActividad ();
   }, []);
 
-  // Opciones de filtro para Sorteos Realizados
-  useEffect (
-    () => {
-      const nombres = Array.from (
-        new Set (sorteos.map (s => s.nombre).filter (Boolean))
-      );
-      setOpcionesSorteoNombre (nombres);
-      const fechas = Array.from (
-        new Set (
-          sorteos
-            .map (s => {
-              const d = new Date (s.fecha_hora);
-              return `${d.getFullYear ()}-${('0' + (d.getMonth () + 1)).slice (-2)}-${('0' + d.getDate ()).slice (-2)}`;
-            })
-            .filter (Boolean)
-        )
-      );
-      setOpcionesSorteoFecha (fechas);
-    },
-    [sorteos]
-  );
+  // Opciones de filtro para Sorteos Realizados (si las necesitas)
+  // En este ejemplo se omiten explícitamente los setters si no se usan más allá de onChange
 
   const requestSortSorteo = key => {
     let direction = 'asc';
@@ -180,12 +160,6 @@ function Registro () {
       sortConfigSorteo,
     ]
   );
-
-  const clearSorteoFilters = () => {
-    setFiltroSorteoNombre ('');
-    setFiltroSorteoDescripcion ('');
-    setFiltroSorteoFecha ('');
-  };
 
   return (
     <div className="registro-container">
