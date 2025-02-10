@@ -103,7 +103,6 @@ def realizar_sorteo(request):
             participantes=participants_info,
             ganadores=winners_info,
         )
-        print("Snapshot creado con ID:", SorteoSnapshot.id)
 
         # Registrar la actividad (si se hace)
         RegistroActividad.objects.create(

@@ -2,7 +2,7 @@
 
 from rest_framework.generics import RetrieveAPIView
 from sorteo_app.models import SorteoSnapshot
-from sorteo_app.serializers import SorteoSnapshotSerializer
+from sorteo_app.serializers import SorteoSnapshotSerializer 
 
 class SorteoSnapshotDetail(RetrieveAPIView):
     queryset = SorteoSnapshot.objects.all()

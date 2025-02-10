@@ -73,12 +73,12 @@ class SorteoSnapshot(models.Model):
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField(blank=True)
     fecha_realizado = models.DateTimeField(default=timezone.now)
-    participantes = models.JSONField()  # Guarda la "base" de usuarios participantes
-    ganadores = models.JSONField()       # Guarda los ganadores del sorteo
+    participantes = models.JSONField()
+    ganadores = models.JSONField()
 
     def __str__(self):
         return f"Snapshot de {self.nombre} - {self.fecha_realizado.strftime('%Y-%m-%d %H:%M')}"
-    
+        
 class ResultadoSorteo(models.Model):
     sorteo = models.ForeignKey(Sorteo, on_delete=models.CASCADE)
     participante = models.ForeignKey(Participante, on_delete=models.CASCADE)
