@@ -4,7 +4,7 @@
 .env
 .env.development
 .env.productions
-_basex
+_baseX
 data
 sorteo-frontend/node_modules/
 

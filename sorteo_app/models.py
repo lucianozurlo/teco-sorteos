@@ -45,11 +45,10 @@ class Sorteo(models.Model):
     descripcion = models.TextField(blank=True)
     premios = models.ManyToManyField(Premio, through='SorteoPremio')
     fecha_hora = models.DateTimeField(auto_now_add=True)
-    # Campo para sorteo programado (opcional)
     fecha_programada = models.DateTimeField(null=True, blank=True)
-    # Campos opcionales para almacenar los filtros aplicados al agendar el sorteo
     provincia = models.CharField(max_length=255, blank=True, default='')
     localidad = models.CharField(max_length=255, blank=True, default='')
+    participants_snapshot = models.JSONField(null=True, blank=True)  # NUEVO: Snapshot de participantes
 
     def __str__(self):
         return self.nombre

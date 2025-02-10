@@ -197,3 +197,11 @@ label.check {
 .scheduled-item button:hover {
     background-color: var(--primary-dark);
 }
+
+/* Estilo para botones deshabilitados (para el botón "Realizar sorteo") */
+button.ejecutar:disabled {
+    pointer-events: none;
+    cursor: default;
+    background-color: #ccc;
+    opacity: 0.8;
+}

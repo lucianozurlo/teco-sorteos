@@ -1,15 +1,9 @@
-# sorteo_app/views/views_sorteo.py
-
 import random
-from django.http import HttpRequest
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.generics import ListAPIView
 from ..models import RegistroActividad, Sorteo, SorteoPremio, ResultadoSorteo, Premio, Participante
-from ..serializers import SorteoSerializer, ResultadoSorteoSerializer
-
-# Importa tus serializers
 from ..serializers import (
     SorteoSerializer,
     ResultadoSorteoSerializer,
@@ -17,7 +11,7 @@ from ..serializers import (
     PremioSerializer
 )
 
-# ViewSet para gestionar Premios
+# VIEWSET PARA PREMIOS
 class PremioViewSet(viewsets.ModelViewSet):
     queryset = Premio.objects.all()
     serializer_class = PremioSerializer
@@ -27,9 +21,6 @@ def realizar_sorteo(request):
     """
     Realiza un sorteo asignando premios a participantes.
     Se pueden filtrar los participantes por provincia y/o localidad si se incluyen en el payload.
-    Se espera un JSON con, entre otros, las claves:
-      - "provincia": (opcional) valor exacto a buscar.
-      - "localidad": (opcional) valor exacto a buscar.
     """
     print("Payload recibido:", request.data)
     provincia = request.data.get('provincia')
@@ -48,7 +39,6 @@ def realizar_sorteo(request):
     # Filtrar participantes en el modelo Participante
     participantes_query = Participante.objects.all()
     if provincia:
-        # Se usa iexact para comparación exacta (ignora mayúsculas/minúsculas)
         participantes_query = participantes_query.filter(provincia__iexact=provincia)
     if localidad:
         participantes_query = participantes_query.filter(localidad__iexact=localidad)
@@ -68,6 +58,9 @@ def realizar_sorteo(request):
             error_msg += "."
         return Response({'error': error_msg}, status=status.HTTP_400_BAD_REQUEST)
     
+    # Guardar un snapshot de los participantes (IDs) en el sorteo
+    original_participants = list(participantes_query.values_list('id', flat=True))
+    
     # Calcular el total de premios
     try:
         premios_data = request.data.get('premios', [])
@@ -76,8 +69,10 @@ def realizar_sorteo(request):
         return Response({'error': f"Error en el campo 'premios': {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
     
     if total_premios > len(participantes_disponibles):
-        return Response({'error': f"No hay suficientes participantes para asignar {total_premios} premios. Participantes disponibles: {len(participantes_disponibles)}."},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {'error': f"No hay suficientes participantes para asignar {total_premios} premios. Participantes disponibles: {len(participantes_disponibles)}."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
     
     random.shuffle(participantes_disponibles)
     ganadores_info = []
@@ -87,8 +82,10 @@ def realizar_sorteo(request):
         cantidad = sorteo_premio.cantidad
         premio = sorteo_premio.premio
         if cantidad > len(participantes_disponibles):
-            return Response({'error': f"No hay suficientes participantes para asignar el premio '{premio.nombre}' (se requieren {cantidad}, disponibles {len(participantes_disponibles)})."},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'error': f"No hay suficientes participantes para asignar el premio '{premio.nombre}' (se requieren {cantidad}, disponibles {len(participantes_disponibles)})."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         ganadores = participantes_disponibles[:cantidad]
         participantes_disponibles = participantes_disponibles[cantidad:]
         ganadores_data = []
@@ -100,10 +97,12 @@ def realizar_sorteo(request):
                     premio=premio
                 )
             except Exception as e:
-                return Response({'error': f"Error al asignar el premio '{premio.nombre}' al participante ID {ganador.id}: {str(e)}"},
-                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response(
+                    {'error': f"Error al asignar el premio '{premio.nombre}' al participante ID {ganador}: {str(e)}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
             ganadores_data.append({
-                'id_ganador': ganador.id,
+                'id_ganador': ganador,
                 'nombre': ganador.nombre,
                 'apellido': ganador.apellido,
                 'email': ganador.email,
@@ -114,6 +113,10 @@ def realizar_sorteo(request):
             'cantidad': cantidad,
             'ganadores': ganadores_data
         })
+    
+    # Guardar el snapshot de participantes en el sorteo
+    sorteo.participants_snapshot = original_participants
+    sorteo.save()
     
     try:
         RegistroActividad.objects.create(
@@ -128,7 +131,6 @@ def realizar_sorteo(request):
         'items': ganadores_info
     }
     return Response(data_response, status=status.HTTP_200_OK)
-
 
 class ListadoSorteos(ListAPIView):
     queryset = Sorteo.objects.all().order_by('-fecha_hora')

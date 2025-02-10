@@ -26,7 +26,7 @@ function ScheduledSorteos () {
       setSorteosProgramados (data);
     } catch (error) {
       console.error (error);
-      toast.error ('Error al cargar sorteos programados.');
+      toast.error ('Error al cargar sorteos agendados.');
     } finally {
       setCargando (false);
     }
@@ -83,9 +83,16 @@ function ScheduledSorteos () {
     }
   };
 
-  // Al presionar el botón de "Play" se redirige a la página de sortear, pasando los datos del sorteo agendado
+  // Al presionar el botón "Sortear" (Play) se redirige a la página de Sorteo,
+  // pasando los datos del sorteo agendado para completar el formulario.
   const handlePlay = sorteo => {
     navigate ('/', {state: {scheduledSorteo: sorteo}});
+  };
+
+  // Helper para formatear la lista de premios
+  const formatPremios = premios => {
+    if (!premios || premios.length === 0) return 'Sin premios';
+    return premios.map (p => `${p.premio.nombre} (x${p.cantidad})`).join (', ');
   };
 
   return (
@@ -101,6 +108,9 @@ function ScheduledSorteos () {
                     <th>Nombre</th>
                     <th>Descripción</th>
                     <th>Fecha y hora</th>
+                    <th>Provincia</th>
+                    <th>Localidad</th>
+                    <th>Premios</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
@@ -138,6 +148,7 @@ function ScheduledSorteos () {
                         {editingId === sorteo.id
                           ? <input
                               type="datetime-local"
+                              className="sorteo-datetime"
                               value={editValues.fecha_programada || ''}
                               onChange={e =>
                                 setEditValues ({
@@ -151,8 +162,38 @@ function ScheduledSorteos () {
                       </td>
                       <td>
                         {editingId === sorteo.id
+                          ? <input
+                              type="text"
+                              value={editValues.provincia || ''}
+                              onChange={e =>
+                                setEditValues ({
+                                  ...editValues,
+                                  provincia: e.target.value,
+                                })}
+                            />
+                          : sorteo.provincia || '-'}
+                      </td>
+                      <td>
+                        {editingId === sorteo.id
+                          ? <input
+                              type="text"
+                              value={editValues.localidad || ''}
+                              onChange={e =>
+                                setEditValues ({
+                                  ...editValues,
+                                  localidad: e.target.value,
+                                })}
+                            />
+                          : sorteo.localidad || '-'}
+                      </td>
+                      <td>{formatPremios (sorteo.premios)}</td>
+                      <td>
+                        {editingId === sorteo.id
                           ? <div className="acciones edit">
-                              <button onClick={() => handleSave (sorteo.id)}>
+                              <button
+                                onClick={() => handleSave (sorteo.id)}
+                                className="ejecutar"
+                              >
                                 Guardar
                               </button>
                               <button onClick={cancelEditing} className="rojo">

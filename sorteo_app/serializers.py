@@ -38,7 +38,7 @@ class SorteoSimpleSerializer(serializers.ModelSerializer):
 
 class SorteoSerializer(serializers.ModelSerializer):
     premios = SorteoPremioSerializer(many=True, source='sorteopremios')
-    
+
     class Meta:
         model = Sorteo
         fields = [
@@ -49,8 +49,10 @@ class SorteoSerializer(serializers.ModelSerializer):
             'fecha_programada',
             'provincia',
             'localidad',
-            'premios'
+            'premios',
+            'participants_snapshot',
         ]
+        read_only_fields = ['fecha_hora', 'participants_snapshot']
 
     def validate_nombre(self, value):
         if not value.strip():
@@ -64,12 +66,13 @@ class SorteoSerializer(serializers.ModelSerializer):
             premio = premio_data['premio']
             orden_item = premio_data['orden_item']
             cantidad = premio_data['cantidad']
-            # Si se agendó el sorteo (fecha_programada definida), no se descuenta el stock
-            if not sorteo.fecha_programada:
-                if premio.stock < cantidad:
-                    raise serializers.ValidationError(f'No hay suficiente stock para el premio {premio.nombre}')
-                premio.stock -= cantidad
-                premio.save()
+
+            if premio.stock < cantidad:
+                raise serializers.ValidationError(f'No hay suficiente stock para el premio {premio.nombre}')
+
+            premio.stock -= cantidad
+            premio.save()
+
             SorteoPremio.objects.create(
                 sorteo=sorteo,
                 premio=premio,
