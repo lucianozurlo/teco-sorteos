@@ -90,10 +90,6 @@ header {
   color: var(--text-color);
   border-radius: 6px;
   transition: background-color 0.3s ease, color 0.3s ease;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  -ms-border-radius: 6px;
-  -o-border-radius: 6px;
 }
 
 .nav-links a:hover {
@@ -121,13 +117,8 @@ button {
   padding: 10px 21px;
   text-align: center;
   text-transform: none;
-  transition: all .25s ease-in-out;
+  transition: all 0.25s ease-in-out;
   user-select: none;
-  -webkit-user-select: none;
-  -webkit-transition: all .25s ease-in-out;
-  -moz-transition: all .25s ease-in-out;
-  -ms-transition: all .25s ease-in-out;
-  -o-transition: all .25s ease-in-out;
 }
 
 button:active {
@@ -136,6 +127,14 @@ button:active {
 
 button:hover {
   background-color: var(--primary-dark) !important;
+}
+
+/* NUEVO: estilos para botones deshabilitados */
+button:disabled {
+  pointer-events: none;
+  background-color: #ccc;
+  opacity: 0.8;
+  cursor: default;
 }
 
 button.ejecutar {
@@ -149,11 +148,7 @@ button.ejecutar {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  transition: all .2s ease-in-out;
-  -webkit-transition: all .2s ease-in-out;
-  -moz-transition: all .2s ease-in-out;
-  -ms-transition: all .2s ease-in-out;
-  -o-transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .acciones {
@@ -201,37 +196,22 @@ button:hover.coral {
 }
 
 button.volver {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
   width: fit-content;
   padding: 10px 14px;
-  transition: all .2s ease-in-out;
-  -webkit-transition: all .2s ease-in-out;
-  -moz-transition: all .2s ease-in-out;
-  -ms-transition: all .2s ease-in-out;
-  -o-transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 input,
 select {
-  font-size: .9rem !important;
+  font-size: 0.9rem !important;
   border: 1px solid var(--neutral-border);
   border-radius: 4px;
-  font-size: .9rem;
   max-width: 300px;
   padding: 10px !important;
   width: 100%;
 }
 
 input[type="checkbox"] {
-  width: unset;
-  margin-right: 10px;
-}
-
-input[type="datetime-local"] {
   width: unset;
   margin-right: 10px;
 }
@@ -301,7 +281,7 @@ label {
   margin-left: 3px;
   margin-right: 8px;
   line-height: 2rem;
-  font-size: .95rem;
+  font-size: 0.95rem;
 }
 
 .d-flex {

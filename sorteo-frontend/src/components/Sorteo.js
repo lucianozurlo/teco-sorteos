@@ -160,7 +160,7 @@ function Sorteo () {
     [location.state]
   );
 
-  // Cargar provincias si se usan filtros
+  // Cargar provincias
   useEffect (
     () => {
       if (usarFiltros) {
@@ -238,40 +238,6 @@ function Sorteo () {
       : 'No se aplicó ningún filtro';
     toast.success (filtroTexto);
   };
-
-  // Función para obtener participantes filtrados para el resumen
-  const fetchFilteredParticipants = async () => {
-    try {
-      const response = await fetch (`${API_BASE_URL}/api/lists/`);
-      const data = await response.json ();
-      const allParticipants = data.participantes || [];
-      const filtered = allParticipants.filter (p => {
-        let match = true;
-        if (appliedFilter.provincia) {
-          match = match && p.provincia === appliedFilter.provincia;
-        }
-        if (appliedFilter.localidad) {
-          match = match && p.localidad === appliedFilter.localidad;
-        }
-        return match;
-      });
-      setFilteredParticipants (filtered);
-    } catch (error) {
-      console.error (error);
-      toast.error ('Error al cargar participantes.');
-    }
-  };
-
-  useEffect (
-    () => {
-      if (usarFiltros && (appliedFilter.provincia || appliedFilter.localidad)) {
-        fetchFilteredParticipants ();
-      } else {
-        setFilteredParticipants ([]);
-      }
-    },
-    [usarFiltros, appliedFilter]
-  );
 
   // Manejador para el checkbox "¿Restringir por provincia/localidad?"
   const handleUsarFiltrosChange = () => {
@@ -395,6 +361,40 @@ function Sorteo () {
     }
   };
 
+  // Función para obtener participantes filtrados (o totales si no hay filtro)
+  const fetchFilteredParticipants = async () => {
+    try {
+      const response = await fetch (`${API_BASE_URL}/api/lists/`);
+      const data = await response.json ();
+      const allParticipants = data.participantes || [];
+      const filtered = allParticipants.filter (p => {
+        let match = true;
+        if (appliedFilter.provincia) {
+          match = match && p.provincia === appliedFilter.provincia;
+        }
+        if (appliedFilter.localidad) {
+          match = match && p.localidad === appliedFilter.localidad;
+        }
+        return match;
+      });
+      setFilteredParticipants (filtered);
+    } catch (error) {
+      console.error (error);
+      toast.error ('Error al cargar participantes.');
+    }
+  };
+
+  useEffect (
+    () => {
+      if (usarFiltros && (appliedFilter.provincia || appliedFilter.localidad)) {
+        fetchFilteredParticipants ();
+      } else {
+        setFilteredParticipants ([]);
+      }
+    },
+    [usarFiltros, appliedFilter]
+  );
+
   const handleSortear = async () => {
     if (items.length === 0) {
       toast.error ('Por favor, agregá al menos un premio para sortear.');
@@ -487,6 +487,21 @@ function Sorteo () {
   return (
     <div className="sorteo-container">
       <h1>Realizar Sorteo</h1>
+      {/* Accordion headers */}
+      <div className="accordion-headers">
+        <button
+          className={activeSection === 'crear' ? 'active' : ''}
+          onClick={() => setActiveSection ('crear')}
+        >
+          Crear sorteo
+        </button>
+        <button
+          className={activeSection === 'realizar' ? 'active' : ''}
+          onClick={() => setActiveSection ('realizar')}
+        >
+          Realizar sorteo
+        </button>
+      </div>
       {activeSection === 'crear' &&
         <div className="accordion-content">
           <div className="sorteo-section">
@@ -610,6 +625,14 @@ function Sorteo () {
                   value={scheduledDate}
                   onChange={e => setScheduledDate (e.target.value)}
                 />
+                <button
+                  onClick={() =>
+                    toast.success (
+                      `Fecha confirmada: ${new Date (scheduledDate).toLocaleString ()}`
+                    )}
+                >
+                  Confirmar fecha
+                </button>
               </div>}
           </div>
           <hr />
@@ -683,7 +706,7 @@ function Sorteo () {
               : 'Sin premios'}
           </p>
           <div className="participants-summary">
-            <strong>Participantes ({filteredParticipants.length}):</strong>
+            <strong>Participantes:</strong>
             {usarFiltros
               ? filteredParticipants.length > 0
                   ? <ul>
@@ -694,7 +717,14 @@ function Sorteo () {
                       ))}
                     </ul>
                   : <p>No hay participantes que cumplan el filtro.</p>
-              : <p>Sin filtro aplicado.</p>}
+              : <p>
+                  {/* Si no hay filtro, se muestra el total de participantes */}
+                  {filteredParticipants.length > 0
+                    ? filteredParticipants.length
+                    : 'No se cargaron participantes'}
+                  {' '}
+                  en la base.
+                </p>}
           </div>
           <div className="sortear">
             <button
@@ -742,35 +772,20 @@ function Sorteo () {
         >
           <h2>Resultado del Sorteo</h2>
           <p>
-            <strong>ID:</strong>
-            {' '}
-            {modalResult.sorteo_id}
-            {' '}
-            -
-            {' '}
-            <strong>Nombre:</strong>
-            {' '}
-            {modalResult.nombre_sorteo}
+            <strong>ID:</strong> {modalResult.sorteo_id} -{' '}
+            <strong>Nombre:</strong> {modalResult.nombre_sorteo}
           </p>
           {modalResult.items && modalResult.items.length > 0
             ? <ul>
                 {modalResult.items.map ((itemObj, i) => (
                   <li key={i}>
-                    <strong>{itemObj.orden_item}° Premio:</strong>
-                    {' '}
+                    <strong>{itemObj.orden_item}° Premio:</strong>{' '}
                     {itemObj.nombre_item}
                     <ul>
                       {itemObj.ganadores.map ((ganador, j) => (
                         <li key={j}>
-                          Ganador:
-                          {' '}
-                          {ganador.nombre}
-                          {' '}
-                          {ganador.apellido}
-                          {' '}
-                          (
-                          {ganador.email}
-                          )
+                          Ganador: {ganador.nombre} {ganador.apellido} (
+                          {ganador.email})
                         </li>
                       ))}
                     </ul>

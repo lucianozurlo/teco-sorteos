@@ -1,105 +1,3 @@
-# sorteo_app/management/commands/cargar_csv.py
-
-from django.core.management.base import BaseCommand, CommandError
-import csv
-from sorteo_app.models import Participante, RegistroActividad
-
-class Command(BaseCommand):
-    help = 'Carga datos de participantes desde CSV y excluye legajos en la lista.'
-
-    def add_arguments(self, parser):
-        parser.add_argument(
-            '--usuarios',
-            type=str,
-            help='Ruta al archivo CSV de usuarios'
-        )
-        parser.add_argument(
-            '--lista_negra',
-            type=str,
-            help='Ruta al archivo CSV de lista'
-        )
-
-    def handle(self, *args, **options):
-        ruta_usuarios = options['usuarios'] or 'participantes.csv'
-        ruta_lista_negra = options['lista_negra'] or 'no_incluidos.csv'
-
-        # Leer IDs de la lista negra
-        blacklist_ids = set()
-        try:
-            with open(ruta_lista_negra, 'r', encoding='utf-8') as f_black:
-                reader = csv.DictReader(f_black)
-                for row in reader:
-                    blacklist_ids.add(int(row['ID']))
-        except FileNotFoundError:
-            raise CommandError(f"No se encontró el archivo: {ruta_lista_negra}")
-
-        # Leer y crear/actualizar participantes (excluyendo los que estén en la lista negra)
-        try:
-            with open(ruta_usuarios, 'r', encoding='utf-8') as f_users:
-                reader = csv.DictReader(f_users)
-                contador = 0
-                for row in reader:
-                    user_id = int(row['ID'])
-                    if user_id in blacklist_ids:
-                        continue
-
-                    Participante.objects.update_or_create(
-                        id=user_id,
-                        defaults={
-                            'nombre': row['Nombre'],
-                            'apellido': row['Apellido'],
-                            'email': row['Email'],
-                            'localidad': row['Localidad'],
-                            'provincia': row['Provincia']
-                        }
-                    )
-                    contador += 1
-
-                self.stdout.write(self.style.SUCCESS(
-                    f'Se cargaron/actualizaron {contador} participantes.'
-                ))
-
-                RegistroActividad.objects.create(
-                    evento=f"Carga de participantes desde {ruta_usuarios}; no incluidos {len(blacklist_ids)} legajos."
-                )
-        except FileNotFoundError:
-            raise CommandError(f"No se encontró el archivo de participantes: {ruta_usuarios}")
-
-
-
-# sorteo_app/management/commands/load_premios.py
-
-from django.core.management.base import BaseCommand
-from sorteo_app.models import Premio
-import random
-
-class Command(BaseCommand):
-    help = 'Carga 10 premios de prueba con stock aleatorio'
-
-    def handle(self, *args, **kwargs):
-        sample_premios = [
-            'TV 42 pulgadas',
-            'Smartphone Samsung Galaxy',
-            'Laptop HP 15"',
-            'Tablet iPad Pro',
-            'Cámara Canon EOS',
-            'Audífonos Bose',
-            'Smartwatch Apple',
-            'Televisor LG 55 pulgadas',
-            'Consola PlayStation 5',
-            'Bicicleta de montaña'
-        ]
-
-        for nombre in sample_premios:
-            stock = random.randint(1, 10)
-            premio, created = Premio.objects.get_or_create(nombre=nombre, defaults={'stock': stock})
-            if created:
-                self.stdout.write(self.style.SUCCESS(f'Creado premio: {nombre} con stock {stock}'))
-            else:
-                self.stdout.write(f'El premio {nombre} ya existe con stock {premio.stock}')
-
-
-
 # sorteo_project/urls.py
 
 from django.contrib import admin
@@ -148,7 +46,6 @@ urlpatterns = [
     path('api/scheduled/<int:pk>/', ScheduledSorteoDetail.as_view(), name='scheduled_sorteo_detail'),
     path('api/', include(router.urls)),
 ]
-
 
 
 
@@ -321,6 +218,110 @@ logging.config.dictConfig({
 
 
 
+# sorteo_app/serializers.py
+
+from rest_framework import serializers
+from .models import Participante, RegistroActividad, Sorteo, SorteoPremio, ResultadoSorteo, Premio, UserProfile
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['localidad', 'provincia']
+
+class ParticipanteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Participante
+        fields = ['id', 'nombre', 'apellido', 'area', 'dominio', 'cargo', 'email', 'localidad', 'provincia']
+
+class RegistroActividadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RegistroActividad
+        fields = '__all__'
+
+class PremioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Premio
+        fields = ['id', 'nombre', 'stock']
+
+class SorteoPremioSerializer(serializers.ModelSerializer):
+    premio = PremioSerializer(read_only=True)
+    # Hacemos el campo writable usando source='premio'
+    premio_id = serializers.PrimaryKeyRelatedField(queryset=Premio.objects.all(), source='premio')
+
+    class Meta:
+        model = SorteoPremio
+        fields = ['premio', 'premio_id', 'orden_item', 'cantidad']
+
+class SorteoSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sorteo
+        fields = ['id', 'nombre']
+
+class SorteoSerializer(serializers.ModelSerializer):
+    # Usamos el serializer de SorteoPremio para el campo de premios
+    premios = SorteoPremioSerializer(many=True, source='sorteopremios')
+
+    class Meta:
+        model = Sorteo
+        fields = [
+            'id',
+            'nombre',
+            'descripcion',
+            'fecha_hora',
+            'fecha_programada',
+            'provincia',
+            'localidad',
+            'premios'
+        ]
+
+    def validate_nombre(self, value):
+        if not value.strip():
+            return "Sorteo sin nombre"
+        return value
+
+    def create(self, validated_data):
+        # Eliminar el campo extra 'participants_snapshot' si está presente
+        # validated_data.pop("participants_snapshot", None)
+        premios_data = validated_data.pop('sorteopremios', [])
+        sorteo = Sorteo.objects.create(**validated_data)
+        for premio_data in premios_data:
+            premio = premio_data['premio']
+            orden_item = premio_data['orden_item']
+            cantidad = premio_data['cantidad']
+
+            if premio.stock < cantidad:
+                raise serializers.ValidationError(f'No hay suficiente stock para el premio {premio.nombre}')
+
+            # Disminuir el stock del premio solo si se está realizando el sorteo (no al agendar)
+            if not validated_data.get('fecha_programada'):
+                premio.stock -= cantidad
+                premio.save()
+
+            SorteoPremio.objects.create(
+                sorteo=sorteo,
+                premio=premio,
+                orden_item=orden_item,
+                cantidad=cantidad
+            )
+        return sorteo
+
+class ResultadoSorteoSerializer(serializers.ModelSerializer):
+    participante = ParticipanteSerializer(read_only=True)
+    premio = PremioSerializer(read_only=True)
+    sorteo = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ResultadoSorteo
+        fields = ['id', 'sorteo', 'participante', 'premio', 'fecha']
+
+    def get_sorteo(self, obj):
+        if obj.sorteo:
+            return {'id': obj.sorteo.id, 'nombre': obj.sorteo.nombre}
+        return None
+
+
+
+
 # sorteo_app/models.py
 
 from django.db import models
@@ -368,7 +369,7 @@ class Sorteo(models.Model):
     descripcion = models.TextField(blank=True)
     premios = models.ManyToManyField(Premio, through='SorteoPremio')
     fecha_hora = models.DateTimeField(auto_now_add=True)
-    # Campo para sorteo programado (opcional)
+    # Campo para sorteo agendado (opcional)
     fecha_programada = models.DateTimeField(null=True, blank=True)
     # Campos opcionales para almacenar los filtros aplicados al agendar el sorteo
     provincia = models.CharField(max_length=255, blank=True, default='')
@@ -422,116 +423,6 @@ class ListaNegra(models.Model):
 
 
 
-# sorteo_app/admin.py
-
-from django.contrib import admin
-from sorteo_app.models import Premio
-
-@admin.register(Premio)
-class PremioAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'stock')
-    search_fields = ('nombre',)
-
-
-# sorteo_app/serializers.py
-
-from rest_framework import serializers
-from .models import Participante, RegistroActividad, Sorteo, SorteoPremio, ResultadoSorteo, Premio, UserProfile
-
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = ['localidad', 'provincia']
-
-class ParticipanteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Participante
-        fields = ['id', 'nombre', 'apellido', 'area', 'dominio', 'cargo', 'email', 'localidad', 'provincia']
-
-class RegistroActividadSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RegistroActividad
-        fields = '__all__'
-
-class PremioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Premio
-        fields = ['id', 'nombre', 'stock']
-
-class SorteoPremioSerializer(serializers.ModelSerializer):
-    premio = PremioSerializer(read_only=True)
-    # Hacemos el campo writable usando source='premio'
-    premio_id = serializers.PrimaryKeyRelatedField(queryset=Premio.objects.all(), source='premio')
-
-    class Meta:
-        model = SorteoPremio
-        fields = ['premio', 'premio_id', 'orden_item', 'cantidad']
-
-class SorteoSimpleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Sorteo
-        fields = ['id', 'nombre']
-
-class SorteoSerializer(serializers.ModelSerializer):
-    # Eliminamos read_only para permitir que se puedan recibir datos para los premios
-    premios = SorteoPremioSerializer(many=True, source='sorteopremios')
-    
-    class Meta:
-        model = Sorteo
-        fields = [
-            'id',
-            'nombre',
-            'descripcion',
-            'fecha_hora',
-            'fecha_programada',
-            'provincia',
-            'localidad',
-            'premios'
-        ]
-
-    def validate_nombre(self, value):
-        if not value.strip():
-            return "Sorteo sin nombre"
-        return value
-
-    def create(self, validated_data):
-        premios_data = validated_data.pop('sorteopremios', [])
-        sorteo = Sorteo.objects.create(**validated_data)
-        for premio_data in premios_data:
-            premio = premio_data['premio']
-            orden_item = premio_data['orden_item']
-            cantidad = premio_data['cantidad']
-
-            if premio.stock < cantidad:
-                raise serializers.ValidationError(f'No hay suficiente stock para el premio {premio.nombre}')
-
-            premio.stock -= cantidad
-            premio.save()
-
-            SorteoPremio.objects.create(
-                sorteo=sorteo,
-                premio=premio,
-                orden_item=orden_item,
-                cantidad=cantidad
-            )
-        return sorteo
-
-class ResultadoSorteoSerializer(serializers.ModelSerializer):
-    participante = ParticipanteSerializer(read_only=True)
-    premio = PremioSerializer(read_only=True)
-    sorteo = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ResultadoSorteo
-        fields = ['id', 'sorteo', 'participante', 'premio', 'fecha']
-
-    def get_sorteo(self, obj):
-        if obj.sorteo:
-            return {'id': obj.sorteo.id, 'nombre': obj.sorteo.nombre}
-        return None
-
-
-
 
 # sorteo_app/apps.py
 
@@ -543,51 +434,17 @@ class SorteoAppConfig(AppConfig):
 
 
 
-# sorteo_app/views/participants.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from ..models import Participante, ListaNegra
 
-class AddToParticipants(APIView):
-    """
-    Permite agregar manualmente un participante a la base de Participante.
-    Se esperan en el JSON los campos: id, nombre, apellido y email (obligatorios),
-    y opcionalmente: área, dominio, cargo, localidad, provincia.
-    Si el participante existe en la lista de no incluidos, se lo remueve de allí.
-    """
-    def post(self, request, format=None):
-        data = request.data
-        # Verificar campos requeridos
-        for campo in ['id', 'nombre', 'apellido', 'email']:
-            if not data.get(campo):
-                return Response({"error": f"El campo {campo} es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            legajo = int(data.get('id'))
-        except ValueError:
-            return Response({"error": "El legajo debe ser un número."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Remover de ListaNegra si existe
-        ListaNegra.objects.filter(id=legajo).delete()
-        
-        participante, created = Participante.objects.update_or_create(
-            id=legajo,
-            defaults={
-                'nombre': data.get('nombre'),
-                'apellido': data.get('apellido'),
-                'email': data.get('email'),
-                'area': data.get('area', ''),
-                'dominio': data.get('dominio', ''),
-                'cargo': data.get('cargo', ''),
-                'localidad': data.get('localidad', ''),
-                'provincia': data.get('provincia', ''),
-            }
-        )
-        if created:
-            message = "Participante agregado exitosamente."
-        else:
-            message = "Participante actualizado exitosamente."
-        return Response({"message": message}, status=status.HTTP_200_OK)
+# sorteo_app/admin.py
+
+from django.contrib import admin
+from sorteo_app.models import Premio
+
+@admin.register(Premio)
+class PremioAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'stock')
+    search_fields = ('nombre',)
+
 
 
 
@@ -616,6 +473,7 @@ __all__ = [
     'ListadoRegistroActividad',
     'UploadCSVView'
 ]
+
 
 
 
@@ -691,6 +549,7 @@ class AddToParticipants(APIView):
 
 
 
+
 # sorteo_app/views/blacklist.py
 
 import logging
@@ -759,6 +618,7 @@ class AddToBlacklist(APIView):
 
 
 
+
 # sorteo_app/views/download_templates.py
 
 import csv
@@ -809,6 +669,56 @@ class DownloadListaNegraTemplate(APIView):
         for row in example_rows:
             writer.writerow(row)
         return response
+
+
+
+
+# sorteo_app/views/participants.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from ..models import Participante, ListaNegra
+
+class AddToParticipants(APIView):
+    """
+    Permite agregar manualmente un participante a la base de Participante.
+    Se esperan en el JSON los campos: id, nombre, apellido y email (obligatorios),
+    y opcionalmente: área, dominio, cargo, localidad, provincia.
+    Si el participante existe en la lista de no incluidos, se lo remueve de allí.
+    """
+    def post(self, request, format=None):
+        data = request.data
+        # Verificar campos requeridos
+        for campo in ['id', 'nombre', 'apellido', 'email']:
+            if not data.get(campo):
+                return Response({"error": f"El campo {campo} es obligatorio."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            legajo = int(data.get('id'))
+        except ValueError:
+            return Response({"error": "El legajo debe ser un número."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Remover de ListaNegra si existe
+        ListaNegra.objects.filter(id=legajo).delete()
+        
+        participante, created = Participante.objects.update_or_create(
+            id=legajo,
+            defaults={
+                'nombre': data.get('nombre'),
+                'apellido': data.get('apellido'),
+                'email': data.get('email'),
+                'area': data.get('area', ''),
+                'dominio': data.get('dominio', ''),
+                'cargo': data.get('cargo', ''),
+                'localidad': data.get('localidad', ''),
+                'provincia': data.get('provincia', ''),
+            }
+        )
+        if created:
+            message = "Participante agregado exitosamente."
+        else:
+            message = "Participante actualizado exitosamente."
+        return Response({"message": message}, status=status.HTTP_200_OK)
+
 
 
 
@@ -875,6 +785,7 @@ class ScheduleSorteoView(APIView):
 
 
 
+
 # sorteo_app/views/scheduled_sorteos.py
 
 from rest_framework import generics
@@ -883,8 +794,8 @@ from ..serializers import SorteoSerializer
 
 class ScheduledSorteosList(generics.ListCreateAPIView):
     """
-    Lista todos los sorteos programados y permite crear uno nuevo.
-    Se asume que los sorteos programados se diferencian de los sorteos ejecutados
+    Lista todos los sorteos agendados y permite crear uno nuevo.
+    Se asume que los sorteos agendados se diferencian de los sorteos ejecutados
     porque tienen el campo 'fecha_programada' definido y 'fecha_hora' nulo.
     """
     queryset = Sorteo.objects.filter(fecha_programada__isnull=False)
@@ -899,8 +810,7 @@ class ScheduledSorteoDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 
-
-# sorteo_app/views/views_filters.py
+    # sorteo_app/views/views_filters.py
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -923,6 +833,7 @@ def listar_localidades(request):
         localidades = Participante.objects.values_list('localidad', flat=True).distinct()
     localidades_list = sorted(localidades)
     return Response(localidades_list, status=status.HTTP_200_OK)
+
 
 
 
@@ -998,18 +909,14 @@ class ClearListaNegra(APIView):
 
 
 
-# sorteo_app/views/views_sorteo.py
+        # sorteo_app/views/views_sorteo.py
 
 import random
-from django.http import HttpRequest
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.generics import ListAPIView
 from ..models import RegistroActividad, Sorteo, SorteoPremio, ResultadoSorteo, Premio, Participante
-from ..serializers import SorteoSerializer, ResultadoSorteoSerializer
-
-# Importa tus serializers
 from ..serializers import (
     SorteoSerializer,
     ResultadoSorteoSerializer,
@@ -1017,7 +924,7 @@ from ..serializers import (
     PremioSerializer
 )
 
-# ViewSet para gestionar Premios
+# ViewSet para gestionar Premios (para el CRUD de premios en el backend)
 class PremioViewSet(viewsets.ModelViewSet):
     queryset = Premio.objects.all()
     serializer_class = PremioSerializer
@@ -1025,110 +932,140 @@ class PremioViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 def realizar_sorteo(request):
     """
-    Realiza un sorteo asignando premios a participantes.
-    Se pueden filtrar los participantes por provincia y/o localidad si se incluyen en el payload.
-    Se espera un JSON con, entre otros, las claves:
-      - "provincia": (opcional) valor exacto a buscar.
-      - "localidad": (opcional) valor exacto a buscar.
+    Realiza o agenda un sorteo.
+
+    Si el payload incluye el campo "fecha_programada" (no nulo), se entiende que el sorteo
+    se agenda y solo se registra la actividad sin asignar ganadores ni descontar stock.
+
+    En cambio, si no se incluye (o es nulo) "fecha_programada", se procede a:
+      - Crear el sorteo usando el serializer.
+      - Filtrar los participantes (por provincia y/o localidad, si se reciben esos filtros).
+      - Validar que haya suficientes participantes para asignar todos los premios.
+      - Asignar de forma aleatoria los premios a los participantes.
+      - Disminuir el stock de cada premio (solo en el sorteo "realizado").
+      - Registrar la actividad.
+      - Devolver en la respuesta un resumen con el ID del sorteo, nombre y la lista de premios con sus ganadores.
     """
-    print("Payload recibido:", request.data)
+    # Extraer filtros (opcional)
     provincia = request.data.get('provincia')
     localidad = request.data.get('localidad')
-    print("Filtro - provincia:", provincia, "localidad:", localidad)
-    
-    # Crear el sorteo con el serializer
+
+    # Crear el sorteo mediante el serializer (este serializer se encarga de descartar campos extra como "participants_snapshot")
     serializer = SorteoSerializer(data=request.data)
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     try:
         sorteo = serializer.save()
     except Exception as e:
-        return Response({'error': f"Error al crear el sorteo: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Filtrar participantes en el modelo Participante
-    participantes_query = Participante.objects.all()
-    if provincia:
-        # Se usa iexact para comparación exacta (ignora mayúsculas/minúsculas)
-        participantes_query = participantes_query.filter(provincia__iexact=provincia)
-    if localidad:
-        participantes_query = participantes_query.filter(localidad__iexact=localidad)
-    
-    participantes_disponibles = list(participantes_query)
-    print("Cantidad de participantes disponibles después del filtro:", len(participantes_disponibles))
-    
-    if not participantes_disponibles:
-        error_msg = "No se encontraron participantes"
-        if provincia and localidad:
-            error_msg += f" para la provincia '{provincia}' y localidad '{localidad}'."
-        elif provincia:
-            error_msg += f" para la provincia '{provincia}'."
-        elif localidad:
-            error_msg += f" para la localidad '{localidad}'."
-        else:
-            error_msg += "."
-        return Response({'error': error_msg}, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Calcular el total de premios
-    try:
-        premios_data = request.data.get('premios', [])
-        total_premios = sum(item['cantidad'] for item in premios_data)
-    except Exception as e:
-        return Response({'error': f"Error en el campo 'premios': {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-    
-    if total_premios > len(participantes_disponibles):
-        return Response({'error': f"No hay suficientes participantes para asignar {total_premios} premios. Participantes disponibles: {len(participantes_disponibles)}."},
-                        status=status.HTTP_400_BAD_REQUEST)
-    
-    random.shuffle(participantes_disponibles)
-    ganadores_info = []
-    premios_sorted = SorteoPremio.objects.filter(sorteo=sorteo).order_by('orden_item')
-    
-    for sorteo_premio in premios_sorted:
-        cantidad = sorteo_premio.cantidad
-        premio = sorteo_premio.premio
-        if cantidad > len(participantes_disponibles):
-            return Response({'error': f"No hay suficientes participantes para asignar el premio '{premio.nombre}' (se requieren {cantidad}, disponibles {len(participantes_disponibles)})."},
-                            status=status.HTTP_400_BAD_REQUEST)
-        ganadores = participantes_disponibles[:cantidad]
-        participantes_disponibles = participantes_disponibles[cantidad:]
-        ganadores_data = []
-        for ganador in ganadores:
-            try:
-                ResultadoSorteo.objects.create(
-                    sorteo=sorteo,
-                    participante=ganador,
-                    premio=premio
-                )
-            except Exception as e:
-                return Response({'error': f"Error al asignar el premio '{premio.nombre}' al participante ID {ganador.id}: {str(e)}"},
-                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            ganadores_data.append({
-                'id_ganador': ganador.id,
-                'nombre': ganador.nombre,
-                'apellido': ganador.apellido,
-                'email': ganador.email,
-            })
-        ganadores_info.append({
-            'nombre_item': premio.nombre,
-            'orden_item': sorteo_premio.orden_item,
-            'cantidad': cantidad,
-            'ganadores': ganadores_data
-        })
-    
-    try:
-        RegistroActividad.objects.create(
-            evento=f"Sorteo (ID={sorteo.id}) '{sorteo.nombre}' con {premios_sorted.count()} premios y {total_premios} ganadores."
+        return Response(
+            {'error': f"Error al crear el sorteo: {str(e)}"},
+            status=status.HTTP_400_BAD_REQUEST
         )
-    except Exception as e:
-        print(f"Error al registrar actividad: {str(e)}")
-    
-    data_response = {
-        'sorteo_id': sorteo.id,
-        'nombre_sorteo': sorteo.nombre,
-        'items': ganadores_info
-    }
-    return Response(data_response, status=status.HTTP_200_OK)
 
+    # Si no se agenda (no hay fecha_programada), se ejecuta el sorteo
+    if not sorteo.fecha_programada:
+        # Filtrar participantes (por defecto se toman todos; si se incluye provincia/localidad, se filtra)
+        participantes_query = Participante.objects.all()
+        if provincia:
+            participantes_query = participantes_query.filter(provincia__iexact=provincia)
+        if localidad:
+            participantes_query = participantes_query.filter(localidad__iexact=localidad)
+        participantes_disponibles = list(participantes_query)
+
+        if not participantes_disponibles:
+            error_msg = "No se encontraron participantes"
+            if provincia and localidad:
+                error_msg += f" para la provincia '{provincia}' y localidad '{localidad}'."
+            elif provincia:
+                error_msg += f" para la provincia '{provincia}'."
+            elif localidad:
+                error_msg += f" para la localidad '{localidad}'."
+            else:
+                error_msg += "."
+            return Response({'error': error_msg}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validar que existan suficientes participantes para asignar los premios
+        try:
+            premios_data = request.data.get('premios', [])
+            total_premios = sum(item['cantidad'] for item in premios_data)
+        except Exception as e:
+            return Response(
+                {'error': f"Error en el campo 'premios': {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if total_premios > len(participantes_disponibles):
+            return Response(
+                {'error': f"No hay suficientes participantes para asignar {total_premios} premios. Participantes disponibles: {len(participantes_disponibles)}."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Mezclar aleatoriamente la lista de participantes
+        random.shuffle(participantes_disponibles)
+        ganadores_info = []
+        premios_sorted = SorteoPremio.objects.filter(sorteo=sorteo).order_by('orden_item')
+
+        for sorteo_premio in premios_sorted:
+            cantidad = sorteo_premio.cantidad
+            premio = sorteo_premio.premio
+            if cantidad > len(participantes_disponibles):
+                return Response(
+                    {'error': f"No hay suficientes participantes para asignar el premio '{premio.nombre}' (se requieren {cantidad}, disponibles {len(participantes_disponibles)})."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            ganadores = participantes_disponibles[:cantidad]
+            participantes_disponibles = participantes_disponibles[cantidad:]
+            ganadores_data = []
+            for ganador in ganadores:
+                try:
+                    ResultadoSorteo.objects.create(
+                        sorteo=sorteo,
+                        participante=ganador,
+                        premio=premio
+                    )
+                except Exception as e:
+                    return Response(
+                        {'error': f"Error al asignar el premio '{premio.nombre}' al participante ID {ganador.id}: {str(e)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    )
+                ganadores_data.append({
+                    'id_ganador': ganador.id,
+                    'nombre': ganador.nombre,
+                    'apellido': ganador.apellido,
+                    'email': ganador.email,
+                })
+            ganadores_info.append({
+                'nombre_item': premio.nombre,
+                'orden_item': sorteo_premio.orden_item,
+                'cantidad': cantidad,
+                'ganadores': ganadores_data
+            })
+
+        try:
+            RegistroActividad.objects.create(
+                evento=f"Sorteo (ID={sorteo.id}) '{sorteo.nombre}' realizado con {premios_sorted.count()} premios y {total_premios} ganadores."
+            )
+        except Exception as e:
+            print(f"Error al registrar actividad: {str(e)}")
+
+        data_response = {
+            'sorteo_id': sorteo.id,
+            'nombre_sorteo': sorteo.nombre,
+            'items': ganadores_info
+        }
+        return Response(data_response, status=status.HTTP_200_OK)
+    else:
+        # Si se agenda el sorteo (fecha_programada está presente), solo se registra la actividad sin asignar ganadores ni modificar stock.
+        try:
+            RegistroActividad.objects.create(
+                evento=f"Sorteo agendado (ID={sorteo.id}) '{sorteo.nombre}' creado."
+            )
+        except Exception as e:
+            print(f"Error al registrar actividad: {str(e)}")
+        return Response(
+            {'message': f"Sorteo agendado (ID={sorteo.id}) creado."},
+            status=status.HTTP_200_OK
+        )
 
 class ListadoSorteos(ListAPIView):
     queryset = Sorteo.objects.all().order_by('-fecha_hora')
@@ -1141,6 +1078,7 @@ class ListadoResultadosSorteo(ListAPIView):
 class ListadoRegistroActividad(ListAPIView):
     queryset = RegistroActividad.objects.all().order_by('-fecha_hora')
     serializer_class = RegistroActividadSerializer
+
 
 
 
@@ -1250,6 +1188,111 @@ class UploadCSVView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         return Response(mensaje, status=status.HTTP_200_OK)
+
+
+
+
+# sorteo_app/management/commands/load_premios.py
+
+from django.core.management.base import BaseCommand
+from sorteo_app.models import Premio
+import random
+
+class Command(BaseCommand):
+    help = 'Carga 10 premios de prueba con stock aleatorio'
+
+    def handle(self, *args, **kwargs):
+        sample_premios = [
+            'TV 42 pulgadas',
+            'Smartphone Samsung Galaxy',
+            'Laptop HP 15"',
+            'Tablet iPad Pro',
+            'Cámara Canon EOS',
+            'Audífonos Bose',
+            'Smartwatch Apple',
+            'Televisor LG 55 pulgadas',
+            'Consola PlayStation 5',
+            'Bicicleta de montaña'
+        ]
+
+        for nombre in sample_premios:
+            stock = random.randint(1, 10)
+            premio, created = Premio.objects.get_or_create(nombre=nombre, defaults={'stock': stock})
+            if created:
+                self.stdout.write(self.style.SUCCESS(f'Creado premio: {nombre} con stock {stock}'))
+            else:
+                self.stdout.write(f'El premio {nombre} ya existe con stock {premio.stock}')
+
+
+
+
+# sorteo_app/management/commands/cargar_csv.py
+
+from django.core.management.base import BaseCommand, CommandError
+import csv
+from sorteo_app.models import Participante, RegistroActividad
+
+class Command(BaseCommand):
+    help = 'Carga datos de participantes desde CSV y excluye legajos en la lista.'
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--usuarios',
+            type=str,
+            help='Ruta al archivo CSV de usuarios'
+        )
+        parser.add_argument(
+            '--lista_negra',
+            type=str,
+            help='Ruta al archivo CSV de lista'
+        )
+
+    def handle(self, *args, **options):
+        ruta_usuarios = options['usuarios'] or 'participantes.csv'
+        ruta_lista_negra = options['lista_negra'] or 'no_incluidos.csv'
+
+        # Leer IDs de la lista negra
+        blacklist_ids = set()
+        try:
+            with open(ruta_lista_negra, 'r', encoding='utf-8') as f_black:
+                reader = csv.DictReader(f_black)
+                for row in reader:
+                    blacklist_ids.add(int(row['ID']))
+        except FileNotFoundError:
+            raise CommandError(f"No se encontró el archivo: {ruta_lista_negra}")
+
+        # Leer y crear/actualizar participantes (excluyendo los que estén en la lista negra)
+        try:
+            with open(ruta_usuarios, 'r', encoding='utf-8') as f_users:
+                reader = csv.DictReader(f_users)
+                contador = 0
+                for row in reader:
+                    user_id = int(row['ID'])
+                    if user_id in blacklist_ids:
+                        continue
+
+                    Participante.objects.update_or_create(
+                        id=user_id,
+                        defaults={
+                            'nombre': row['Nombre'],
+                            'apellido': row['Apellido'],
+                            'email': row['Email'],
+                            'localidad': row['Localidad'],
+                            'provincia': row['Provincia']
+                        }
+                    )
+                    contador += 1
+
+                self.stdout.write(self.style.SUCCESS(
+                    f'Se cargaron/actualizaron {contador} participantes.'
+                ))
+
+                RegistroActividad.objects.create(
+                    evento=f"Carga de participantes desde {ruta_usuarios}; no incluidos {len(blacklist_ids)} legajos."
+                )
+        except FileNotFoundError:
+            raise CommandError(f"No se encontró el archivo de participantes: {ruta_usuarios}")
+
 
 
 

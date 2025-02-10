@@ -19,27 +19,37 @@ function Registro() {
   const [actividad, setActividad] = useState([]);
   const [cargandoActividad, setCargandoActividad] = useState(false);
 
-  // Estado para filtros y ordenamiento en "Resultados de Sorteos"
+  // Sorting y filtrado para Resultados de Sorteos
   const [sortConfig, setSortConfig] = useState({ key: 'fecha', direction: 'desc' });
   const [filtroSorteo, setFiltroSorteo] = useState('');
   const [filtroParticipante, setFiltroParticipante] = useState('');
   const [filtroPremio, setFiltroPremio] = useState('');
   const [filtroFecha, setFiltroFecha] = useState('');
 
-  // Estado para filtros y ordenamiento en "Sorteos Realizados"
-  const [sortConfigSorteo, setSortConfigSorteo] = useState({ key: 'fecha_hora', direction: 'desc' });
+  // Sorting y filtrado para Sorteos Realizados
   const [filtroSorteoNombre, setFiltroSorteoNombre] = useState('');
   const [filtroSorteoDescripcion, setFiltroSorteoDescripcion] = useState('');
   const [filtroSorteoFecha, setFiltroSorteoFecha] = useState('');
+  const [sortConfigSorteo, setSortConfigSorteo] = useState({ key: 'fecha_hora', direction: 'desc' });
 
-  // Funciones para obtener datos
+  // Opciones de filtro para Resultados y Sorteos Realizados
+  const [opcionesSorteo, setOpcionesSorteo] = useState([]);
+  const [opcionesParticipante, setOpcionesParticipante] = useState([]);
+  const [opcionesPremio, setOpcionesPremio] = useState([]);
+  const [opcionesFecha, setOpcionesFecha] = useState([]);
+  const [opcionesSorteoNombre, setOpcionesSorteoNombre] = useState([]);
+  const [opcionesSorteoFecha, setOpcionesSorteoFecha] = useState([]);
+
+  // Función para obtener Resultados de Sorteos
   const fetchResultados = async () => {
     setCargandoResultados(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/resultados_sorteo/`);
       const data = await response.json();
       // Ordenar de más nuevo a más viejo según "fecha"
-      const resultadosOrdenados = data.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      const resultadosOrdenados = data.sort(
+        (a, b) => new Date(b.fecha) - new Date(a.fecha)
+      );
       setResultados(resultadosOrdenados);
     } catch (error) {
       console.error('Error al obtener resultados:', error);
@@ -49,13 +59,16 @@ function Registro() {
     }
   };
 
+  // Función para obtener Sorteos Realizados
   const fetchSorteos = async () => {
     setCargandoSorteos(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/sorteos/`);
       const data = await response.json();
       // Ordenar de más nuevo a más viejo según "fecha_hora"
-      const sorteosOrdenados = data.sort((a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
+      const sorteosOrdenados = data.sort(
+        (a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora)
+      );
       setSorteos(sorteosOrdenados);
     } catch (error) {
       console.error('Error al obtener sorteos:', error);
@@ -65,6 +78,7 @@ function Registro() {
     }
   };
 
+  // Función para obtener Registro de Actividades
   const fetchActividad = async () => {
     setCargandoActividad(true);
     try {
@@ -85,6 +99,60 @@ function Registro() {
     fetchActividad();
   }, []);
 
+  // Opciones de filtro para "Resultados de Sorteos"
+  useEffect(() => {
+    const nombresSorteo = Array.from(
+      new Set(resultados.map(r => (r.sorteo && r.sorteo.nombre) || ''))
+    ).filter(Boolean);
+    setOpcionesSorteo(nombresSorteo);
+
+    const nombresParticipante = Array.from(
+      new Set(
+        resultados
+          .map(r =>
+            r.participante ? `${r.participante.nombre} ${r.participante.apellido}` : ''
+          )
+          .filter(Boolean)
+      )
+    );
+    setOpcionesParticipante(nombresParticipante);
+
+    const nombresPremio = Array.from(
+      new Set(resultados.map(r => (r.premio && r.premio.nombre) || '').filter(Boolean))
+    );
+    setOpcionesPremio(nombresPremio);
+
+    const fechasUnicas = Array.from(
+      new Set(
+        resultados
+          .map(r => {
+            const d = new Date(r.fecha);
+            return `${d.getFullYear()}-${('0' + (d.getMonth() + 1)).slice(-2)}-${('0' + d.getDate()).slice(-2)}`;
+          })
+          .filter(Boolean)
+      )
+    );
+    setOpcionesFecha(fechasUnicas);
+  }, [resultados]);
+
+  // Opciones de filtro para "Sorteos Realizados"
+  useEffect(() => {
+    const nombres = Array.from(new Set(sorteos.map(s => s.nombre).filter(Boolean)));
+    setOpcionesSorteoNombre(nombres);
+
+    const fechas = Array.from(
+      new Set(
+        sorteos
+          .map(s => {
+            const d = new Date(s.fecha_hora);
+            return `${d.getFullYear()}-${('0' + (d.getMonth() + 1)).slice(-2)}-${('0' + d.getDate()).slice(-2)}`;
+          })
+          .filter(Boolean)
+      )
+    );
+    setOpcionesSorteoFecha(fechas);
+  }, [sorteos]);
+
   // Función para ordenar Resultados de Sorteos
   const requestSort = (key) => {
     let direction = 'asc';
@@ -94,7 +162,7 @@ function Registro() {
     setSortConfig({ key, direction });
   };
 
-  // Variable derivada: resultados ordenados según sortConfig
+  // Variable ordenada para Resultados de Sorteos
   const sortedResultados = useMemo(() => {
     let sortableItems = [...resultados];
     if (sortConfig !== null) {
@@ -142,7 +210,16 @@ function Registro() {
   };
 
   const sortedSorteos = useMemo(() => {
-    let sortableItems = [...sorteos];
+    let sortableItems = [...sorteos.filter(s => {
+      const matchNombre = filtroSorteoNombre ? s.nombre === filtroSorteoNombre : true;
+      const matchDescripcion = filtroSorteoDescripcion
+        ? s.descripcion.toLowerCase().includes(filtroSorteoDescripcion.toLowerCase())
+        : true;
+      const d = new Date(s.fecha_hora);
+      const fechaFormateada = `${d.getFullYear()}-${('0' + (d.getMonth() + 1)).slice(-2)}-${('0' + d.getDate()).slice(-2)}`;
+      const matchFecha = filtroSorteoFecha ? fechaFormateada === filtroSorteoFecha : true;
+      return matchNombre && matchDescripcion && matchFecha;
+    })];
     if (sortConfigSorteo !== null) {
       sortableItems.sort((a, b) => {
         let aVal, bVal;
@@ -172,14 +249,7 @@ function Registro() {
       });
     }
     return sortableItems;
-  }, [sorteos, sortConfigSorteo]);
-
-  const clearFilters = () => {
-    setFiltroSorteo('');
-    setFiltroParticipante('');
-    setFiltroPremio('');
-    setFiltroFecha('');
-  };
+  }, [sorteos, filtroSorteoNombre, filtroSorteoDescripcion, filtroSorteoFecha, sortConfigSorteo]);
 
   const clearSorteoFilters = () => {
     setFiltroSorteoNombre('');
@@ -242,7 +312,7 @@ function Registro() {
           <label>Nombre:</label>
           <select value={filtroSorteoNombre} onChange={(e) => setFiltroSorteoNombre(e.target.value)}>
             <option value="">Todos</option>
-            {sortedSorteos.map((s) => s.nombre && s.nombre).filter((value, index, self) => self.indexOf(value) === index).map((nombre, idx) => (
+            {opcionesSorteoNombre.map((nombre, idx) => (
               <option key={idx} value={nombre}>{nombre}</option>
             ))}
           </select>
@@ -260,15 +330,9 @@ function Registro() {
           <label>Fecha:</label>
           <select value={filtroSorteoFecha} onChange={(e) => setFiltroSorteoFecha(e.target.value)}>
             <option value="">Todas</option>
-            {sortedSorteos
-              .map(s => {
-                const d = new Date(s.fecha_hora);
-                return `${d.getFullYear()}-${('0' + (d.getMonth() + 1)).slice(-2)}-${('0' + d.getDate()).slice(-2)}`;
-              })
-              .filter((value, index, self) => self.indexOf(value) === index)
-              .map((fecha, idx) => (
-                <option key={idx} value={fecha}>{fecha}</option>
-              ))}
+            {opcionesSorteoFecha.map((fecha, idx) => (
+              <option key={idx} value={fecha}>{fecha}</option>
+            ))}
           </select>
         </div>
         <div className="filtro">
@@ -294,7 +358,7 @@ function Registro() {
                 <th onClick={() => requestSortSorteo('fecha_hora')} style={{ cursor: 'pointer' }}>
                   Fecha y Hora {sortConfigSorteo.key === 'fecha_hora' ? (sortConfigSorteo.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
-                <th>Fecha Agendada</th>
+                <th>Fecha Programada</th>
                 <th>Provincia</th>
                 <th>Localidad</th>
                 <th>Premios</th>

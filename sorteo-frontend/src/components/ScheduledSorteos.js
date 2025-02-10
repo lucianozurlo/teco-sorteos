@@ -83,16 +83,10 @@ function ScheduledSorteos () {
     }
   };
 
-  // Al presionar el botón "Sortear" (Play) se redirige a la página de Sorteo,
-  // pasando los datos del sorteo agendado para completar el formulario.
+  // Al presionar el botón "Sortear", se redirige a la página de Sorteo
+  // pasando los datos del sorteo agendado seleccionado.
   const handlePlay = sorteo => {
     navigate ('/', {state: {scheduledSorteo: sorteo}});
-  };
-
-  // Helper para formatear la lista de premios
-  const formatPremios = premios => {
-    if (!premios || premios.length === 0) return 'Sin premios';
-    return premios.map (p => `${p.premio.nombre} (x${p.cantidad})`).join (', ');
   };
 
   return (
@@ -148,7 +142,6 @@ function ScheduledSorteos () {
                         {editingId === sorteo.id
                           ? <input
                               type="datetime-local"
-                              className="sorteo-datetime"
                               value={editValues.fecha_programada || ''}
                               onChange={e =>
                                 setEditValues ({
@@ -160,33 +153,15 @@ function ScheduledSorteos () {
                               sorteo.fecha_programada
                             ).toLocaleString ()}
                       </td>
+                      <td>{sorteo.provincia || '-'}</td>
+                      <td>{sorteo.localidad || '-'}</td>
                       <td>
-                        {editingId === sorteo.id
-                          ? <input
-                              type="text"
-                              value={editValues.provincia || ''}
-                              onChange={e =>
-                                setEditValues ({
-                                  ...editValues,
-                                  provincia: e.target.value,
-                                })}
-                            />
-                          : sorteo.provincia || '-'}
+                        {sorteo.premios && sorteo.premios.length > 0
+                          ? sorteo.premios
+                              .map (p => `${p.premio.nombre} (x${p.cantidad})`)
+                              .join (', ')
+                          : 'Sin premios'}
                       </td>
-                      <td>
-                        {editingId === sorteo.id
-                          ? <input
-                              type="text"
-                              value={editValues.localidad || ''}
-                              onChange={e =>
-                                setEditValues ({
-                                  ...editValues,
-                                  localidad: e.target.value,
-                                })}
-                            />
-                          : sorteo.localidad || '-'}
-                      </td>
-                      <td>{formatPremios (sorteo.premios)}</td>
                       <td>
                         {editingId === sorteo.id
                           ? <div className="acciones edit">
