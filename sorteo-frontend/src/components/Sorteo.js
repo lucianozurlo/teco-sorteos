@@ -1,26 +1,13 @@
 // sorteo-frontend/src/components/Sorteo.js
 
 import React, {useState, useEffect} from 'react';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import {toast} from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
 import './Sorteo.css';
 import {API_BASE_URL} from '../config';
 import {useLocation} from 'react-router-dom';
+import {useSortable} from '@dnd-kit/sortable';
 
 function SortableItem (props) {
   const {id, nombre_item, cantidad, index} = props;
@@ -104,20 +91,13 @@ function Sorteo () {
   const [selectedPremioCantidad, setSelectedPremioCantidad] = useState (1);
 
   // Resultado del sorteo (se mostrará en el modal)
-  const [resultado, setResultado] = useState (null);
+  const [modalResult, setModalResult] = useState (null);
 
   // Estado para el modal
   const [showModal, setShowModal] = useState (false);
-  const [modalResult, setModalResult] = useState (null);
 
   // Indicador de carga
   const [cargando, setCargando] = useState (false);
-
-  // Sensores para drag & drop
-  const sensors = useSensors (
-    useSensor (PointerSensor),
-    useSensor (KeyboardSensor)
-  );
 
   const location = useLocation ();
 
@@ -352,48 +332,20 @@ function Sorteo () {
     toast.success (`Premio "${premio.nombre}" agregado al sorteo.`);
   };
 
-  const handleDragEnd = event => {
-    const {active, over} = event;
-    if (active.id !== over.id) {
-      const oldIndex = items.findIndex (item => item.id === active.id);
-      const newIndex = items.findIndex (item => item.id === over.id);
-      setItems (arrayMove (items, oldIndex, newIndex));
-    }
+  const resetForm = () => {
+    setNombreSorteo ('');
+    setDescripcion ('');
+    setItems ([]);
+    setScheduledDate ('');
+    setProvinciaSeleccionada ('');
+    setLocalidadSeleccionada ('');
+    setUsarFiltros (false);
+    setAppliedFilter ({provincia: '', localidad: ''});
+    setProgramarSorteo (false);
+    setSorteoAgendado (false);
+    setSelectedScheduledSorteoId ('');
+    setModalResult (null);
   };
-
-  // Función para obtener participantes filtrados (o totales si no hay filtro)
-  const fetchFilteredParticipants = async () => {
-    try {
-      const response = await fetch (`${API_BASE_URL}/api/lists/`);
-      const data = await response.json ();
-      const allParticipants = data.participantes || [];
-      const filtered = allParticipants.filter (p => {
-        let match = true;
-        if (appliedFilter.provincia) {
-          match = match && p.provincia === appliedFilter.provincia;
-        }
-        if (appliedFilter.localidad) {
-          match = match && p.localidad === appliedFilter.localidad;
-        }
-        return match;
-      });
-      setFilteredParticipants (filtered);
-    } catch (error) {
-      console.error (error);
-      toast.error ('Error al cargar participantes.');
-    }
-  };
-
-  useEffect (
-    () => {
-      if (usarFiltros && (appliedFilter.provincia || appliedFilter.localidad)) {
-        fetchFilteredParticipants ();
-      } else {
-        setFilteredParticipants ([]);
-      }
-    },
-    [usarFiltros, appliedFilter]
-  );
 
   const handleSortear = async () => {
     if (items.length === 0) {
@@ -435,7 +387,6 @@ function Sorteo () {
           resetForm ();
         } else {
           toast.error (data.error || 'Error al agendar el sorteo.');
-          setResultado (null);
         }
       } else {
         const response = await fetch (`${API_BASE_URL}/api/sortear/`, {
@@ -452,41 +403,34 @@ function Sorteo () {
           toast.success ('Sorteo realizado exitosamente.');
         } else {
           toast.error (data.error || 'Error al sortear');
-          setResultado (null);
         }
       }
     } catch (err) {
       console.error ('Error de conexión:', err);
       toast.error ('Error de conexión');
-      setResultado (null);
     } finally {
       setCargando (false);
     }
   };
 
-  // Función para reiniciar el formulario sin afectar availablePremios
-  const resetForm = () => {
-    setNombreSorteo ('');
-    setDescripcion ('');
-    setItems ([]);
-    setScheduledDate ('');
-    setProvinciaSeleccionada ('');
-    setLocalidadSeleccionada ('');
-    setUsarFiltros (false);
-    setAppliedFilter ({provincia: '', localidad: ''});
-    setProgramarSorteo (false);
-    setSorteoAgendado (false);
-    setSelectedScheduledSorteoId ('');
-    setResultado (null);
-  };
-
-  const handleNuevoSorteo = () => {
-    resetForm ();
-  };
-
   return (
     <div className="sorteo-container">
       <h1>Realizar Sorteo</h1>
+      {/* Accordion headers */}
+      <div className="accordion-headers">
+        <button
+          className={activeSection === 'crear' ? 'active' : ''}
+          onClick={() => setActiveSection ('crear')}
+        >
+          Crear sorteo
+        </button>
+        <button
+          className={activeSection === 'realizar' ? 'active' : ''}
+          onClick={() => setActiveSection ('realizar')}
+        >
+          Realizar sorteo
+        </button>
+      </div>
       {activeSection === 'crear' &&
         <div className="accordion-content">
           <div className="sorteo-section">
@@ -695,7 +639,6 @@ function Sorteo () {
                     </ul>
                   : <p>No hay participantes que cumplan el filtro.</p>
               : <p>
-                  {/* Si no hay filtro, se muestra el total de participantes */}
                   {filteredParticipants.length > 0
                     ? filteredParticipants.length
                     : 'No se cargaron participantes'}
@@ -749,20 +692,35 @@ function Sorteo () {
         >
           <h2>Resultado del Sorteo</h2>
           <p>
-            <strong>ID:</strong> {modalResult.sorteo_id} -{' '}
-            <strong>Nombre:</strong> {modalResult.nombre_sorteo}
+            <strong>ID:</strong>
+            {' '}
+            {modalResult.sorteo_id}
+            {' '}
+            -
+            {' '}
+            <strong>Nombre:</strong>
+            {' '}
+            {modalResult.nombre_sorteo}
           </p>
           {modalResult.items && modalResult.items.length > 0
             ? <ul>
                 {modalResult.items.map ((itemObj, i) => (
                   <li key={i}>
-                    <strong>{itemObj.orden_item}° Premio:</strong>{' '}
+                    <strong>{itemObj.orden_item}° Premio:</strong>
+                    {' '}
                     {itemObj.nombre_item}
                     <ul>
                       {itemObj.ganadores.map ((ganador, j) => (
                         <li key={j}>
-                          Ganador: {ganador.nombre} {ganador.apellido} (
-                          {ganador.email})
+                          Ganador:
+                          {' '}
+                          {ganador.nombre}
+                          {' '}
+                          {ganador.apellido}
+                          {' '}
+                          (
+                          {ganador.email}
+                          )
                         </li>
                       ))}
                     </ul>

@@ -21,10 +21,6 @@ function Registro() {
 
   // Sorting y filtrado para Resultados de Sorteos
   const [sortConfig, setSortConfig] = useState({ key: 'fecha', direction: 'desc' });
-  const [filtroSorteo, setFiltroSorteo] = useState('');
-  const [filtroParticipante, setFiltroParticipante] = useState('');
-  const [filtroPremio, setFiltroPremio] = useState('');
-  const [filtroFecha, setFiltroFecha] = useState('');
 
   // Sorting y filtrado para Sorteos Realizados
   const [filtroSorteoNombre, setFiltroSorteoNombre] = useState('');
@@ -32,11 +28,7 @@ function Registro() {
   const [filtroSorteoFecha, setFiltroSorteoFecha] = useState('');
   const [sortConfigSorteo, setSortConfigSorteo] = useState({ key: 'fecha_hora', direction: 'desc' });
 
-  // Opciones de filtro para Resultados y Sorteos Realizados
-  const [opcionesSorteo, setOpcionesSorteo] = useState([]);
-  const [opcionesParticipante, setOpcionesParticipante] = useState([]);
-  const [opcionesPremio, setOpcionesPremio] = useState([]);
-  const [opcionesFecha, setOpcionesFecha] = useState([]);
+  // Opciones de filtro para Sorteos Realizados
   const [opcionesSorteoNombre, setOpcionesSorteoNombre] = useState([]);
   const [opcionesSorteoFecha, setOpcionesSorteoFecha] = useState([]);
 
@@ -46,10 +38,7 @@ function Registro() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/resultados_sorteo/`);
       const data = await response.json();
-      // Ordenar de más nuevo a más viejo según "fecha"
-      const resultadosOrdenados = data.sort(
-        (a, b) => new Date(b.fecha) - new Date(a.fecha)
-      );
+      const resultadosOrdenados = data.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
       setResultados(resultadosOrdenados);
     } catch (error) {
       console.error('Error al obtener resultados:', error);
@@ -65,7 +54,6 @@ function Registro() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/sorteos/`);
       const data = await response.json();
-      // Ordenar de más nuevo a más viejo según "fecha_hora"
       const sorteosOrdenados = data.sort(
         (a, b) => new Date(b.fecha_hora) - new Date(a.fecha_hora)
       );
@@ -99,70 +87,7 @@ function Registro() {
     fetchActividad();
   }, []);
 
-  // Opciones de filtro para "Resultados de Sorteos"
-  useEffect(() => {
-    const nombresSorteo = Array.from(
-      new Set(resultados.map(r => (r.sorteo && r.sorteo.nombre) || ''))
-    ).filter(Boolean);
-    setOpcionesSorteo(nombresSorteo);
-
-    const nombresParticipante = Array.from(
-      new Set(
-        resultados
-          .map(r =>
-            r.participante ? `${r.participante.nombre} ${r.participante.apellido}` : ''
-          )
-          .filter(Boolean)
-      )
-    );
-    setOpcionesParticipante(nombresParticipante);
-
-    const nombresPremio = Array.from(
-      new Set(resultados.map(r => (r.premio && r.premio.nombre) || '').filter(Boolean))
-    );
-    setOpcionesPremio(nombresPremio);
-
-    const fechasUnicas = Array.from(
-      new Set(
-        resultados
-          .map(r => {
-            const d = new Date(r.fecha);
-            return `${d.getFullYear()}-${('0' + (d.getMonth() + 1)).slice(-2)}-${('0' + d.getDate()).slice(-2)}`;
-          })
-          .filter(Boolean)
-      )
-    );
-    setOpcionesFecha(fechasUnicas);
-  }, [resultados]);
-
-  // Opciones de filtro para "Sorteos Realizados"
-  useEffect(() => {
-    const nombres = Array.from(new Set(sorteos.map(s => s.nombre).filter(Boolean)));
-    setOpcionesSorteoNombre(nombres);
-
-    const fechas = Array.from(
-      new Set(
-        sorteos
-          .map(s => {
-            const d = new Date(s.fecha_hora);
-            return `${d.getFullYear()}-${('0' + (d.getMonth() + 1)).slice(-2)}-${('0' + d.getDate()).slice(-2)}`;
-          })
-          .filter(Boolean)
-      )
-    );
-    setOpcionesSorteoFecha(fechas);
-  }, [sorteos]);
-
-  // Función para ordenar Resultados de Sorteos
-  const requestSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  // Variable ordenada para Resultados de Sorteos
+  // Ordenar Resultados de Sorteos
   const sortedResultados = useMemo(() => {
     let sortableItems = [...resultados];
     if (sortConfig !== null) {
@@ -200,7 +125,7 @@ function Registro() {
     return sortableItems;
   }, [resultados, sortConfig]);
 
-  // Función para ordenar Sorteos Realizados
+  // Ordenar Sorteos Realizados
   const requestSortSorteo = (key) => {
     let direction = 'asc';
     if (sortConfigSorteo.key === key && sortConfigSorteo.direction === 'asc') {
@@ -269,19 +194,19 @@ function Registro() {
           <table className="registro-table">
             <thead>
               <tr>
-                <th onClick={() => requestSort('id')} style={{ cursor: 'pointer' }}>
+                <th onClick={() => setSortConfig({ key: 'id', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })} style={{ cursor: 'pointer' }}>
                   ID {sortConfig.key === 'id' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
-                <th onClick={() => requestSort('sorteo')} style={{ cursor: 'pointer' }}>
+                <th onClick={() => setSortConfig({ key: 'sorteo', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })} style={{ cursor: 'pointer' }}>
                   Sorteo {sortConfig.key === 'sorteo' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
-                <th onClick={() => requestSort('participante')} style={{ cursor: 'pointer' }}>
+                <th onClick={() => setSortConfig({ key: 'participante', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })} style={{ cursor: 'pointer' }}>
                   Participante {sortConfig.key === 'participante' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
-                <th onClick={() => requestSort('premio')} style={{ cursor: 'pointer' }}>
+                <th onClick={() => setSortConfig({ key: 'premio', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })} style={{ cursor: 'pointer' }}>
                   Premio {sortConfig.key === 'premio' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
-                <th onClick={() => requestSort('fecha')} style={{ cursor: 'pointer' }}>
+                <th onClick={() => setSortConfig({ key: 'fecha', direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' })} style={{ cursor: 'pointer' }}>
                   Fecha {sortConfig.key === 'fecha' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                 </th>
               </tr>
@@ -313,7 +238,9 @@ function Registro() {
           <select value={filtroSorteoNombre} onChange={(e) => setFiltroSorteoNombre(e.target.value)}>
             <option value="">Todos</option>
             {opcionesSorteoNombre.map((nombre, idx) => (
-              <option key={idx} value={nombre}>{nombre}</option>
+              <option key={idx} value={nombre}>
+                {nombre}
+              </option>
             ))}
           </select>
         </div>
@@ -331,7 +258,9 @@ function Registro() {
           <select value={filtroSorteoFecha} onChange={(e) => setFiltroSorteoFecha(e.target.value)}>
             <option value="">Todas</option>
             {opcionesSorteoFecha.map((fecha, idx) => (
-              <option key={idx} value={fecha}>{fecha}</option>
+              <option key={idx} value={fecha}>
+                {fecha}
+              </option>
             ))}
           </select>
         </div>
@@ -377,7 +306,7 @@ function Registro() {
                   <td>
                     {sorteo.premios && sorteo.premios.length > 0
                       ? sorteo.premios
-                          .map(p => `${p.premio.nombre} (x${p.cantidad})`)
+                          .map((p) => `${p.premio.nombre} (x${p.cantidad})`)
                           .join(', ')
                       : 'Sin premios'}
                   </td>
@@ -398,7 +327,7 @@ function Registro() {
           <ClipLoader size={50} color="#123abc" />
         ) : (
           <ul className="actividad-list">
-            {actividad.map(act => (
+            {actividad.map((act) => (
               <li key={act.id}>
                 {new Date(act.fecha_hora).toLocaleString()} - {act.evento}
               </li>
