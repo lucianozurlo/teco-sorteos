@@ -2,19 +2,12 @@
 
 import React, {useState, useEffect} from 'react';
 import {
-  DndContext,
-  closestCenter,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import {arrayMove, useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import {toast} from 'react-toastify';
 import ClipLoader from 'react-spinners/ClipLoader';
@@ -386,14 +379,14 @@ function Sorteo () {
     toast.success (`Premio "${premio.nombre}" agregado al sorteo.`);
   };
 
-  const handleDragEnd = event => {
-    const {active, over} = event;
-    if (active.id !== over.id) {
-      const oldIndex = items.findIndex (item => item.id === active.id);
-      const newIndex = items.findIndex (item => item.id === over.id);
-      setItems (arrayMove (items, oldIndex, newIndex));
-    }
-  };
+  // const handleDragEnd = event => {
+  //   const {active, over} = event;
+  //   if (active.id !== over.id) {
+  //     const oldIndex = items.findIndex (item => item.id === active.id);
+  //     const newIndex = items.findIndex (item => item.id === over.id);
+  //     setItems (arrayMove (items, oldIndex, newIndex));
+  //   }
+  // };
 
   const handleSortear = async () => {
     if (items.length === 0) {
@@ -480,9 +473,9 @@ function Sorteo () {
     setResultado (null);
   };
 
-  const handleNuevoSorteo = () => {
-    resetForm ();
-  };
+  // const handleNuevoSorteo = () => {
+  //   resetForm ();
+  // };
 
   return (
     <div className="sorteo-container">
