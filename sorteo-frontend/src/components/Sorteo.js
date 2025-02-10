@@ -785,7 +785,7 @@ function Sorteo () {
                     </ul>
                   : <p>No hay participantes que cumplan el filtro.</p>
               : <p>
-                  Se realizará el sorteo sobre la base activa de participantes con
+                  Se realizará el sorteo sobre la base activa con
                   {' '}
                   {participantsCount !== null
                     ? participantsCount
