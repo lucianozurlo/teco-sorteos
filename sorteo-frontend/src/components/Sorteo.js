@@ -487,21 +487,6 @@ function Sorteo () {
   return (
     <div className="sorteo-container">
       <h1>Realizar Sorteo</h1>
-      {/* Accordion headers */}
-      <div className="accordion-headers">
-        <button
-          className={activeSection === 'crear' ? 'active' : ''}
-          onClick={() => setActiveSection ('crear')}
-        >
-          Crear sorteo
-        </button>
-        <button
-          className={activeSection === 'realizar' ? 'active' : ''}
-          onClick={() => setActiveSection ('realizar')}
-        >
-          Realizar sorteo
-        </button>
-      </div>
       {activeSection === 'crear' &&
         <div className="accordion-content">
           <div className="sorteo-section">
@@ -625,14 +610,6 @@ function Sorteo () {
                   value={scheduledDate}
                   onChange={e => setScheduledDate (e.target.value)}
                 />
-                <button
-                  onClick={() =>
-                    toast.success (
-                      `Fecha confirmada: ${new Date (scheduledDate).toLocaleString ()}`
-                    )}
-                >
-                  Confirmar fecha
-                </button>
               </div>}
           </div>
           <hr />
