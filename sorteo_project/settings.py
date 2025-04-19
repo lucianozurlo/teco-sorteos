@@ -23,7 +23,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', "django-insecure-*!)y=(x-y1vj5s5i^y5a_zv(4z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('ENV', 'development') == 'development'
 
-ALLOWED_HOSTS = ['web-production-0252.up.railway.app', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['web-production-0252.up.railway.app', 'localhost', '127.0.0.1', 'teco-sorteos.onrender.com']
 
 # DATABASE
 if DEBUG:
