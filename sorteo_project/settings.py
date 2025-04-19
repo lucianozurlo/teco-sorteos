@@ -17,6 +17,11 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# RENDER.COM
+TEMPLATES[0]['DIRS'] = [ BASE_DIR / 'sorteo-frontend' / 'build' ]
+
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', "django-insecure-*!)y=(x-y1vj5s5i^y5a_zv(4z1&wvl%f00umni1x6cv@8hwd2")
 
@@ -123,7 +128,16 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'sorteo_app/static')]
+
+#RENDER.COM
+# OCULTO STATICFILES_DIRS = [os.path.join(BASE_DIR, 'sorteo_app/static')]
+
+# Servir los assets estáticos de React
+STATICFILES_DIRS = [
+  BASE_DIR / 'sorteo-frontend' / 'build' / 'static',
+  os.path.join(BASE_DIR, 'sorteo_app', 'static'),
+]
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STORAGES = {
     "staticfiles": {

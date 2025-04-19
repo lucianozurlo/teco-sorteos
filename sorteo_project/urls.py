@@ -49,3 +49,10 @@ urlpatterns = [
     path('api/scheduled/<int:pk>/', ScheduledSorteoDetail.as_view(), name='scheduled_sorteo_detail'),
     path('api/', include(router.urls)),
 ]
+
+from django.views.generic import TemplateView
+from django.urls import re_path
+
+urlpatterns += [
+  re_path(r'^(?:.*)/?$', TemplateView.as_view(template_name='index.html')),
+]
